@@ -5,14 +5,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent {
+export class RegisterComponent {
   hide = signal(true);
 
   togglePasswordVisibility(event: MouseEvent) {

@@ -1,0 +1,37 @@
+<main class="container">
+  <div class="register">
+    <h1 class="register__title">Register</h1>
+    <div class="register__content">
+      <mat-form-field class="register__form-field" appearance="outline">
+        <mat-icon matPrefix>perm_identity</mat-icon>
+        <mat-label>First Name</mat-label>
+        <input matInput type="email" />
+      </mat-form-field>
+      <mat-form-field class="register__form-field" appearance="outline">
+        <mat-icon matPrefix>perm_identity</mat-icon>
+        <mat-label>Last Name</mat-label>
+        <input matInput type="email" />
+      </mat-form-field>
+      <mat-form-field class="register__form-field" appearance="outline">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-label>E-Mail</mat-label>
+        <input matInput type="email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>lock</mat-icon>
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hide() ? 'password' : 'text'" />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="togglePasswordVisibility($event)"
+          [attr.aria-label]="hide() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="hide()">
+          <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+      <button class="register__btn" type="submit" mat-flat-button aria-label="Sign Up">Register</button>
+      <p class="register__register">Already have an account yet?<a href="#"> Login now!</a></p>
+    </div>
+  </div>
+</main>
