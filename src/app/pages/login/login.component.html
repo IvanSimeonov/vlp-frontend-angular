@@ -1,0 +1,28 @@
+<main class="container">
+  <div class="login">
+    <h1 class="login__title">Sign In</h1>
+    <div class="login__content">
+      <mat-form-field class="login__form-field" appearance="outline">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-label>E-Mail</mat-label>
+        <input matInput type="email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>lock</mat-icon>
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hide() ? 'password' : 'text'" />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="togglePasswordBisibility($event)"
+          [attr.aria-label]="hide() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="hide()">
+          <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+      <a href="#" class="login__forgot">Forgot your password?</a>
+      <button class="login__btn" type="submit" mat-flat-button aria-label="Sign In">Sign In</button>
+      <p class="login__register">Don't have an account yet?<a href="#"> Register now!</a></p>
+    </div>
+  </div>
+</main>
