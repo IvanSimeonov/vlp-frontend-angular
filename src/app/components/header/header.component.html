@@ -1,0 +1,82 @@
+<mat-toolbar class="header">
+  <div class="header__left">
+    <a class="header__logo" routerLink="/" aria-current="page">
+      <img class="header__logo-img" src="/images/logo.svg" alt="Virtual Learning Platform logo" />
+      <span class="header__logo-text">Virtual Learning Platform</span>
+    </a>
+  </div>
+  <span class="header__spacer"></span>
+  <nav class="header__nav">
+    <a class="header__nav-link" routerLink="/courses" routerLinkActive="header__nav-link--active" aria-current="page">
+      Explore Courses
+    </a>
+    <a class="header__nav-link" routerLink="/login" routerLinkActive="header__nav-link--active" aria-current="page">
+      Login
+    </a>
+    <a class="header__nav-link" routerLink="/register" routerLinkActive="header__nav-link--active" aria-current="page">
+      Register
+    </a>
+    @if (user) {
+      <a
+        class="header__nav-link"
+        routerLink="/my-courses"
+        routerLinkActive="header__nav-link--active"
+        aria-current="page">
+        My Learnings
+      </a>
+      <a
+        class="header__nav-link"
+        routerLink="/dashboard"
+        routerLinkActive="header__nav-link--active"
+        aria-current="page">
+        Dashboard
+      </a>
+      <a class="header__nav-link header__nav-link--menu" [matMenuTriggerFor]="managementMenu"> Management </a>
+      <mat-menu #managementMenu="matMenu" class="header__menu">
+        <a class="header__menu-item" routerLink="/management/courses">Courses</a>
+        <a class="header__menu-item" routerLink="/management/users">Users</a>
+        <a class="header__menu-item" routerLink="/management/add-admin">Add Admin</a>
+      </mat-menu>
+      <a
+        class="header__nav-link"
+        routerLink="/requests"
+        routerLinkActive="header__nav-link--active"
+        aria-current="page">
+        Requests
+      </a>
+      <a
+        class="header__nav-link"
+        routerLink="/notifications"
+        routerLinkActive="header__nav-link--active"
+        aria-current="page">
+        <mat-icon [matBadge]="unreadNotifications" [matBadgeHidden]="unreadNotifications > 0 ? false : true"
+          >notifications</mat-icon
+        >
+      </a>
+
+      <button
+        mat-icon-button
+        class="header__nav-link header__nav-link--profile"
+        [matMenuTriggerFor]="profileMenu"
+        aria-haspopup="true">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #profileMenu="matMenu">
+        <div class="header__profile">
+          <img
+            class="header__profile-avatar"
+            [src]="user.avatar || '/images/user-default-img.webp'"
+            alt="{{ user.firstName }} {{ user.lastName }} avatar" />
+          <div>
+            <span class="header__profile-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="header__profile-email">{{ user.email }}</span>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <a class="header__menu-item" routerLink="/profile">Profile</a>
+        <a class="header__menu-item" routerLink="/account-settings">Account Settings</a>
+        <a class="header__menu-item" (click)="logout()" (keydown)="logout()" tabindex="{0}">Logout</a>
+      </mat-menu>
+    }
+  </nav>
+</mat-toolbar>

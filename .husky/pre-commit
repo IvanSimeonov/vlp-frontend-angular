@@ -7,7 +7,7 @@ fi
 
 echo "Running tests..."
 
-npm run test-headless
+npm run test:headless
 if [ $? -ne 0 ]; then
   echo "Tests failed! Fix issues and try again."
   exit 1

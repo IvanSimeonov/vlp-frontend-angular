@@ -1,0 +1,138 @@
+$color-white: #fff;
+$color-purple: #684089;
+$color-purple-hover: #a886cd;
+$color-grey-light: #f5f5f5;
+
+.header {
+  background-color: $color-white;
+  color: $color-purple;
+  height: 80px;
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+
+  &__left {
+    display: flex;
+    align-items: center;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    column-gap: 0.5rem;
+
+    &-img {
+      height: 60px;
+    }
+
+    &-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: $color-purple;
+    }
+  }
+
+  &__spacer {
+    flex-grow: 1;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    column-gap: 1.5rem;
+
+    &-link {
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: $color-purple;
+      transition: color 0.3s ease;
+
+      &:hover,
+      &--active {
+        color: $color-purple-hover;
+      }
+
+      &--menu {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+      }
+
+      &--profile {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+
+    &-avatar {
+      border-radius: 50%;
+      height: 3rem;
+      width: 3rem;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+
+    &-name {
+      display: block;
+      font-weight: 700;
+      font-size: 1rem;
+      color: $color-purple;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+
+    &-email {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: darken($color-purple, 20%);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+  }
+}
+
+mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__menu {
+  background-color: $color-white;
+  padding: 1rem 2rem;
+}
+
+.header__menu-item {
+  display: block;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  color: $color-purple;
+  transition: color 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-purple-hover;
+    background-color: $color-grey-light;
+  }
+
+  &:focus {
+    outline: none;
+    background-color: lighten($color-grey-light, 10%);
+  }
+}

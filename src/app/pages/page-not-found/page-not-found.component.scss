@@ -1,0 +1,52 @@
+$color-white: #ffffff;
+$color-purple: #a886cd;
+
+.container {
+  display: flex;
+  justify-content: center;
+  height: calc(100vh - 80px);
+  align-items: center;
+  background: url('/images/not-found-bg.jpg') center/cover no-repeat;
+}
+
+.not-found {
+  max-width: 600px;
+  background: transparent;
+  backdrop-filter: blur(5px);
+  border: 2px solid $color-white;
+  border-radius: 1rem;
+  color: $color-white;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.not-found__error-code {
+  font-size: 7rem;
+  font-weight: 600;
+  margin-bottom: 0rem;
+  color: $color-purple;
+  -webkit-text-stroke: 1px $color-white;
+}
+
+.not-found__error-msg {
+  font-size: 3rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  color: $color-purple;
+  -webkit-text-stroke: 1px $color-white;
+}
+
+.not-found__content {
+  display: grid;
+  row-gap: 0.25rem;
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+}
+
+.not-found__home-btn {
+  font-size: 1.5rem;
+  padding: 1.5rem 2.5rem;
+  border: 2px solid $color-white;
+}
