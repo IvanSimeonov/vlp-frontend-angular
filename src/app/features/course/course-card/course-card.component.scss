@@ -1,0 +1,58 @@
+$txt-color-gray: #666;
+
+.course-card {
+  max-width: 350px;
+
+  &__img {
+    object-fit: cover;
+    height: 200px;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    letter-spacing: 0;
+    margin-bottom: 5px;
+  }
+
+  &__description {
+    color: $txt-color-gray;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    margin-bottom: 5px;
+  }
+
+  &__author {
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    margin-bottom: 5px;
+
+    span:not(:last-child)::after {
+      content: '●';
+      margin: 0 0.4rem;
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+  }
+}
+
+.mat-mdc-card-content {
+  padding: 16px;
+}

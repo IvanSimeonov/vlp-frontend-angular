@@ -1,0 +1,27 @@
+$star-color-orange: #ff9900;
+$txt-color-grey: #666;
+
+.star-rating {
+  display: flex;
+  align-items: center;
+
+  &__value {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: 5px;
+  }
+
+  &__icon {
+    color: $star-color-orange;
+    height: 15px;
+    width: 15px;
+    font-size: 15px;
+  }
+
+  &__votes {
+    margin-left: 5px;
+    color: $txt-color-grey;
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+}

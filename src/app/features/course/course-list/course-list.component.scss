@@ -1,0 +1,52 @@
+.filter-sort {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 3rem 20px;
+}
+.hidden {
+  display: none;
+}
+
+.course-layout {
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  gap: 2rem;
+  padding: 0 3rem;
+
+  &__filter {
+    background-color: #ececec;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    position: sticky;
+    height: fit-content;
+    top: 0;
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); // Adjust course card sizing
+    gap: 1.5rem;
+
+    .loading-spinner {
+      grid-column: 1 / -1; // Center spinner across the entire grid
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .course-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .course-layout__list {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); // Adjust for smaller screens
+  }
+}

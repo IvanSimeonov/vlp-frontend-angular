@@ -1,0 +1,61 @@
+<div class="filter-sort">
+  <div class="filter__actions">
+    <button mat-stroked-button class="filter-sort__actions__filters" (click)="toggleVisibilty()">
+      Filter
+      <mat-icon> filter_list </mat-icon>
+    </button>
+  </div>
+  <div class="filter-sort__sort-results">
+    <mat-form-field appearance="outline" class="sort-form-field">
+      <mat-label class="sort-label">
+        <mat-icon> sort </mat-icon>
+        <span>Sort By</span>
+      </mat-label>
+      <mat-select>
+        <mat-option value="option1">
+          Title
+          <mat-icon>arrow_upward</mat-icon>
+        </mat-option>
+        <mat-option value="option2">
+          Title
+          <mat-icon>arrow_downward</mat-icon>
+        </mat-option>
+        <mat-option value="option1">
+          Rating
+          <mat-icon>arrow_upward</mat-icon>
+        </mat-option>
+        <mat-option value="option2">
+          Rating
+          <mat-icon>arrow_downward</mat-icon>
+        </mat-option>
+        <mat-option value="option1">
+          Votes
+          <mat-icon>arrow_upward</mat-icon>
+        </mat-option>
+        <mat-option value="option2">
+          Votes
+          <mat-icon>arrow_downward</mat-icon>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    {{ courses.length }} results
+  </div>
+</div>
+<div class="course-layout">
+  <!-- Filter Section -->
+  <div class="course-layout__filter" [ngClass]="{ hidden: isHidden }">
+    <app-course-filter (filter)="applyFilters($event)" (reset)="resetFilters()"></app-course-filter>
+  </div>
+
+  <!-- Course List Section -->
+  <div class="course-layout__list">
+    @if (isLoading) {
+      <div class="loading-spinner">
+        <mat-spinner></mat-spinner>
+      </div>
+    }
+    @for (course of courses; let i = $index; track i) {
+      <app-course-card class="course-list" [course]="course"></app-course-card>
+    }
+  </div>
+</div>
