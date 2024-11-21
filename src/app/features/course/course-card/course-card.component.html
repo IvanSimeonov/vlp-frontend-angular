@@ -5,10 +5,10 @@
     [src]="course?.image || '/images/course-default-img.jpeg'"
     alt="Course Image" />
   <mat-card-content>
-    <h3 class="course-card__title">{{ course?.title }}</h3>
-    <p class="course-card__description">{{ course?.description }}</p>
+    <h3 class="course-card__title">{{ course?.title || '' }}</h3>
+    <p class="course-card__description">{{ course?.description || '' }}</p>
     <div class="course-card__author">
-      <span>{{ course?.author }}</span>
+      <span>{{ course?.author || '' }}</span>
     </div>
     <div class="course-card__rating">
       @if (course?.rating && course?.totalVotes) {
@@ -16,7 +16,9 @@
       }
     </div>
     <div class="course-card__meta">
-      <span>{{ course?.difficultyLevel?.toLowerCase() | titlecase }}</span>
+      @if (course?.difficultyLevel) {
+        <span>{{ course.difficultyLevel.toLowerCase() | titlecase }}</span>
+      }
       @if (course?.totalLectures) {
         <span>{{ course.totalLectures }} lectures</span>
       }
