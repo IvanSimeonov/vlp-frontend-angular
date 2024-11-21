@@ -23,5 +23,5 @@ export interface ICourse {
   styleUrl: './course-card.component.scss',
 })
 export class CourseCardComponent {
-  @Input() course?: ICourse;
+  @Input() course?: ICourse = {};
 }

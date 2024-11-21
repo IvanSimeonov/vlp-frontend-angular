@@ -1,0 +1,57 @@
+$color-white: #fff;
+$color-red: #ba1a1a;
+
+mat-error {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ff6f5f;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 1rem;
+  background: url('/images/not-found-bg.jpg') center/cover no-repeat;
+}
+
+.register {
+  width: 100%;
+  background: transparent;
+  backdrop-filter: blur(10px);
+  padding: 2.5rem 1.5rem;
+  color: $color-white;
+  text-align: center;
+}
+
+.register__title {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.register__content {
+  display: grid;
+  row-gap: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.cancel__btn {
+  background-color: white;
+}
+
+a {
+  text-decoration: none;
+  font-weight: 600;
+  color: $color-white;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+.mat-mdc-unelevated-button.mat-mdc-button-disabled {
+  color: grey;
+  border-color: grey;
+}

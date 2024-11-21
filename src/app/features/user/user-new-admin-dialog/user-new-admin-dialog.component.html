@@ -1,0 +1,63 @@
+<main class="container">
+  <div class="register">
+    <h1 class="register__title">Create new admin</h1>
+    <form class="register__content" [formGroup]="createAdminForm" (ngSubmit)="createAdmin()">
+      <mat-form-field class="register__form-field" appearance="fill">
+        <mat-icon matPrefix>perm_identity</mat-icon>
+        <mat-label>First Name</mat-label>
+        <input matInput type="text" formControlName="firstName" (blur)="markAsTouched('firstName')" />
+        @if (createAdminForm.get('firstName')!.invalid) {
+          <mat-error>{{ firstNameErrorMsg() }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="register__form-field" appearance="fill">
+        <mat-icon matPrefix>perm_identity</mat-icon>
+        <mat-label>Last Name</mat-label>
+        <input matInput type="text" formControlName="lastName" (blur)="markAsTouched('lastName')" />
+        @if (createAdminForm.get('lastName')!.invalid) {
+          <mat-error>{{ lastNameErrorMsg() }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="register__form-field" appearance="fill">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-label>E-Mail</mat-label>
+        <input matInput type="email" formControlName="email" (blur)="markAsTouched('email')" />
+        @if (createAdminForm.get('email')!.invalid) {
+          <mat-error>{{ emailErrorMsg() }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-icon matPrefix>lock</mat-icon>
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hide() ? 'password' : 'text'"
+          formControlName="password"
+          (blur)="markAsTouched('password')" />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePasswordVisibility($event)"
+          [attr.aria-label]="hide() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="hide()">
+          <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (createAdminForm.get('password')!.invalid) {
+          <mat-error>{{ passwordErrorMsg() }}</mat-error>
+        }
+      </mat-form-field>
+      <button type="submit" mat-flat-button aria-label="Create admin" [disabled]="!createAdminForm.valid">
+        Create
+      </button>
+      <button
+        class="cancel__btn"
+        type="button"
+        mat-stroked-button
+        aria-label="Cancel admin creation"
+        (click)="cancel()">
+        Cancel
+      </button>
+    </form>
+  </div>
+</main>

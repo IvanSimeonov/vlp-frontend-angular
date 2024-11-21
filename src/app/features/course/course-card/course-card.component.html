@@ -11,15 +11,15 @@
       <span>{{ course?.author || '' }}</span>
     </div>
     <div class="course-card__rating">
-      @if (course?.rating && course?.totalVotes) {
+      @if (course && course.rating && course.totalVotes) {
         <app-star-rating [rating]="course.rating" [totalVotes]="course.totalVotes"></app-star-rating>
       }
     </div>
     <div class="course-card__meta">
-      @if (course?.difficultyLevel) {
+      @if (course && course.difficultyLevel) {
         <span>{{ course.difficultyLevel.toLowerCase() | titlecase }}</span>
       }
-      @if (course?.totalLectures) {
+      @if (course && course.totalLectures) {
         <span>{{ course.totalLectures }} lectures</span>
       }
     </div>
