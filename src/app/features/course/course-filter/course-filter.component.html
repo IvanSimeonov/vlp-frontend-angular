@@ -1,15 +1,15 @@
 <div class="course-filter">
-  <mat-form-field appearance="outline" class="course-filter__field">
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
     <mat-label>Course Title</mat-label>
     <input matInput [(ngModel)]="title" placeholder="Search by title" />
   </mat-form-field>
 
-  <mat-form-field appearance="outline" class="course-filter__field">
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
     <mat-label>Author</mat-label>
     <input matInput [(ngModel)]="author" placeholder="Search by author" />
   </mat-form-field>
 
-  <mat-form-field appearance="outline" class="course-filter__field">
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
     <mat-label>Difficulty</mat-label>
     <mat-select [(ngModel)]="selectedDifficulty">
       <mat-option value="">All</mat-option>
@@ -19,7 +19,7 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field appearance="outline" class="course-filter__field">
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
     <mat-label>Topic</mat-label>
     <mat-select [(ngModel)]="selectedTopic">
       <mat-option value="">All</mat-option>

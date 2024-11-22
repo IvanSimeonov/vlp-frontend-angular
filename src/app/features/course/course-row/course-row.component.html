@@ -1,0 +1,27 @@
+<div class="course-layout">
+  <img class="course-layout__img" [src]="course?.image || '/images/course-default-img.jpeg'" alt="Course Thumbnail" />
+  <div class="course-layout__content">
+    <div class="course-layout__content__layout">
+      <p class="course-layout__content__layout__subtitle">
+        {{ course?.status }} - {{ course?.topic }} - {{ course?.modificationDate | date: 'dd.MM.yyy' }}
+      </p>
+      <p class="course-layout__content__layout__title">{{ course?.title }}</p>
+      <p class="course-layout__content__layout__author">{{ course?.author }}</p>
+      <div class="course-layout__content__layout__spacer"></div>
+      @if (course && course.rating && course.totalVotes) {
+        <div class="course-layout__content__layout__rating">
+          <app-star-rating [rating]="course.rating" [totalVotes]="course.totalVotes"></app-star-rating>
+        </div>
+      }
+      <p class="course-layout__content__layout__students">Students: {{ course?.totalStudents }}</p>
+    </div>
+    <div class="course-layout__content__actions">
+      <mat-slide-toggle [ngModel]="isEnabled" (ngModelChange)="onSoftDelete($event)">
+        {{ isEnabled ? 'Enabled' : 'Disabled' }}
+      </mat-slide-toggle>
+      <mat-slide-toggle [ngModel]="isPublished" (ngModelChange)="onStatusChange($event)">
+        {{ isPublished ? 'Published' : 'Draft' }}
+      </mat-slide-toggle>
+    </div>
+  </div>
+</div>
