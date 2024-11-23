@@ -1,0 +1,54 @@
+<div class="homepage">
+  <!-- Banner Section -->
+  <section class="homepage-banner">
+    <img class="homepage-banner__image" src="/images/innovation_3.jpg" alt="Virtual Learning Banner" />
+    <div class="homepage-banner__content">
+      <p class="homepage-banner__quote">
+        <span class="typewriter line1">“Anyone who stops learning is old, whether at twenty or eighty.</span><br />
+        <span class="typewriter line2">Anyone who keeps learning stays young.</span><br />
+        <span class="typewriter line3">The greatest thing in life is to keep your mind young.” - Henry Ford</span>
+      </p>
+      <button mat-flat-button color="primary" (click)="navigateToCourses()">Explore Courses</button>
+    </div>
+  </section>
+
+  <section class="featured-courses">
+    <h2 class="featured-courses__title">Featured Courses</h2>
+    <div class="featured-courses__container">
+      <button
+        mat-icon-button
+        class="featured-courses__container__nav-btn featured-courses__container__nav-btn__left"
+        (click)="scroll(-1)">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <!-- Course Cards -->
+      <div class="featured-courses__container__viewport">
+        @for (course of visibleCourses; let idx = $index; track idx) {
+          <app-course-card class="featured-courses__container__viewport__card" [course]="course"></app-course-card>
+        }
+      </div>
+
+      <!-- Right Chevron -->
+      <button
+        mat-icon-button
+        class="featured-courses__container__nav-btn featured-courses__container__nav-btn__right"
+        (click)="scroll(1)">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </section>
+
+  <!-- Top Teachers Section -->
+  <section class="homepage-teachers">
+    <h2 class="homepage-teachers__title">Top Teachers</h2>
+    <div class="homepage-teachers__list">
+      <div class="homepage-teachers__card" *ngFor="let teacher of topTeachers">
+        <img [src]="teacher.photo" [alt]="teacher.name" class="homepage-teachers__card__photo" />
+        <h3 class="homepage-teachers__card__name">{{ teacher.name }}</h3>
+        <p class="homepage-teachers__card__bio">{{ teacher.bio }}</p>
+        <button mat-stroked-button color="primary" (click)="navigateToCourses()">Browse Courses</button>
+      </div>
+    </div>
+  </section>
+</div>
