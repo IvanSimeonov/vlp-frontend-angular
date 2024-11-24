@@ -1,0 +1,28 @@
+.topic-dialog-layout {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+
+  &__title {
+    margin: 0;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+
+    &__title,
+    &__description {
+      margin: 0;
+    }
+
+    &__btns {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}

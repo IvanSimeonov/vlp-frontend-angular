@@ -1,0 +1,21 @@
+<mat-card class="topic-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{ topic?.title }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="topic-card__description">
+      {{ topic?.description }}
+    </div>
+    <div class="topic-card__courses">Courses: {{ topic?.totalCourses }}</div>
+  </mat-card-content>
+  <mat-card-actions>
+    <div class="topic-card__btns">
+      <button class="topic-card__btns__edit" mat-flat-button type="button" (click)="edit.emit(topic)">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+      <button class="topic-card__btns__delete" mat-stroked-button [disabled]="isCourseAssigned()">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </div>
+  </mat-card-actions>
+</mat-card>

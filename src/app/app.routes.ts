@@ -6,6 +6,7 @@ import { UserListComponent } from './features/user/user-list/user-list.component
 import { CourseListComponent } from './features/course/course-list/course-list.component';
 import { CourseManagementComponent } from './features/course/course-management/course-management.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
+import { TopicManagementComponent } from './features/topic/topic-management/topic-management.component';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,11 @@ export const routes: Routes = [
     path: 'management/users',
     title: 'User Management',
     component: UserListComponent,
+  },
+  {
+    path: 'management/topics',
+    title: 'Topic Management',
+    component: TopicManagementComponent,
   },
   {
     path: 'login',
