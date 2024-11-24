@@ -126,23 +126,22 @@
     }
 
     &__container {
-      max-width: 1200px;
+      max-width: 900px;
       position: relative;
       display: flex;
       align-items: center;
 
       &__viewport {
-        width: 100%;
+        max-width: 900px;
         display: flex;
-        column-gap: 2rem;
         overflow: hidden;
-        padding: 1rem;
+        padding: 1rem 0;
         position: relative;
 
         &__card {
-          transition:
-            transform 0.5s ease-in-out,
-            opacity 0.5s ease-in-out;
+          width: 300px;
+          transition: transform 0.5s ease-in-out;
+          padding: 0 1rem;
         }
       }
 

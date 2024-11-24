@@ -23,9 +23,13 @@
       </button>
 
       <!-- Course Cards -->
+
       <div class="featured-courses__container__viewport">
-        @for (course of visibleCourses; let idx = $index; track idx) {
-          <app-course-card class="featured-courses__container__viewport__card" [course]="course"></app-course-card>
+        @for (course of courses; let idx = $index; track idx) {
+          <app-course-card
+            [style.transform]="getTransform()"
+            class="featured-courses__container__viewport__card"
+            [course]="course"></app-course-card>
         }
       </div>
 

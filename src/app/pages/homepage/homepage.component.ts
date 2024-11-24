@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CourseCardComponent, ICourse } from '../../features/course/course-card/course-card.component';
@@ -11,7 +11,7 @@ import { CourseCardComponent, ICourse } from '../../features/course/course-card/
   standalone: true,
   imports: [CommonModule, MatIconModule, MatButtonModule, CourseCardComponent],
 })
-export class HomepageComponent implements OnInit {
+export class HomepageComponent {
   courses: ICourse[] = [
     {
       title: '1 The Complete Python Bootcamp From Zero to Hero in Python',
@@ -132,34 +132,26 @@ export class HomepageComponent implements OnInit {
     },
   ];
 
-  visibleCourses: ICourse[] = [];
   currentIndex = 0;
   slideDirection = 0;
-
-  ngOnInit() {
-    this.visibleCourses = this.courses.slice(0, 3);
-  }
 
   navigateToCourses() {
     console.log('navigated to courses');
   }
 
   scroll(direction: number) {
-    this.slideDirection = direction;
-    this.updateVisibleCourses(direction);
-  }
-
-  updateVisibleCourses(direction: number) {
-    const totalCourses = this.courses.length;
+    const totalCourses = this.courses.length - 2;
 
     if (direction === 1) {
-      const nextIndex = (this.currentIndex + 3) % totalCourses;
-      this.visibleCourses = [...this.visibleCourses.slice(1), this.courses[nextIndex]];
       this.currentIndex = (this.currentIndex + 1) % totalCourses;
     } else if (direction === -1) {
-      const prevIndex = (this.currentIndex - 1 + totalCourses) % totalCourses;
-      this.visibleCourses = [this.courses[prevIndex], ...this.visibleCourses.slice(0, -1)];
       this.currentIndex = (this.currentIndex - 1 + totalCourses) % totalCourses;
     }
+  }
+
+  getTransform(): string {
+    const cardWidth = 100;
+    console.log(this.currentIndex * cardWidth);
+    return `translateX(-${this.currentIndex * cardWidth}%)`;
   }
 }
