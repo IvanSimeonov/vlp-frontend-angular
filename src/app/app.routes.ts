@@ -8,6 +8,7 @@ import { CourseManagementComponent } from './features/course/course-management/c
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { TopicManagementComponent } from './features/topic/topic-management/topic-management.component';
 import { UserPublicProfileComponent } from './features/user/user-public-profile/user-public-profile.component';
+import { UserEditProfileComponent } from './features/user/user-edit-profile/user-edit-profile.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,11 @@ export const routes: Routes = [
     path: 'user/public-profile',
     title: 'Public Profile',
     component: UserPublicProfileComponent,
+  },
+  {
+    path: 'user/edit-profile',
+    title: 'Edit Profile',
+    component: UserEditProfileComponent,
   },
   {
     path: 'management/courses',

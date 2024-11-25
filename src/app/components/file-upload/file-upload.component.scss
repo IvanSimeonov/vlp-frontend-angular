@@ -1,0 +1,85 @@
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+
+  &__file-preview {
+    display: flex;
+    flex-direction: column;
+    &__container-title {
+      font-size: 1.2rem;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+    &__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px dashed black;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 0 0 1rem 0;
+
+      &__img {
+        object-fit: cover;
+        border-radius: 1rem;
+        transition: transform 0.5s;
+        height: 200px;
+        width: 200px;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+
+      &__file-name {
+        color: gray;
+        font-weight: 600;
+        font-size: 1rem;
+        line-height: 1.2;
+        margin: 1rem 0;
+      }
+    }
+  }
+
+  &__dropzone {
+    width: 100%;
+    border: 1px dashed #3f51b5;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #e0e0e0;
+    }
+
+    &__upload-icon {
+      font-size: 48px;
+      height: 48px;
+      width: 48px;
+      color: #3f51b5;
+      margin-bottom: 1rem;
+    }
+
+    &__main-txt {
+      font-size: 1.2rem;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    &__secondary-txt {
+      font-size: 1rem;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+  }
+
+  &__file-actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0 0 0;
+  }
+}

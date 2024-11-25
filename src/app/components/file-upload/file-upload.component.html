@@ -1,0 +1,32 @@
+<div class="file-upload">
+  <div class="file-upload__file-preview">
+    @if (file) {
+      <h4 class="file-upload__file-preview__container-title">Uploaded File:</h4>
+      <div class="file-upload__file-preview__content">
+        @if (filePreviewUrl) {
+          <img class="file-upload__file-preview__content__img" [src]="filePreviewUrl" alt="Uploaded Image" />
+        }
+        <p class="file-upload__file-preview__content__file-name">File: {{ file?.name }}</p>
+      </div>
+    }
+  </div>
+  <div
+    class="file-upload__dropzone"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onFileDropped($event)">
+    <mat-icon class="file-upload__dropzone__upload-icon">cloud_upload</mat-icon>
+    <p><span class="file-upload__dropzone__main-txt">Drag & Drop to Upload File</span></p>
+    <p><span class="file-upload__dropzone__secondary-txt">OR</span></p>
+    <button class="file-upload__dropzone__upload-btn" type="button" mat-raised-button (click)="fileInput.click()">
+      Browse Files
+    </button>
+    <input #fileInput type="file" [accept]="fileAccept" (change)="onFileSelected($event)" hidden />
+  </div>
+  @if (file) {
+    <div class="file-upload__file-actions">
+      <button type="button" mat-flat-button (click)="saveFile()">Save</button>
+      <button type="button" mat-stroked-button (click)="removeFile()">Remove</button>
+    </div>
+  }
+</div>

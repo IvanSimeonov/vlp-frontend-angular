@@ -1,0 +1,106 @@
+<div class="user-profile">
+  <mat-card>
+    <mat-card-content>
+      <div class="user-profile__header">
+        <div class="user-profile__header__data">
+          <img [src]="'/images/user-default-img.webp'" alt="User photo" class="user-profile__header__data__img" />
+          <div class="user-profile__header__data__txt">
+            <p class="user-profile__header__data__txt__role">Student</p>
+            <h4 class="user-profile__header__data__txt__name">Ivan Simeonov</h4>
+            <p class="user-profile__header__data__txt__email">ivannicksimeonov.com</p>
+          </div>
+        </div>
+        <div class="user-profile__header__actions">
+          <button class="user-profile__actions__profile-preview" type="button" mat-raised-button>
+            Public Profile Preview</button
+          ><button
+            class="user-profile__actions__request-access"
+            type="button"
+            mat-raised-button
+            [disabled]="isAccessRequested">
+            Teacher Access Request
+          </button>
+          <button class="user-profile__actions__profile-preview" type="button" mat-flat-button>Logout</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-accordion class="example-headers-align">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>account_circle</mat-icon>
+          Personal Data
+        </mat-panel-title>
+        <mat-panel-description> Add information about yourself </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="user-profile__panel__security">
+        <div class="user-profile__panel__security__name">
+          <mat-form-field class="full-width" subscriptSizing="dynamic" appearance="outline">
+            <mat-label>First Name</mat-label>
+            <input matInput />
+          </mat-form-field>
+
+          <mat-form-field class="full-width" subscriptSizing="dynamic" appearance="outline">
+            <mat-label>Last Name</mat-label>
+            <input matInput />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
+          <mat-label>LinkedIn Profle</mat-label>
+          <input placeholder="https://www.linkedin.com/in/johndoe/" matInput />
+        </mat-form-field>
+
+        <button class="user-profile__panel__security__btn" mat-flat-button type="button">Update Profile</button>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>image</mat-icon>
+          Profile Photo
+        </mat-panel-title>
+        <mat-panel-description> Add photo of yourself for your profile </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="user-profile__panel__security">
+        <app-file-upload
+          [allowedFileTypes]="allowedFileTypes"
+          [maxFileSizeMB]="maxFileSizeMB"
+          (fileChange)="onImageUpload($event)"></app-file-upload>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>security</mat-icon>
+          Security Settings
+        </mat-panel-title>
+        <mat-panel-description> Change your password </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="user-profile__panel__security">
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
+          <mat-label>Current Password</mat-label>
+          <input matInput />
+        </mat-form-field>
+
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
+          <mat-label>New Password</mat-label>
+          <input matInput />
+        </mat-form-field>
+
+        <mat-form-field subscriptSizing="dynamic" appearance="outline">
+          <mat-label>Retype New Password</mat-label>
+          <input matInput />
+        </mat-form-field>
+
+        <button class="user-profile__panel__security__btn" mat-flat-button type="button">Change Password</button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
