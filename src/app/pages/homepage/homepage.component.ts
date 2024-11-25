@@ -151,7 +151,6 @@ export class HomepageComponent {
 
   getTransform(): string {
     const cardWidth = 100;
-    console.log(this.currentIndex * cardWidth);
     return `translateX(-${this.currentIndex * cardWidth}%)`;
   }
 }

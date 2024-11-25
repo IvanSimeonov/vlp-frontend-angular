@@ -64,7 +64,6 @@ export class TopicCreateEditDialogComponent {
   }
 
   updateErrorMsg() {
-    console.log('Hi');
     if (this.topicForm.get('title')?.hasError('required')) {
       this.titleErrorMsg.set('Enter valid topic title.');
     } else {

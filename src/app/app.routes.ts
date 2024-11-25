@@ -7,6 +7,7 @@ import { CourseListComponent } from './features/course/course-list/course-list.c
 import { CourseManagementComponent } from './features/course/course-management/course-management.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { TopicManagementComponent } from './features/topic/topic-management/topic-management.component';
+import { UserPublicProfileComponent } from './features/user/user-public-profile/user-public-profile.component';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,11 @@ export const routes: Routes = [
     path: 'courses',
     title: 'Explore Courses',
     component: CourseListComponent,
+  },
+  {
+    path: 'user/public-profile',
+    title: 'Public Profile',
+    component: UserPublicProfileComponent,
   },
   {
     path: 'management/courses',

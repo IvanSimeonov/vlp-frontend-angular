@@ -1,0 +1,76 @@
+<div class="public-profile__layout">
+  <section class="public-profile__layout__main-info">
+    <div class="public-profile__layout__main-info__details">
+      <img
+        class="public-profile__layout__main-info__details__img"
+        [src]="user?.profileImg || '/images/user-default-img.webp'"
+        alt="User Profile Image" />
+      <div class="public-profile__layout__main-info__details__data">
+        <h4 class="public-profile__layout__main-info__details__data__user-type">{{ getUserRole() }}</h4>
+        <h2 class="public-profile__layout__main-info__details__data__name">
+          {{ user?.firstName }} {{ user?.lastName }}
+        </h2>
+        @if (user?.role === 'ROLE_TEACHER') {
+          <section class="public-profile__layout__main-info__details__data__stats">
+            <div class="public-profile__layout__main-info__details__data__stats__students">
+              <h4 class="public-profile__layout__main-info__details__data__stats__students__label">Students</h4>
+              <h4 class="public-profile__layout__main-info__details__data__stats__students__value">3456789</h4>
+            </div>
+            <div class="public-profile__layout__main-info__details__data__stats__reviews">
+              <h4 class="public-profile__layout__main-info__details__data__stats__reviews__label">Reviews</h4>
+              <h4 class="public-profile__layout__main-info__details__data__stats__reviews__value">223456</h4>
+            </div>
+          </section>
+        }
+      </div>
+    </div>
+
+    <div class="public-profile__layout__main-info__actions">
+      <a mat-stroked-button [href]="'mailto:' + user?.email" target="_blank"> <mat-icon>mail</mat-icon> E-Mail</a>
+      @if (user?.linkedIn) {
+        <a mat-stroked-button [href]="user?.linkedIn" target="_blank"> <mat-icon>link</mat-icon> LinkedIn</a>
+      }
+    </div>
+  </section>
+
+  <section class="public-profile__layout__about">
+    <h4>About me</h4>
+    <p>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Earum suscipit mollitia expedita. Enim ratione facere
+      debitis quidem rem tenetur quia ipsam quod, molestias eaque deleniti alias dolor incidunt assumenda accusantium
+      placeat labore non atque perferendis officia. Culpa quam distinctio fugiat eveniet possimus praesentium saepe
+      nihil pariatur eum. Debitis, ex iusto!
+    </p>
+  </section>
+  <section class="public-profile__layout__courses">
+    <h4>Courses</h4>
+    <mat-tab-group animationDuration="1000ms">
+      @if (user.role === 'ROLE_TEACHER') {
+        <mat-tab [label]="'Created Courses (' + user.createdCourses?.length + ')'">
+          <div class="public-profile__layout__courses__created">
+            @for (course of user.createdCourses; track $index) {
+              <app-course-card [course]="course"></app-course-card>
+            }
+          </div>
+          <mat-paginator
+            [length]="user.createdCourses?.length"
+            [pageSize]="createdCoursesPageSize"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            (page)="paginateCreatedCourses($event)"></mat-paginator>
+        </mat-tab>
+      }
+      <mat-tab [label]="'Enrolled Courses (' + user.enrolledCourses?.length + ')'">
+        <div class="public-profile__layout__courses__enrolled">
+          @for (course of user.enrolledCourses; track $index) {
+            <app-course-card [course]="course"></app-course-card>
+          }
+        </div>
+        <mat-paginator
+          [length]="user.enrolledCourses?.length"
+          [pageSize]="enrolledCoursesPageSize"
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          (page)="paginateEnrolledCourses($event)"></mat-paginator>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+</div>
