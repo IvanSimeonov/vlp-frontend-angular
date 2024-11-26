@@ -39,3 +39,7 @@ body {
 .NgxEditor__Content {
   min-height: 100px;
 }
+
+.advanced-pie-legend .legend-items-container .legend-items {
+  overflow: visible !important;
+}

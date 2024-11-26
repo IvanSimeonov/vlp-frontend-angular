@@ -1,0 +1,93 @@
+.dashboard {
+  display: grid;
+  grid-template-areas:
+    'users users courses courses'
+    'topics topics topics requests';
+  gap: 2rem;
+  padding: 2rem 3rem;
+  box-sizing: border-box;
+
+  &__topics {
+    grid-area: topics;
+
+    &__chart {
+      min-height: 250px;
+    }
+  }
+
+  &__users {
+    grid-area: users;
+
+    &__header {
+      button {
+        margin-right: 25px;
+      }
+    }
+  }
+
+  &__requests {
+    grid-area: requests;
+  }
+
+  &__courses {
+    grid-area: courses;
+  }
+
+  &__topics,
+  &__users,
+  &__requests,
+  &__courses {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    border-radius: 1rem;
+  }
+
+  &__users__header,
+  &__requests__header,
+  &__courses__header,
+  &__topics__header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__users__chart,
+  &__requests__chart,
+  &__courses__chart,
+  &__topics__chart {
+    height: 100%;
+    width: 100%;
+    flex-grow: 1;
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-areas:
+      'users'
+      'courses'
+      'topics'
+      'requests';
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-areas:
+      'users'
+      'courses'
+      'topics'
+      'requests';
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  &__topics__chart,
+  &__users__chart,
+  &__courses__chart,
+  &__requests__chart {
+    min-height: 200px;
+  }
+
+  .hidden {
+    display: none;
+  }
+}

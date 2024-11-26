@@ -1,0 +1,83 @@
+<div class="dashboard">
+  <div class="dashboard__courses mat-elevation-z8">
+    <div class="dashboard__courses__header">
+      <h4>Courses</h4>
+      <button mat-flat-button color="primary" (click)="navigateTo('management/courses')">Manage Courses</button>
+    </div>
+    <div class="dashboard__courses__chart">
+      <ngx-charts-advanced-pie-chart
+        [results]="courseAnalyticsData"
+        [animations]="true"></ngx-charts-advanced-pie-chart>
+    </div>
+  </div>
+
+  <div class="dashboard__topics mat-elevation-z8">
+    <div class="dashboard__topics__header">
+      <h4>Topics</h4>
+      <button mat-flat-button color="primary" (click)="navigateTo('management/topics')">Manage Topics</button>
+    </div>
+    <div class="dashboard__topics__chart">
+      <ngx-charts-bar-vertical
+        [results]="coursesPerTopicData"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [yAxisLabel]="'Courses'"
+        [xAxisLabel]="'Topic'"></ngx-charts-bar-vertical>
+    </div>
+  </div>
+
+  <div class="dashboard__users mat-elevation-z8">
+    <div class="dashboard__users__header">
+      <h4>Users</h4>
+      <button mat-flat-button color="primary" (click)="navigateTo('management/users')">Manage Users</button>
+    </div>
+    <div class="dashboard__users__chart">
+      <ngx-charts-number-card [results]="userAnalyticsData"></ngx-charts-number-card>
+    </div>
+  </div>
+
+  <div class="dashboard__requests mat-elevation-z8" [ngClass]="teacherAccessRequests.length > 0 ? '' : 'hidden'">
+    <div class="dashboard__requests__header">
+      <h4>Teacher Access Requests</h4>
+    </div>
+    <div class="dashboard__requests__table">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.firstName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="lastName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.lastName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="primary" (click)="approveRequest(row.id)">
+              <mat-icon>check</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="denyRequest(row.id)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="5">No data</td>
+        </tr>
+      </table>
+      <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>
