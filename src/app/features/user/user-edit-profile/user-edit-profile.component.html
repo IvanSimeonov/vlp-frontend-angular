@@ -26,7 +26,7 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-accordion class="example-headers-align">
+  <mat-accordion>
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -36,26 +36,54 @@
         <mat-panel-description> Add information about yourself </mat-panel-description>
       </mat-expansion-panel-header>
 
-      <div class="user-profile__panel__security">
-        <div class="user-profile__panel__security__name">
-          <mat-form-field class="full-width" subscriptSizing="dynamic" appearance="outline">
-            <mat-label>First Name</mat-label>
-            <input matInput />
+      <form [formGroup]="updatePersonalDataForm">
+        <div class="user-profile__panel__personal-data">
+          <div class="user-profile__panel__security__name">
+            <mat-form-field class="full-width" subscriptSizing="dynamic" appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="firstName"
+                (blur)="markAsPersonalDataFormTouched('firstName')" />
+              @if (updatePersonalDataForm.get('firstName')!.invalid) {
+                <mat-error>{{ firstNameErrorMsg() }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field class="full-width" subscriptSizing="dynamic" appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="lastName"
+                (blur)="markAsPersonalDataFormTouched('lastName')" />
+              @if (updatePersonalDataForm.get('lastName')!.invalid) {
+                <mat-error>{{ lastNameErrorMsg() }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field subscriptSizing="dynamic" appearance="outline" class="">
+            <mat-label>LinkedIn Profle</mat-label>
+            <input matInput placeholder="https://www.linkedin.com/in/johndoe/" formControlName="linkedInProfile" />
           </mat-form-field>
 
-          <mat-form-field class="full-width" subscriptSizing="dynamic" appearance="outline">
-            <mat-label>Last Name</mat-label>
-            <input matInput />
-          </mat-form-field>
+          <div class="NgxEditor__Wrapper">
+            <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
+            <ngx-editor [editor]="editor" formControlName="about" [placeholder]="'Type here...'"></ngx-editor>
+          </div>
+
+          <button
+            class="user-profile__panel__security__btn"
+            mat-flat-button
+            type="button"
+            [disabled]="updatePersonalDataForm.invalid"
+            (click)="onPersonalDataUpdate()">
+            Update Profile
+          </button>
         </div>
-
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>LinkedIn Profle</mat-label>
-          <input placeholder="https://www.linkedin.com/in/johndoe/" matInput />
-        </mat-form-field>
-
-        <button class="user-profile__panel__security__btn" mat-flat-button type="button">Update Profile</button>
-      </div>
+      </form>
     </mat-expansion-panel>
 
     <mat-expansion-panel>
@@ -67,7 +95,7 @@
         <mat-panel-description> Add photo of yourself for your profile </mat-panel-description>
       </mat-expansion-panel-header>
 
-      <div class="user-profile__panel__security">
+      <div class="user-profile__panel__photo-upload">
         <app-file-upload
           [allowedFileTypes]="allowedFileTypes"
           [maxFileSizeMB]="maxFileSizeMB"
@@ -83,24 +111,81 @@
         </mat-panel-title>
         <mat-panel-description> Change your password </mat-panel-description>
       </mat-expansion-panel-header>
-      <div class="user-profile__panel__security">
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Current Password</mat-label>
-          <input matInput />
-        </mat-form-field>
+      <form [formGroup]="updateSecurityDataForm">
+        <div class="user-profile__panel__security">
+          <mat-form-field subscriptSizing="dynamic" appearance="outline">
+            <mat-label>Current Password</mat-label>
+            <input
+              matInput
+              [type]="hideCurrentPassword() ? 'password' : 'text'"
+              formControlName="currentPassword"
+              (blur)="markAsSecurityDataFormTouched('currentPassword')" />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="togglePasswordVisibility($event)"
+              [attr.aria-label]="hideCurrentPassword() ? 'Show password' : 'Hide password'"
+              [attr.aria-pressed]="hideCurrentPassword()">
+              <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (updateSecurityDataForm.get('currentPassword')!.invalid) {
+              <mat-error>{{ passwordErrorMsg() }}</mat-error>
+            }
+          </mat-form-field>
 
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>New Password</mat-label>
-          <input matInput />
-        </mat-form-field>
+          <mat-form-field subscriptSizing="dynamic" appearance="outline">
+            <mat-label>New Password</mat-label>
+            <input
+              matInput
+              formControlName="newPassword"
+              (blur)="markAsSecurityDataFormTouched('newPassword')"
+              [type]="hideNewPassword() ? 'password' : 'text'" />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleNewPasswordVisibility($event)"
+              [attr.aria-label]="hideNewPassword() ? 'Show password' : 'Hide password'"
+              [attr.aria-pressed]="hideNewPassword()">
+              <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (updateSecurityDataForm.get('newPassword')!.invalid) {
+              <mat-error>{{ newPasswordErrorMsg() }}</mat-error>
+            }
+          </mat-form-field>
 
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Retype New Password</mat-label>
-          <input matInput />
-        </mat-form-field>
+          <mat-form-field subscriptSizing="dynamic" appearance="outline">
+            <mat-label>Retype New Password</mat-label>
+            <input
+              matInput
+              formControlName="retypeNewPassword"
+              (blur)="markAsSecurityDataFormTouched('retypeNewPassword')"
+              [type]="hideRetypeNewPassword() ? 'password' : 'text'" />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleRetypeNewPasswordVisibility($event)"
+              [attr.aria-label]="hideRetypeNewPassword() ? 'Show password' : 'Hide password'"
+              [attr.aria-pressed]="hideRetypeNewPassword()">
+              <mat-icon>{{ hideRetypeNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (updateSecurityDataForm.get('retypeNewPassword')!.invalid) {
+              <mat-error>{{ retypeNewPasswordErrorMsg() }}</mat-error>
+            }
+          </mat-form-field>
 
-        <button class="user-profile__panel__security__btn" mat-flat-button type="button">Change Password</button>
-      </div>
+          <button
+            class="user-profile__panel__security__btn"
+            mat-flat-button
+            type="button"
+            [disabled]="updateSecurityDataForm.invalid"
+            (click)="onChangePassword()">
+            Change Password
+          </button>
+        </div>
+      </form>
     </mat-expansion-panel>
   </mat-accordion>
 </div>

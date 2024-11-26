@@ -77,7 +77,7 @@ export class FileUploadComponent {
     } else {
       this.file = { name: file.name, progress: 0 };
       this.generateFilePreview(file);
-      this.fileChange.emit(this.file);
+      //this.fileChange.emit(this.file);
     }
   }
 
