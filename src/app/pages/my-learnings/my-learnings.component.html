@@ -43,6 +43,18 @@
             [pageSizeOptions]="[10, 25, 50, 100]"
             (page)="paginateEnrolledCourses($event)"></mat-paginator>
         </mat-tab>
+        <mat-tab [label]="'Completed Courses (' + user.completedCourses?.length + ')'">
+          <div class="learnings__content__courses__completed">
+            @for (course of user.completedCourses; track $index) {
+              <app-course-card [course]="course" [showRateBtn]="true" (rate)="handleRate(course)"></app-course-card>
+            }
+          </div>
+          <mat-paginator
+            [length]="user.completedCourses?.length"
+            [pageSize]="completedCoursesPageSize"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            (page)="paginateCompletedCourses($event)"></mat-paginator>
+        </mat-tab>
       </mat-tab-group>
     </div>
   </div>

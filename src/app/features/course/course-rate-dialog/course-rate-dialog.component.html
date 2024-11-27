@@ -1,0 +1,14 @@
+<div class="rate-dialog">
+  <h2 class="rate-dialog__title">How would you rate this course?</h2>
+  <mat-dialog-content class="rate-dialog__content">
+    <p>{{ data?.course?.title }}</p>
+    <app-star-rating
+      [rating]="selectedRating"
+      [editable]="true"
+      (ratingChange)="onRatingChange($event)"></app-star-rating>
+  </mat-dialog-content>
+  <mat-dialog-actions class="rate-dialog__actions">
+    <button mat-flat-button (click)="submit()">Submit</button>
+    <button mat-button (click)="close()">Cancel</button>
+  </mat-dialog-actions>
+</div>

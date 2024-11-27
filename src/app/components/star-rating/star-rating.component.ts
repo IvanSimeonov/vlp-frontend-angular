@@ -1,38 +1,46 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { WhiteSpaceNumberPipe } from '../../shared/pipes/white-space-number.pipe';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-star-rating',
   standalone: true,
-  imports: [MatIconModule, WhiteSpaceNumberPipe],
+  imports: [MatIconModule, WhiteSpaceNumberPipe, CommonModule],
   templateUrl: './star-rating.component.html',
   styleUrl: './star-rating.component.scss',
 })
 export class StarRatingComponent {
-  @Input() rating!: number;
-  @Input() totalVotes!: number;
+  @Input() rating = 0;
+  @Input() totalVotes = 0;
+  @Input() editable = false;
+  @Output() ratingChange = new EventEmitter<number>();
 
-  get stars(): string[] {
-    const fullStars = Math.floor(this.rating);
-    const decimalPart = Number((this.rating - fullStars).toPrecision(1));
-    const starIcons: string[] = [];
+  hoveredRating = 0;
 
-    for (let i = 0; i < fullStars; i++) {
-      starIcons.push('star');
+  get displayStars(): string[] {
+    const effectiveRating = this.editable ? this.hoveredRating || this.rating : this.rating;
+    return Array.from({ length: 5 }, (_, i) => {
+      if (i < Math.floor(effectiveRating)) {
+        return 'star';
+      }
+      if (i < Math.ceil(effectiveRating)) {
+        return 'star_half';
+      }
+      return 'star_border';
+    });
+  }
+
+  onHover(hoveredRating: number): void {
+    if (this.editable) {
+      this.hoveredRating = hoveredRating;
     }
+  }
 
-    if (decimalPart > 0.2 && decimalPart < 0.8) {
-      starIcons.push('star_half');
+  onRate(newRating: number): void {
+    if (this.editable) {
+      this.rating = newRating;
+      this.ratingChange.emit(newRating);
     }
-
-    if (decimalPart >= 0.8) {
-      starIcons.push('star');
-    }
-
-    while (starIcons.length < 5) {
-      starIcons.push('star_border');
-    }
-    return starIcons;
   }
 }

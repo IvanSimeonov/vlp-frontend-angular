@@ -8,7 +8,7 @@ $txt-color-grey: #666;
   &__value {
     font-weight: 600;
     font-size: 0.9rem;
-    margin-right: 5px;
+    margin: 0 5px;
   }
 
   &__icon {
@@ -23,5 +23,24 @@ $txt-color-grey: #666;
     color: $txt-color-grey;
     font-size: 0.8rem;
     line-height: 1.2;
+  }
+}
+
+.star-rating-editable {
+  display: flex;
+  justify-content: center;
+}
+
+.star-rating__icon--editable {
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+  height: 50px;
+  width: 50px;
+  font-size: 50px;
+  display: flex;
+  justify-content: center;
+
+  &:hover {
+    color: #fbc02d;
   }
 }

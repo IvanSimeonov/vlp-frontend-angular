@@ -1,9 +1,18 @@
-<div class="star-rating">
-  <span class="star-rating__value">{{ rating }}</span>
-  @for (star of stars; let i = $index; track i) {
-    <mat-icon class="star-rating__icon">
+<div class="star-rating" [ngClass]="{ 'star-rating-editable': editable }">
+  <ng-container *ngFor="let star of displayStars; let i = index">
+    <mat-icon
+      class="star-rating__icon"
+      [ngClass]="{
+        'star-rating__icon--editable': editable,
+        'star-rating__icon--hovered': editable && i < hoveredRating,
+      }"
+      (mouseenter)="editable && onHover(i + 1)"
+      (mouseleave)="editable && onHover(0)"
+      (click)="editable && onRate(i + 1)">
       {{ star }}
     </mat-icon>
-  }
-  <span class="star-rating__votes">({{ totalVotes | whiteSpaceNumber }})</span>
+  </ng-container>
+
+  <span *ngIf="!editable" class="star-rating__value">{{ rating }}</span>
+  <span *ngIf="!editable" class="star-rating__votes">({{ totalVotes | whiteSpaceNumber }})</span>
 </div>

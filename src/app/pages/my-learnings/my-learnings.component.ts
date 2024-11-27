@@ -6,6 +6,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { CourseCardComponent, ICourse } from '../../features/course/course-card/course-card.component';
 import { CourseFilterBarComponent } from '../../features/course/course-filter-bar/course-filter-bar.component';
 import { ITopic } from '../../features/topic/topic-management/topic-management.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CourseRateDialogComponent } from '../../features/course/course-rate-dialog/course-rate-dialog.component';
 
 interface IUser {
   firstName?: string;
@@ -16,6 +18,7 @@ interface IUser {
   role?: string;
   enrolledCourses?: ICourse[];
   createdCourses?: ICourse[];
+  completedCourses?: ICourse[];
 }
 
 @Component({
@@ -28,6 +31,7 @@ interface IUser {
     MatPaginatorModule,
     CourseCardComponent,
     CourseFilterBarComponent,
+    MatDialogModule,
   ],
   templateUrl: './my-learnings.component.html',
   styleUrl: './my-learnings.component.scss',
@@ -91,6 +95,32 @@ export class MyLearningsComponent {
       },
     ],
     createdCourses: [
+      {
+        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
+        difficultyLevel: 'ADVANCED',
+        image: '/images/innovation_3.jpg',
+        rating: 4.6,
+        totalVotes: 522235,
+        author: 'Ivan Simeonov',
+      },
+      {
+        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
+        difficultyLevel: 'ADVANCED',
+        image: '/images/innovation_3.jpg',
+        rating: 4.6,
+        totalVotes: 522235,
+        author: 'Ivan Simeonov',
+      },
+      {
+        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
+        difficultyLevel: 'ADVANCED',
+        image: '/images/innovation_3.jpg',
+        rating: 4.6,
+        totalVotes: 522235,
+        author: 'Ivan Simeonov',
+      },
+    ],
+    completedCourses: [
       {
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
@@ -202,9 +232,11 @@ export class MyLearningsComponent {
 
   createdCoursesPageSize = 10;
   enrolledCoursesPageSize = 10;
+  completedCoursesPageSize = 10;
+
+  constructor(private dialog: MatDialog) {}
 
   handleTabChange(selectedIndex: number) {
-    console.log(selectedIndex);
     this.activeTab = selectedIndex === 0 ? 'created' : 'enrolled';
   }
 
@@ -224,7 +256,24 @@ export class MyLearningsComponent {
     this.enrolledCoursesPageSize = event.pageSize;
   }
 
+  paginateCompletedCourses(event: PageEvent): void {
+    this.completedCoursesPageSize = event.pageSize;
+  }
+
   getUserRole() {
     return this.user.role?.split('_')[1];
+  }
+
+  handleRate(course: ICourse): void {
+    const dialogRef = this.dialog.open(CourseRateDialogComponent, {
+      width: '400px',
+      data: { course },
+    });
+
+    dialogRef.afterClosed().subscribe((rating) => {
+      if (rating) {
+        console.log('Rated with: ', rating);
+      }
+    });
   }
 }

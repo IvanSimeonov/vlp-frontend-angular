@@ -1,0 +1,21 @@
+.rate-dialog {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+
+  &__title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  &__content {
+    padding: 0;
+    margin: 1rem 0;
+  }
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+  }
+}
