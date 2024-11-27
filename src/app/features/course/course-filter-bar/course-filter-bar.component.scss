@@ -1,0 +1,23 @@
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-around;
+
+  &__search {
+    flex: 2;
+  }
+  &__filter,
+  &__sort {
+    flex: 1;
+  }
+
+  button {
+    color: red;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid gray;
+    box-shadow: none;
+  }
+}

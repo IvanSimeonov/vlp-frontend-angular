@@ -24,13 +24,11 @@ export class CourseFilterComponent {
     'Health & Wellness',
   ];
 
-  // Two-way bound filter values
   title = '';
   author = '';
   selectedDifficulty = '';
   selectedTopic = '';
 
-  // Emit the filter event to the parent
   @Output() filter = new EventEmitter<{
     title: string;
     author: string;
@@ -38,7 +36,6 @@ export class CourseFilterComponent {
     topic: string;
   }>();
 
-  // Emit reset filter event
   @Output() resetFilter = new EventEmitter<void>();
 
   onFilter(): void {

@@ -1,0 +1,38 @@
+<div class="filter-bar">
+  <mat-form-field class="filter-bar__search" appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Search</mat-label>
+    <input matInput type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" placeholder="Search courses" />
+    @if (searchQuery) {
+      <button matSuffix mat-icon-button (click)="resetFiltersAndSorting()">
+        <mat-icon>close</mat-icon>
+      </button>
+    } @else {
+      <mat-icon matSuffix>search</mat-icon>
+    }
+  </mat-form-field>
+  @for (filter of filters; track $index) {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-bar__filter">
+      <mat-label>{{ filter.label }}</mat-label>
+      <mat-select [value]="activeFilters[filter.id] || ''" (selectionChange)="onFilterChange(filter.id, $event.value)">
+        @for (option of filter.options; track $index) {
+          <mat-option [value]="option">
+            {{ option }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-bar__sort">
+    <mat-label>Sort by</mat-label>
+    <mat-select (selectionChange)="onSortChange($event.value)">
+      @for (sort of sortOptions; track $index) {
+        <mat-option [value]="sort.id">
+          {{ sort.label }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-fab extended color="primary" (click)="resetFiltersAndSorting()">Reset</button>
+</div>

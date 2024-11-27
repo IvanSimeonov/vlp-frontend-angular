@@ -27,11 +27,11 @@
 
   &__list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); // Adjust course card sizing
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 1.5rem;
 
     .loading-spinner {
-      grid-column: 1 / -1; // Center spinner across the entire grid
+      grid-column: 1 / -1;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,6 +47,6 @@
   }
 
   .course-layout__list {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); // Adjust for smaller screens
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }

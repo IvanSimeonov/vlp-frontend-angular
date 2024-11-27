@@ -1,0 +1,49 @@
+<div class="learnings">
+  <div class="learnings__header">
+    <h4 class="learnings__header__title">My Learnings</h4>
+    <p class="learnings__header__description">
+      Discover your courses and stay on track with your learning goals. Whether you are revisiting past lessons or
+      exploring new opportunities, this is your space to grow and succeed. Continue your journey toward knowledge and
+      achievement with every step forward.
+    </p>
+  </div>
+  <div class="learnings__content">
+    <div class="learnings__content__filters">
+      <app-course-filter-bar
+        [filters]="activeTab === 'enrolled' ? enrolledCourseFilters : createdCourseFilters"
+        [sortOptions]="activeTab === 'enrolled' ? enrolledCourseSortOptions : createdCourseSortOptions"
+        (filterChange)="handleFiltersChange($event)"
+        (sortChange)="handleSortChange($event)"></app-course-filter-bar>
+    </div>
+    <div class="learnings__content__courses">
+      <mat-tab-group animationDuration="1000ms" (selectedIndexChange)="handleTabChange($event)">
+        @if (user.role === 'ROLE_TEACHER') {
+          <mat-tab [label]="'Created Courses (' + user.createdCourses?.length + ')'">
+            <div class="learnings__content__courses__created">
+              @for (course of user.createdCourses; track $index) {
+                <app-course-card [course]="course"></app-course-card>
+              }
+            </div>
+            <mat-paginator
+              [length]="user.createdCourses?.length"
+              [pageSize]="createdCoursesPageSize"
+              [pageSizeOptions]="[10, 25, 50, 100]"
+              (page)="paginateCreatedCourses($event)"></mat-paginator>
+          </mat-tab>
+        }
+        <mat-tab [label]="'Enrolled Courses (' + user.enrolledCourses?.length + ')'">
+          <div class="learnings__content__courses__enrolled">
+            @for (course of user.enrolledCourses; track $index) {
+              <app-course-card [course]="course"></app-course-card>
+            }
+          </div>
+          <mat-paginator
+            [length]="user.enrolledCourses?.length"
+            [pageSize]="enrolledCoursesPageSize"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            (page)="paginateEnrolledCourses($event)"></mat-paginator>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
