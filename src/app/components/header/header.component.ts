@@ -36,11 +36,7 @@ export interface INotification {
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  user: User | undefined = {
-    firstName: 'Ivan',
-    lastName: 'Simeonov',
-    email: 'IvanNickSim@gmail.com',
-  };
+  user: User | undefined;
 
   notifications: INotification[] | undefined;
 
