@@ -14,6 +14,11 @@ export interface User {
   avatar?: string;
 }
 
+export interface INotification {
+  type: string;
+  message: string;
+}
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -31,7 +36,13 @@ export interface User {
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  user: User | undefined;
+  user: User | undefined = {
+    firstName: 'Ivan',
+    lastName: 'Simeonov',
+    email: 'IvanNickSim@gmail.com',
+  };
+
+  notifications: INotification[] | undefined;
 
   unreadNotifications = 0;
 

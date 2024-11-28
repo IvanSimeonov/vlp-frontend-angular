@@ -137,3 +137,34 @@ mat-icon {
     background-color: lighten($color-grey-light, 10%);
   }
 }
+
+.header__menu-notification__layout {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+  text-align: center;
+  max-height: 200px;
+  overflow-y: scroll;
+
+  &__btn-container {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__notification-header {
+    font-size: 1rem;
+    line-height: 1.2;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  &__notification-content {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    font-weight: 400;
+    color: grey;
+    margin: 0;
+  }
+}

@@ -43,15 +43,31 @@
         aria-current="page">
         Requests
       </a>
-      <a
-        class="header__nav-link"
-        routerLink="/notifications"
-        routerLinkActive="header__nav-link--active"
-        aria-current="page">
-        <mat-icon [matBadge]="unreadNotifications" [matBadgeHidden]="unreadNotifications > 0 ? false : true"
+      <a class="header__nav-link header__nav-link--menu" aria-current="page" [matMenuTriggerFor]="notificationMenu">
+        <mat-icon
+          [matBadge]="notifications?.length"
+          [matBadgeHidden]="notifications && notifications.length > 0 ? false : true"
+          aria-hidden="false"
           >notifications</mat-icon
         >
       </a>
+      <mat-menu #notificationMenu="matMenu">
+        <div class="header__menu-notification__layout">
+          <div class="header__menu-notification__layout__btn-container">
+            <button mat-flat-button type="button">Mark All Read</button>
+          </div>
+          <mat-divider></mat-divider>
+          @if (notifications) {
+            @for (notification of notifications; track $index) {
+              <h4 class="header__menu-notification__layout__notification-header">{{ notification.type }}</h4>
+              <p class="header__menu-notification__layout__notification-content">{{ notification.message }}</p>
+              <mat-divider class="divider"></mat-divider>
+            }
+          } @else {
+            <p class="header__menu-notification__layout__notification-content">No notifications found</p>
+          }
+        </div>
+      </mat-menu>
 
       <button
         mat-icon-button
