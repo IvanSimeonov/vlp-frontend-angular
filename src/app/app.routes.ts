@@ -11,6 +11,7 @@ import { UserPublicProfileComponent } from './features/user/user-public-profile/
 import { UserEditProfileComponent } from './features/user/user-edit-profile/user-edit-profile.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { MyLearningsComponent } from './pages/my-learnings/my-learnings.component';
+import { CourseDetailsComponent } from './pages/course-details/course-details.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,11 @@ export const routes: Routes = [
     path: 'courses',
     title: 'Explore Courses',
     component: CourseListComponent,
+  },
+  {
+    path: 'courses/:id',
+    title: 'Course Details',
+    component: CourseDetailsComponent,
   },
   {
     path: 'my-courses',

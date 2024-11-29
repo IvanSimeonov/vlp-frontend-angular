@@ -1,4 +1,5 @@
 <div class="star-rating" [ngClass]="{ 'star-rating-editable': editable }">
+  <span *ngIf="!editable" class="star-rating__value">{{ rating }}</span>
   <ng-container *ngFor="let star of displayStars; let i = index">
     <mat-icon
       class="star-rating__icon"
@@ -12,7 +13,5 @@
       {{ star }}
     </mat-icon>
   </ng-container>
-
-  <span *ngIf="!editable" class="star-rating__value">{{ rating }}</span>
   <span *ngIf="!editable" class="star-rating__votes">({{ totalVotes | whiteSpaceNumber }})</span>
 </div>

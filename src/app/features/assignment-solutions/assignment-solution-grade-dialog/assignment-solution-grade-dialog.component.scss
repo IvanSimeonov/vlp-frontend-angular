@@ -1,0 +1,19 @@
+.assignment-solution-grade-dialog {
+  &__title {
+    text-align: center;
+  }
+
+  &__content {
+    display: flex;
+    justify-content: center;
+
+    &__form-field {
+      margin: 1rem 0;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-around;
+  }
+}

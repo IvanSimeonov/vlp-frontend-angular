@@ -6,6 +6,18 @@
       color: #d1d7dc,
     )
   );
+
+  @include mat.tabs-overrides(
+    (
+      container-height: 50px,
+      label-text-size: 1.25rem,
+      label-text-weight: 500,
+      label-text-line-height: 1.2,
+      active-label-text-color: #005cbb,
+      active-focus-label-text-color: #005cbb,
+      inactive-hover-label-text-color: #005cbb,
+    )
+  );
 }
 
 html,

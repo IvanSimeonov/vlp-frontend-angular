@@ -1,0 +1,10 @@
+.assignment-solution-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  &__search {
+    flex: 1;
+    min-width: 200px;
+  }
+}

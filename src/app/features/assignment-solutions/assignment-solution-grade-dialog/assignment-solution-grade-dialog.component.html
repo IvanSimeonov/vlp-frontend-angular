@@ -1,0 +1,15 @@
+<h2 class="assignment-solution-grade-dialog__title" mat-dialog-title>Grade Assignment</h2>
+<mat-dialog-content class="assignment-solution-grade-dialog__content">
+  <mat-form-field
+    class="assignment-solution-grade-dialog__content__form-field"
+    subscriptSizing="dynamic"
+    appearance="outline">
+    <mat-label>Grade</mat-label>
+    <input matInput type="number" [(ngModel)]="grade" />
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions class="assignment-solution-grade-dialog__actions">
+  <button mat-flat-button [mat-dialog-close]="grade()">Grade</button>
+
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

@@ -1,0 +1,171 @@
+.course-tab-icon {
+  margin: 0 0 0 1rem;
+}
+
+.course {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &__header {
+    background-color: black;
+    height: 40vh;
+    color: white;
+    padding: 1rem 5rem;
+
+    &__content {
+      width: 60%;
+      margin-right: auto;
+
+      &__title {
+        margin: 3rem 0 0 3rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0;
+        font-size: clamp(24px, 3vw, 36px);
+      }
+
+      &__short-desc {
+        margin: 0.5rem 0 0 3rem;
+        font-weight: 400;
+        line-height: 1.4;
+        font-size: clamp(16px, 2vw, 22px);
+      }
+
+      &__topic {
+        display: flex;
+        column-gap: 5px;
+        margin: 2rem 0 0 3rem;
+        font-size: 0.9rem;
+        align-items: center;
+
+        mat-icon {
+          font-size: 1.1rem;
+          height: 1.1rem;
+          width: 1.1rem;
+        }
+      }
+
+      &__rating {
+        margin: 0.5rem 0 0 3rem;
+      }
+
+      &__updated {
+        display: flex;
+        column-gap: 5px;
+        margin: 0.5rem 0 0 3rem;
+        font-size: 0.9rem;
+        align-items: center;
+
+        mat-icon {
+          font-size: 1.1rem;
+          height: 1.1rem;
+          width: 1.1rem;
+        }
+      }
+
+      &__created {
+        display: flex;
+        column-gap: 5px;
+        margin: 0.5rem 0 3rem 3rem;
+        font-size: 0.9rem;
+        align-items: center;
+
+        mat-icon {
+          font-size: 1.1rem;
+          height: 1.1rem;
+          width: 1.1rem;
+        }
+      }
+    }
+  }
+
+  &__side-content {
+    width: 20%;
+    min-width: 350px;
+    background-color: white;
+    color: black;
+    border-radius: 1rem;
+    position: absolute;
+    top: 5vh;
+    right: 5rem;
+    margin: 0 3rem;
+    border: 1px solid white;
+
+    &__header {
+      height: 250px;
+
+      img {
+        object-fit: cover;
+        object-position: center;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+
+      &__title {
+        font-size: clamp(16px, 2vw, 24px);
+        font-weight: 600;
+        margin-bottom: 0;
+        line-height: 1.4;
+      }
+
+      &__subtitle {
+        margin: 0;
+        font-size: clamp(16px, 2vw, 20px);
+        font-weight: 500;
+        line-height: 1.2;
+      }
+
+      &__description {
+        font-size: clamp(12px, 1.5vw, 16px);
+        font-weight: 400;
+        line-height: 1.2;
+      }
+    }
+  }
+
+  &__body {
+    margin-right: auto;
+    width: 70%;
+    padding: 0 8rem;
+    min-height: 50vh;
+
+    &__tab-desc,
+    &__tab-cirriculum,
+    &__tab-submissions {
+      padding: 1rem 0;
+      margin: 0 1px;
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+    }
+
+    &__tab-submissions {
+      &__req {
+        &__title {
+          font-size: 24px;
+          font-weight: 600;
+          line-height: 1.4;
+          margin: 0 0 0.5rem 0;
+        }
+      }
+
+      &__desc {
+        &__title {
+          font-size: 24px;
+          font-weight: 600;
+          line-height: 1.4;
+          margin: 0 0 0.5rem 0;
+        }
+      }
+    }
+  }
+}

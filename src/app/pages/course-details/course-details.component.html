@@ -1,0 +1,137 @@
+<div class="course">
+  <section class="course__header">
+    <div class="course__header__content">
+      <h1 class="course__header__content__title">{{ course?.title }}</h1>
+      <p class="course__header__content__short-desc">
+        {{ course?.shortDescription }}
+      </p>
+      <div class="course__header__content__topic">
+        <mat-icon>subject</mat-icon>
+        <span>{{ course?.topic }}</span>
+      </div>
+      <div class="course__header__content__rating">
+        <app-star-rating [rating]="course?.rating ?? 0" [totalVotes]="course?.totalVotes ?? 0"></app-star-rating>
+      </div>
+      <div class="course__header__content__updated">
+        <mat-icon>schedule</mat-icon>
+        <span>Last Updated: {{ course?.lastUpdated | date: 'longDate' }}</span>
+      </div>
+      <div class="course__header__content__created">
+        <mat-icon>account_circle</mat-icon>
+        <span>Created by: {{ course?.author }}</span>
+      </div>
+    </div>
+  </section>
+  <div class="course__body">
+    <mat-tab-group animationDuration="1000ms">
+      <mat-tab label="Description">
+        <div class="course__body__tab-desc">
+          <div class="course__body__tab-desc__req">
+            <h4 class="course__body__tab-desc__req__title">Requirements</h4>
+            <p class="course__body__tab-desc__req__content" [innerHTML]="course?.requirements"></p>
+          </div>
+          <div class="course__body__tab-desc__desc">
+            <h4 class="course__body__tab-desc__desc__title">Description</h4>
+            <p class="course__body__tab-desc__desc__content" [innerHTML]="course?.fullDescription"></p>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab [disabled]="!isUserCourseAuthor && !isUserEnrolled">
+        <ng-template mat-tab-label>
+          Cirriculum
+          <mat-icon
+            class="course-tab-icon"
+            [style.visibility]="!isUserCourseAuthor && !isUserEnrolled ? 'visible' : 'hidden'"
+            >lock</mat-icon
+          >
+        </ng-template>
+        <div class="course__body__lecture course__body__tab-cirriculum">
+          <mat-accordion>
+            @for (lecture of course?.lectures; let idx = $index; track idx) {
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>{{
+                  formatLecturePanelTitle(idx, lecture?.title)
+                }}</mat-expansion-panel-header>
+                <div class="course__body__lecture__body">
+                  <div class="course__body__lecture__body__description">
+                    <p [innerHTML]="lecture.fullDescription"></p>
+                  </div>
+                  <div class="course__body__lecture__body__video">
+                    <iframe
+                      width="420"
+                      height="249"
+                      [src]="lecture.videoUrl | safeUrl"
+                      title="YouTube video player"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen></iframe>
+                  </div>
+                  <div class="course__body__lecture__body__assignment-task">
+                    <p>{{ lecture.assignmentTask }}</p>
+                  </div>
+                  <div class="course__body__lecture__body__assignment-solution"></div>
+                </div>
+              </mat-expansion-panel>
+            }
+          </mat-accordion>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label> Submissions </ng-template>
+        <div class="course__body__lecture course__body__tab-cirriculum">
+          <mat-accordion>
+            <ng-container *ngFor="let lecture of course?.lectures; let idx = index">
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title> {{ idx + 1 }}. {{ lecture.title }} </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-assignment-solution-list
+                  [assignmentSolutions]="lecture!.assignmentSolutions"
+                  [isTeacher]="isUserCourseAuthor"></app-assignment-solution-list>
+              </mat-expansion-panel>
+            </ng-container>
+          </mat-accordion>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <div class="course__side-content mat-elevation-z8">
+    <div class="course__side-content__header">
+      <img src="/images/course-default-img.jpeg" alt="course image" />
+    </div>
+    <div class="course__side-content__content">
+      <h4 class="course__side-content__content__title">Your Success Starts Here</h4>
+      <p class="course__side-content__content__description">
+        Structured learning through comprehensive video lectures and targeted assignments to validate comprehension.
+      </p>
+      <h5 class="course__side-content__content__subtitle">What's included</h5>
+      <mat-list>
+        <mat-list-item>
+          <mat-icon matListItemIcon>smart_display</mat-icon>
+          <div matListItemTitle>{{ course?.lectures?.length }} Video Lectures</div>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon matListItemIcon>assignment</mat-icon>
+          <div matListItemTitle>{{ course?.lectures?.length }} Assignments</div>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon matListItemIcon>all_inclusive</mat-icon>
+          <div matListItemTitle>Lifetime Access</div>
+        </mat-list-item>
+      </mat-list>
+      <h5 class="course__side-content__content__subtitle">Passing score</h5>
+      <mat-list>
+        <mat-list-item>
+          <mat-icon matListItemIcon>fact_check</mat-icon>
+          <div matListItemTitle>{{ course?.passingScore + '/100' }}%</div>
+        </mat-list-item>
+      </mat-list>
+      <button
+        [style.visibility]="isUserLoggedIn && !isUserEnrolled && !isUserCourseAuthor ? 'visible' : 'hidden'"
+        type="button"
+        mat-flat-button>
+        Enroll
+      </button>
+    </div>
+  </div>
+</div>
