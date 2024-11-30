@@ -1,0 +1,29 @@
+.ngx-editor__label {
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.ngx-editor__hint-msg {
+  padding: 0 16px;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--mat-form-field-subscript-text-font, var(--mat-app-body-small-font));
+  line-height: var(--mat-form-field-subscript-text-line-height, var(--mat-app-body-small-line-height));
+  font-size: var(--mat-form-field-subscript-text-size, var(--mat-app-body-small-size));
+  letter-spacing: var(--mat-form-field-subscript-text-tracking, var(--mat-app-body-small-tracking));
+  font-weight: var(--mat-form-field-subscript-text-weight, var(--mat-app-body-small-weight));
+}
+
+.ngx-editor__error-msg {
+  padding: 0 16px;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--mat-form-field-subscript-text-font, var(--mat-app-body-small-font));
+  line-height: var(--mat-form-field-subscript-text-line-height, var(--mat-app-body-small-line-height));
+  font-size: var(--mat-form-field-subscript-text-size, var(--mat-app-body-small-size));
+  letter-spacing: var(--mat-form-field-subscript-text-tracking, var(--mat-app-body-small-tracking));
+  font-weight: var(--mat-form-field-subscript-text-weight, var(--mat-app-body-small-weight));
+}
+
+.ngx-editor__error-border {
+  border-color: var(--mat-form-field-error-text-color);
+}

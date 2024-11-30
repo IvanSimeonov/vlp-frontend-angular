@@ -1,0 +1,21 @@
+<div class="ngx-editor">
+  @if (title()) {
+    <h4 class="ngx-editor__title">
+      {{ title() }}
+    </h4>
+  }
+  <div class="NgxEditor__Wrapper" [ngClass]="{ 'ngx-editor__wrapper__error': control().touched && control().invalid }">
+    <ngx-editor-menu [editor]="editor" [toolbar]="toolbar()"></ngx-editor-menu>
+    <ngx-editor
+      [editor]="editor"
+      [formControl]="control()"
+      [placeholder]="placeholder()"
+      (focusOut)="control().markAsTouched(); control().updateValueAndValidity()"></ngx-editor>
+  </div>
+  @if (maxlength()) {
+    <div class="ngx-editor__hint-msg">{{ control().value.length }}/ {{ maxlength() }}</div>
+  }
+  @if (control().invalid) {
+    <div class="ngx-editor__error-msg">{{ errorMessageResult() }}</div>
+  }
+</div>

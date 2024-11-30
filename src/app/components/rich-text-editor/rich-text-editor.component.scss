@@ -1,0 +1,26 @@
+.ngx-editor {
+  &__title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &__wrapper__error {
+    border: 1px solid var(--mdc-outlined-text-field-error-label-text-color);
+  }
+
+  &__hint-msg,
+  &__error-msg {
+    padding: 0 16px;
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--mat-form-field-subscript-text-font, var(--mat-app-body-small-font));
+    line-height: var(--mat-form-field-subscript-text-line-height, var(--mat-app-body-small-line-height));
+    font-size: var(--mat-form-field-subscript-text-size, var(--mat-app-body-small-size));
+    letter-spacing: var(--mat-form-field-subscript-text-tracking, var(--mat-app-body-small-tracking));
+    font-weight: var(--mat-form-field-subscript-text-weight, var(--mat-app-body-small-weight));
+  }
+
+  &__error-msg {
+    color: var(--mdc-outlined-text-field-error-label-text-color);
+  }
+}

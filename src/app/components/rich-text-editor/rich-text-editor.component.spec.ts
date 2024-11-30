@@ -1,0 +1,24 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { RichTextEditorComponent } from './rich-text-editor.component';
+import { FormControl } from '@angular/forms';
+
+describe('RichTextEditorComponent', () => {
+  let component: RichTextEditorComponent;
+  let fixture: ComponentFixture<RichTextEditorComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [RichTextEditorComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(RichTextEditorComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('control', new FormControl('test'));
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
