@@ -56,7 +56,7 @@ export class CourseCreateEditFormComponent {
   private fb = inject(FormBuilder);
   difficultyLevels = Object.values(DifficultyLevel);
   topics = input<ITopic[]>();
-  createCourse = output<ICourse>();
+  createdCourse = output<ICourse>();
   titleErrorMsg = signal('');
   shortDescriptionErrorMsg = signal('');
   passingScoreErrorMsg = signal('');
@@ -85,7 +85,7 @@ export class CourseCreateEditFormComponent {
 
   onCreate() {
     if (this.courseForm.valid) {
-      this.createCourse.emit(this.courseForm.value);
+      this.createdCourse.emit(this.courseForm.value);
     } else {
       Object.values(this.courseForm.controls).forEach((control) => {
         control.markAsTouched();

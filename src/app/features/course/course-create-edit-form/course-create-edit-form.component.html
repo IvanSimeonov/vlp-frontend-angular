@@ -47,7 +47,7 @@
         formControlName="topic"
         (blur)="courseForm.controls.topic.markAsTouched(); courseForm.controls.topic.updateValueAndValidity()">
         @for (topic of topics(); track topic.id) {
-          <mat-option value="topic.id">{{ topic.title }}</mat-option>
+          <mat-option [value]="topic.id">{{ topic.title }}</mat-option>
         }
       </mat-select>
       @if (courseForm.controls.topic.invalid) {
@@ -63,25 +63,13 @@
           courseForm.controls.difficultyLevel.updateValueAndValidity()
         ">
         @for (difficultyLevel of difficultyLevels; track difficultyLevel) {
-          <mat-option value="difficultyLevel">{{ formatDifficultyLevel(difficultyLevel) }}</mat-option>
+          <mat-option [value]="difficultyLevel">{{ formatDifficultyLevel(difficultyLevel) }}</mat-option>
         }
       </mat-select>
       @if (courseForm.controls.difficultyLevel.invalid) {
         <mat-error>{{ difficultyLevelErrorMsg() }}</mat-error>
       }
     </mat-form-field>
-    <div class="course__form__field__editor">
-      <app-rich-text-editor
-        [control]="courseForm.controls.fullDescription"
-        [title]="'Full Description'"
-        [minlength]="300"
-        [maxlength]="3000"
-        [errorMessages]="{
-          required: 'Full description is required.',
-          minlength: 'Minimum 300 characters required.',
-          maxlength: 'Maximum 3000 characters required.',
-        }"></app-rich-text-editor>
-    </div>
     <div class="course__form__field__editor">
       <app-rich-text-editor
         [control]="courseForm.controls.requirements"
@@ -93,6 +81,18 @@
           required: 'Requirements are required.',
           minlength: 'Minimum 50 characters required.',
           maxlength: 'Maximum 500 characters required.',
+        }"></app-rich-text-editor>
+    </div>
+    <div class="course__form__field__editor">
+      <app-rich-text-editor
+        [control]="courseForm.controls.fullDescription"
+        [title]="'Full Description'"
+        [minlength]="300"
+        [maxlength]="3000"
+        [errorMessages]="{
+          required: 'Full description is required.',
+          minlength: 'Minimum 300 characters required.',
+          maxlength: 'Maximum 3000 characters required.',
         }"></app-rich-text-editor>
     </div>
     <button mat-flat-button type="submit">Create Course</button>
