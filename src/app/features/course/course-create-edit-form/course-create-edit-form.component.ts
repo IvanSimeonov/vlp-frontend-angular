@@ -86,6 +86,11 @@ export class CourseCreateEditFormComponent {
   onCreate() {
     if (this.courseForm.valid) {
       this.createCourse.emit(this.courseForm.value);
+    } else {
+      Object.values(this.courseForm.controls).forEach((control) => {
+        control.markAsTouched();
+        control.updateValueAndValidity();
+      });
     }
   }
 

@@ -1,3 +1,9 @@
+.course__form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .ngx-editor__label {
   font-size: 1.2rem;
   font-weight: 500;
