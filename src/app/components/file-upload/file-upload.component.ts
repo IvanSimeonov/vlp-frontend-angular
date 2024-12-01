@@ -8,7 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 export interface IFile {
   name: string;
-  progress: number;
+  file: File;
 }
 
 @Component({
@@ -75,9 +75,8 @@ export class FileUploadComponent {
     } else if (!this.isFileSizeAllowed(file)) {
       this.showError(`${file.name} exceeds the maximum file size of ${this.maxFileSizeMB}MB.`);
     } else {
-      this.file = { name: file.name, progress: 0 };
+      this.file = { name: file.name, file: file };
       this.generateFilePreview(file);
-      //this.fileChange.emit(this.file);
     }
   }
 
