@@ -40,7 +40,6 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.editor = new Editor({ schema, keyboardShortcuts: this.keyboardShortcuts(), history: this.history() });
-    console.log(this.control());
     merge(this.control().statusChanges, this.control().valueChanges)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.getErrorMessage());
@@ -48,14 +47,13 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.editor.destroy();
-    console.log('Destroy: ', this.destroy$);
+    // console.log('Destroy: ', this.destroy$);
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   getErrorMessage() {
     for (const [key, msg] of Object.entries(this.errorMessages())) {
-      console.log(this.control());
       if (this.control().hasError(key)) {
         this.errorMessageResult.set(msg);
         return;

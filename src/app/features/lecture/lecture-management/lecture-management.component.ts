@@ -13,7 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
-import { CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
+import { CdkDropList, CdkDrag, CdkDragDrop, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Validators as NgxEditorValidators } from 'ngx-editor';
 
@@ -48,6 +48,7 @@ export interface LectureTypeForm {
     MatExpansionModule,
     CdkDropList,
     CdkDrag,
+    CdkDragPlaceholder,
     RichTextEditorComponent,
   ],
   templateUrl: './lecture-management.component.html',
@@ -57,11 +58,12 @@ export class LectureManagementComponent {
   private fb = inject(NonNullableFormBuilder);
   courseId = input.required<number>();
   isFormValid = signal(true);
+  isFormSubmitted = false;
 
   addedLectures = output<ILecture[]>();
 
   form: FormGroup<{ lectures: FormArray<FormGroup<LectureTypeForm>> }> = this.fb.group({
-    lectures: this.fb.array<FormGroup<LectureTypeForm>>([]),
+    lectures: this.fb.array<FormGroup<LectureTypeForm>>([], [Validators.minLength(3)]),
   });
 
   errorMessages = new Map<number, Record<string, ReturnType<typeof signal>>>();
@@ -75,7 +77,8 @@ export class LectureManagementComponent {
   }
 
   saveLectures() {
-    if (this.checkFormValidity()) {
+    this.isFormSubmitted = true;
+    if (this.form.valid) {
       const lectureData: ILecture[] = this.lectures.controls.map((control) => ({
         title: control.controls.title.value,
         description: control.controls.description.value,
@@ -123,6 +126,14 @@ export class LectureManagementComponent {
     this.updateSequenceNumber();
   }
 
+  onDrop(event: CdkDragDrop<FormGroup<LectureTypeForm>[]>) {
+    const lecturesFormArray = this.lectures;
+    const control = lecturesFormArray.at(event.previousIndex);
+    lecturesFormArray.removeAt(event.previousIndex);
+    lecturesFormArray.insert(event.currentIndex, control);
+    this.updateSequenceNumber();
+  }
+
   private updateSequenceNumber() {
     this.lectures.controls.forEach((lectureForm, index) => {
       lectureForm.controls.sequenceNumber.patchValue(index + 1);
@@ -161,9 +172,10 @@ export class LectureManagementComponent {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
-  checkFormValidity() {
-    const isFormValid = this.form.valid && this.form.controls.lectures.length >= 3;
-    this.isFormValid.set(isFormValid);
-    return isFormValid;
-  }
+  // checkFormValidity() {
+  //   this.isFormSubmitted = true;
+  //   const isFormValid = this.form.valid && this.form.controls.lectures.length >= 3;
+  //   this.isFormValid.set(isFormValid);
+  //   return isFormValid;
+  // }
 }
