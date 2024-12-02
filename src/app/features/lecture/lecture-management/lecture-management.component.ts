@@ -56,6 +56,7 @@ export interface LectureTypeForm {
 export class LectureManagementComponent {
   private fb = inject(NonNullableFormBuilder);
   courseId = input.required<number>();
+  isFormValid = signal(true);
 
   addedLectures = output<ILecture[]>();
 
@@ -74,15 +75,25 @@ export class LectureManagementComponent {
   }
 
   saveLectures() {
-    const lectureData: ILecture[] = this.lectures.controls.map((control) => ({
-      title: control.controls.title.value,
-      description: control.controls.description.value,
-      videoUrl: control.controls.videoUrl.value,
-      assignmentTask: control.controls.assignmentTask.value,
-      sequenceNumber: control.controls.sequenceNumber.value,
-      courseId: this.courseId(),
-    }));
-    this.addedLectures.emit(lectureData);
+    if (this.checkFormValidity()) {
+      const lectureData: ILecture[] = this.lectures.controls.map((control) => ({
+        title: control.controls.title.value,
+        description: control.controls.description.value,
+        videoUrl: control.controls.videoUrl.value,
+        assignmentTask: control.controls.assignmentTask.value,
+        sequenceNumber: control.controls.sequenceNumber.value,
+        courseId: this.courseId(),
+      }));
+      this.addedLectures.emit(lectureData);
+    } else {
+      this.lectures.controls.forEach((control) => {
+        control.markAllAsTouched();
+        control.controls.title.updateValueAndValidity();
+        control.controls.description.updateValueAndValidity();
+        control.controls.videoUrl.updateValueAndValidity();
+        control.controls.assignmentTask.updateValueAndValidity();
+      });
+    }
   }
 
   addLecture() {
@@ -103,6 +114,7 @@ export class LectureManagementComponent {
       courseId: this.fb.control(0, Validators.required),
     });
     this.lectures.push(lectureForm);
+    this.initializeErrorSignals(lectureForm, this.lectures.length - 1);
   }
 
   removeLecture(event: Event, lectureIndex: number) {
@@ -117,18 +129,41 @@ export class LectureManagementComponent {
     });
   }
 
-  titleErrorMessage(control: FormControl) {
-    if (control.hasError('required')) {
-      return 'Title is required';
-    } else {
-      return 'Title must be 5 to 500 chars longs';
+  private initializeErrorSignals(form: FormGroup<LectureTypeForm>, index: number): void {
+    const errorSignals = {
+      title: signal(''),
+      description: signal(''),
+      videoUrl: signal(''),
+      assignmentTask: signal(''),
+      sequenceNumber: signal(''),
+      courseId: signal(''),
+    };
+    this.errorMessages.set(index, errorSignals);
+    for (const [key, control] of Object.entries(form.controls) as [keyof LectureTypeForm, FormControl][]) {
+      control.statusChanges.subscribe(() => {
+        const fieldName = this.capitalizeFirstLetter(key);
+        if (control.hasError('required')) {
+          errorSignals[key].set(`${fieldName} is required`);
+        } else if (control.hasError('minlength')) {
+          errorSignals[key].set(
+            `${fieldName} must have min. ${control.getError('minlength')?.requiredLength} characters`
+          );
+        } else if (control.hasError('maxlength')) {
+          errorSignals[key].set(
+            `${fieldName} must have max. ${control.getError('maxlength')?.requiredLength} characters`
+          );
+        }
+      });
     }
   }
-  videoUrlErrorMessage(control: FormControl) {
-    if (control.hasError('required')) {
-      return 'Video URL is required';
-    } else {
-      return 'Video URL must be a valid YouTube url';
-    }
+
+  private capitalizeFirstLetter(word: string): string {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
+  checkFormValidity() {
+    const isFormValid = this.form.valid && this.form.controls.lectures.length >= 3;
+    this.isFormValid.set(isFormValid);
+    return isFormValid;
   }
 }

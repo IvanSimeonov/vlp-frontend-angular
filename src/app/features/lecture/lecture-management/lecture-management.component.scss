@@ -5,7 +5,30 @@
 
   &__main-actions {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    row-gap: 1rem;
+
+    &__btns {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &__generic-error {
+      display: flex;
+      justify-content: flex-start;
+      border-radius: 12px;
+      border: 1px solid #f1aeb5;
+      color: #58151c;
+      background-color: #f8d7da;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 500;
+      font-size: 1rem;
+
+      mat-icon {
+        margin-right: 5px;
+      }
+    }
   }
 
   &__panel-header__desc {
@@ -21,4 +44,14 @@
     flex-direction: column;
     row-gap: 1rem;
   }
+}
+
+.mat-accordion > .mat-expansion-panel-spacing:first-child,
+.mat-accordion > *:first-child:not(.mat-expansion-panel) .mat-expansion-panel-spacing {
+  margin-top: 10px;
+}
+
+.mat-accordion > .mat-expansion-panel-spacing:last-child,
+.mat-accordion > *:last-child:not(.mat-expansion-panel) .mat-expansion-panel-spacing {
+  margin-bottom: 10px;
 }

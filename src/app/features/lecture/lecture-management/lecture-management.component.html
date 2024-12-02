@@ -1,7 +1,15 @@
 <div class="lectures" [formGroup]="form">
   <div class="lectures__main-actions">
-    <button mat-flat-button (click)="saveLectures()">Save Lectures</button>
-    <button mat-raised-button (click)="addLecture()">New Lecture</button>
+    <div class="lectures__main-actions__btns">
+      <button mat-flat-button (click)="saveLectures()" [disabled]="!isFormValid()">Save Lectures</button>
+      <button mat-raised-button (click)="addLecture()">New Lecture</button>
+    </div>
+    @if (!isFormValid()) {
+      <div class="lectures__main-actions__generic-error mat-elevation-z2">
+        <mat-icon>error</mat-icon>
+        Oops! To proceed, please fill in all fields for at least 3 lectures.
+      </div>
+    }
   </div>
   <mat-accordion>
     <div formArrayName="lectures">
@@ -21,33 +29,50 @@
           <div class="lectures__panel-content__form">
             <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>Title</mat-label>
-              <input type="text" matInput formControlName="title" />
-              @if (
-                lectureForm.controls.title.invalid ||
-                (lectureForm.controls.title.touched && lectureForm.controls.title.dirty)
-              ) {
-                <mat-error>{{ titleErrorMessage(lectureForm.controls.title) }}</mat-error>
-              }
+              <input
+                type="text"
+                matInput
+                formControlName="title"
+                (blur)="
+                  lectureForm.controls.title.markAsTouched(); lectureForm.controls.title.updateValueAndValidity()
+                " />
+              <mat-hint>{{ lectureForm.controls.title.value.length }} / 300</mat-hint>
+              <mat-error>{{ errorMessages.get(idx)?.['title']() }}</mat-error>
             </mat-form-field>
             <div>
               <app-rich-text-editor
                 [control]="lectureForm.controls.description"
-                [title]="'Description'"></app-rich-text-editor>
+                [title]="'Description'"
+                [minlength]="50"
+                [maxlength]="500"
+                [errorMessages]="{
+                  required: 'Description is required.',
+                  minlength: 'Minimum 50 characters required.',
+                  maxlength: 'Maximum 500 characters required.',
+                }"></app-rich-text-editor>
             </div>
             <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>Video URL</mat-label>
-              <input type="text" matInput formControlName="videoUrl" />
-              @if (
-                lectureForm.controls.videoUrl.invalid ||
-                (lectureForm.controls.videoUrl.touched && lectureForm.controls.videoUrl.dirty)
-              ) {
-                <mat-error>{{ videoUrlErrorMessage(lectureForm.controls.videoUrl) }}</mat-error>
-              }
+              <input
+                type="text"
+                matInput
+                formControlName="videoUrl"
+                (blur)="
+                  lectureForm.controls.videoUrl.markAsTouched(); lectureForm.controls.videoUrl.updateValueAndValidity()
+                " />
+              <mat-error>{{ errorMessages.get(idx)?.['videoUrl']() }}</mat-error>
             </mat-form-field>
             <div>
               <app-rich-text-editor
                 [control]="lectureForm.controls.assignmentTask"
-                [title]="'Assignment Task'"></app-rich-text-editor>
+                [title]="'Assignment Task'"
+                [minlength]="50"
+                [maxlength]="500"
+                [errorMessages]="{
+                  required: 'Assignment task is required.',
+                  minlength: 'Minimum 50 characters required.',
+                  maxlength: 'Maximum 500 characters required.',
+                }"></app-rich-text-editor>
             </div>
           </div>
         </mat-expansion-panel>
