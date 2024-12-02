@@ -1,16 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output, signal, WritableSignal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, input, output, signal } from '@angular/core';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
-import { Validators as NgxEditorValidators } from 'ngx-editor';
-import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { merge } from 'rxjs';
+import { Validators as NgxEditorValidators } from 'ngx-editor';
 
 export interface ILecture {
   title: string;
@@ -19,6 +24,15 @@ export interface ILecture {
   assignmentTask: string;
   sequenceNumber: number;
   courseId: number;
+}
+
+export interface LectureTypeForm {
+  title: FormControl<string>;
+  description: FormControl<string>;
+  videoUrl: FormControl<string>;
+  assignmentTask: FormControl<string>;
+  sequenceNumber: FormControl<number>;
+  courseId: FormControl<number>;
 }
 
 @Component({
@@ -40,127 +54,81 @@ export interface ILecture {
   styleUrl: './lecture-management.component.scss',
 })
 export class LectureManagementComponent {
-  private fb = inject(FormBuilder);
+  private fb = inject(NonNullableFormBuilder);
   courseId = input.required<number>();
+
   addedLectures = output<ILecture[]>();
-  lectures: { form: FormGroup; errorSignals: Record<string, WritableSignal<string>> }[] = [];
+
+  form: FormGroup<{ lectures: FormArray<FormGroup<LectureTypeForm>> }> = this.fb.group({
+    lectures: this.fb.array<FormGroup<LectureTypeForm>>([]),
+  });
+
+  errorMessages = new Map<number, Record<string, ReturnType<typeof signal>>>();
+
+  get lectures(): FormArray<FormGroup<LectureTypeForm>> {
+    return this.form.controls.lectures;
+  }
 
   constructor() {
-    this.addLecture();
-    this.addLecture();
     this.addLecture();
   }
 
   saveLectures() {
-    if (this.lectures.length >= 3 && this.lectures.every((lecture) => lecture.form.valid)) {
-      this.addedLectures.emit(this.lectures.map((lecture) => lecture.form.value));
-    } else {
-      this.lectures.forEach((lecture) => {
-        console.log(lecture);
-        Object.values(lecture.form.controls).forEach((control) => {
-          control.markAsTouched();
-          control.updateValueAndValidity();
-        });
-      });
-    }
+    const lectureData: ILecture[] = this.lectures.controls.map((control) => ({
+      title: control.controls.title.value,
+      description: control.controls.description.value,
+      videoUrl: control.controls.videoUrl.value,
+      assignmentTask: control.controls.assignmentTask.value,
+      sequenceNumber: control.controls.sequenceNumber.value,
+      courseId: this.courseId(),
+    }));
+    this.addedLectures.emit(lectureData);
   }
 
   addLecture() {
-    const lectureForm = this.fb.nonNullable.group({
-      title: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(100)]],
-      videoUrl: ['', [Validators.required]],
-      description: [
-        '',
+    const lectureForm: FormGroup<LectureTypeForm> = this.fb.group<LectureTypeForm>({
+      title: this.fb.control('', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]),
+      description: this.fb.control('', [
         NgxEditorValidators.required(),
-        NgxEditorValidators.minLength(100),
-        NgxEditorValidators.maxLength(300),
-      ],
-      assignmentTask: [
-        '',
+        NgxEditorValidators.minLength(50),
+        NgxEditorValidators.maxLength(500),
+      ]),
+      videoUrl: this.fb.control('', [Validators.required]),
+      assignmentTask: this.fb.control('', [
         NgxEditorValidators.required(),
-        NgxEditorValidators.minLength(300),
-        NgxEditorValidators.maxLength(1000),
-      ],
-      courseId: [this.courseId],
-      sequenceNumber: [this.lectures.length + 1],
+        NgxEditorValidators.minLength(50),
+        NgxEditorValidators.maxLength(500),
+      ]),
+      sequenceNumber: this.fb.control(this.lectures.length + 1, Validators.required),
+      courseId: this.fb.control(0, Validators.required),
     });
-    const errorSignals = {
-      title: signal(''),
-      description: signal(''),
-      videoUrl: signal(''),
-      assignmentTask: signal(''),
-    };
-    this.initErrorSubscriptions(lectureForm, errorSignals);
-    this.lectures.push({ form: lectureForm, errorSignals });
+    this.lectures.push(lectureForm);
   }
 
-  removeLecture(event: Event, index: number) {
+  removeLecture(event: Event, lectureIndex: number) {
     event.stopPropagation();
-    this.lectures.splice(index, 1);
+    this.lectures.removeAt(lectureIndex);
     this.updateSequenceNumber();
-  }
-
-  onDrop(event: CdkDragDrop<FormGroup[]>) {
-    moveItemInArray(this.lectures, event.previousIndex, event.currentIndex);
-    this.updateSequenceNumber();
-  }
-
-  getFormControl(group: FormGroup, controlName: string): FormControl {
-    return group.get(controlName) as FormControl;
   }
 
   private updateSequenceNumber() {
-    this.lectures.forEach((lecture, index) => {
-      lecture.form.patchValue({ sequenceNumber: index + 1 });
+    this.lectures.controls.forEach((lectureForm, index) => {
+      lectureForm.controls.sequenceNumber.patchValue(index + 1);
     });
   }
 
-  private initErrorSubscriptions(formGroup: FormGroup, errorSignals: Record<string, WritableSignal<string>>): void {
-    Object.entries(errorSignals).forEach(([controlName, signal]) => {
-      const control = formGroup.get(controlName);
-
-      if (!control) {
-        console.warn(`Control '${controlName}' does not exist in the form group.`);
-        return;
-      }
-
-      const messages: Record<string, string> = this.getErrorMessages(controlName);
-
-      merge(control.statusChanges, control.valueChanges)
-        .pipe(takeUntilDestroyed())
-        .subscribe(() => {
-          for (const [errorKey, errorMsg] of Object.entries(messages)) {
-            if (control.hasError(errorKey)) {
-              signal.set(errorMsg);
-              return;
-            }
-          }
-          signal.set('');
-        });
-    });
+  titleErrorMessage(control: FormControl) {
+    if (control.hasError('required')) {
+      return 'Title is required';
+    } else {
+      return 'Title must be 5 to 500 chars longs';
+    }
   }
-
-  private getErrorMessages(controlName: string): Record<string, string> {
-    const errorMessages: Record<string, Record<string, string>> = {
-      title: {
-        required: 'Title is required.',
-        minlength: 'Title must be at least 10 characters.',
-        maxlength: 'Title must not exceed 100 characters.',
-      },
-      videoUrl: {
-        required: 'Video URL is required.',
-      },
-      description: {
-        required: 'Description is required.',
-        minlength: 'Description must be at least 100 characters.',
-        maxlength: 'Description must not exceed 300 characters.',
-      },
-      assignmentTask: {
-        required: 'Assignment task is required.',
-        minlength: 'Task must be at least 300 characters.',
-        maxlength: 'Task must not exceed 1000 characters.',
-      },
-    };
-    return errorMessages[controlName] || {};
+  videoUrlErrorMessage(control: FormControl) {
+    if (control.hasError('required')) {
+      return 'Video URL is required';
+    } else {
+      return 'Video URL must be a valid YouTube url';
+    }
   }
 }

@@ -1,77 +1,57 @@
-<div class="lectures">
+<div class="lectures" [formGroup]="form">
   <div class="lectures__main-actions">
     <button mat-flat-button (click)="saveLectures()">Save Lectures</button>
     <button mat-raised-button (click)="addLecture()">New Lecture</button>
   </div>
-  <mat-accordion cdkDropList (cdkDropListDropped)="onDrop($event)">
-    @for (lecture of lectures; let idx = $index; track idx) {
-      <mat-expansion-panel cdkDrag>
-        <mat-expansion-panel-header>
-          <mat-panel-title>Lecture {{ lecture.form.get('sequenceNumber')?.value }}</mat-panel-title>
-          <mat-panel-description class="lectures__panel-header__desc">
-            <button
-              class="lectures__panel-header__desc__delete-btn"
-              mat-icon-button
-              (click)="removeLecture($event, idx)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <form class="lectures__panel-content__form" [formGroup]="lecture.form">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Title</mat-label>
-            <input
-              type="text"
-              matInput
-              formControlName="title"
-              (blur)="
-                lecture.form.controls['title'].markAsTouched(); lecture.form.controls['title'].updateValueAndValidity()
-              " />
-            <mat-hint>{{ lecture.form.controls['title'].value.length }} / 50</mat-hint>
-            @if (lecture.form.controls['title'].invalid) {
-              <mat-error>{{ lecture.errorSignals['title']() }}</mat-error>
-            }
-          </mat-form-field>
-          <div>
-            <app-rich-text-editor
-              [control]="getFormControl(lecture.form, 'description')"
-              [title]="'Description'"
-              [minlength]="300"
-              [maxlength]="3000"
-              [errorMessages]="{
-                required: 'Description is required.',
-                minlength: 'Minimum 300 characters required.',
-                maxlength: 'Maximum 3000 characters required.',
-              }"></app-rich-text-editor>
+  <mat-accordion>
+    <div formArrayName="lectures">
+      @for (lectureForm of lectures.controls; let idx = $index; track idx) {
+        <mat-expansion-panel [formGroupName]="idx">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Lecture {{ lectureForm.get('sequenceNumber')?.value }}</mat-panel-title>
+            <mat-panel-description class="lectures__panel-header__desc">
+              <button
+                class="lectures__panel-header__desc__delete-btn"
+                mat-icon-button
+                (click)="removeLecture($event, idx)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="lectures__panel-content__form">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Title</mat-label>
+              <input type="text" matInput formControlName="title" />
+              @if (
+                lectureForm.controls.title.invalid ||
+                (lectureForm.controls.title.touched && lectureForm.controls.title.dirty)
+              ) {
+                <mat-error>{{ titleErrorMessage(lectureForm.controls.title) }}</mat-error>
+              }
+            </mat-form-field>
+            <div>
+              <app-rich-text-editor
+                [control]="lectureForm.controls.description"
+                [title]="'Description'"></app-rich-text-editor>
+            </div>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Video URL</mat-label>
+              <input type="text" matInput formControlName="videoUrl" />
+              @if (
+                lectureForm.controls.videoUrl.invalid ||
+                (lectureForm.controls.videoUrl.touched && lectureForm.controls.videoUrl.dirty)
+              ) {
+                <mat-error>{{ videoUrlErrorMessage(lectureForm.controls.videoUrl) }}</mat-error>
+              }
+            </mat-form-field>
+            <div>
+              <app-rich-text-editor
+                [control]="lectureForm.controls.assignmentTask"
+                [title]="'Assignment Task'"></app-rich-text-editor>
+            </div>
           </div>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Video URL</mat-label>
-            <input
-              type="text"
-              matInput
-              formControlName="videoUrl"
-              (blur)="
-                lecture.form.controls['videoUrl'].markAsTouched();
-                lecture.form.controls['videoUrl'].updateValueAndValidity()
-              " />
-            @if (lecture.form.controls['videoUrl'].invalid) {
-              <mat-error>{{ lecture.errorSignals['videoUrl']() }}</mat-error>
-            }
-          </mat-form-field>
-          <div>
-            <app-rich-text-editor
-              [control]="getFormControl(lecture.form, 'assignmentTask')"
-              [title]="'Assignment Task'"
-              [minlength]="300"
-              [maxlength]="3000"
-              [errorMessages]="{
-                required: 'Assignment Task is required.',
-                minlength: 'Minimum 300 characters required.',
-                maxlength: 'Maximum 3000 characters required.',
-              }"></app-rich-text-editor>
-          </div>
-        </form>
-      </mat-expansion-panel>
-    }
+        </mat-expansion-panel>
+      }
+    </div>
   </mat-accordion>
 </div>
