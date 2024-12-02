@@ -8,11 +8,18 @@ import {
 } from '../../features/course/course-create-edit-form/course-create-edit-form.component';
 import { FileUploadComponent, IFile } from '../../components/file-upload/file-upload.component';
 import { ILecture } from '../course-details/course-details.component';
+import { LectureManagementComponent } from '../../features/lecture/lecture-management/lecture-management.component';
 
 @Component({
   selector: 'app-course-create-edit',
   standalone: true,
-  imports: [MatStepperModule, MatButtonModule, CourseCreateEditFormComponent, FileUploadComponent],
+  imports: [
+    MatStepperModule,
+    MatButtonModule,
+    CourseCreateEditFormComponent,
+    FileUploadComponent,
+    LectureManagementComponent,
+  ],
   templateUrl: './course-create-edit.component.html',
   styleUrl: './course-create-edit.component.scss',
 })

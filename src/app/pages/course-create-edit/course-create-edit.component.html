@@ -1,15 +1,17 @@
 <div class="course">
   <div class="course__stepper">
     <mat-stepper animationDuration="500" [linear]="true">
-      <mat-step
+      <!-- <mat-step
         class="course__stepper__course-details"
         label="Create new course"
         [completed]="isCourseCreated()"
-        [editable]="false">
+        [editable]="false"
+      >
         @if (!isCourseCreated()) {
           <app-course-create-edit-form
             [topics]="topics()"
-            (createdCourse)="handleCourseCreated($event)"></app-course-create-edit-form>
+            (createdCourse)="handleCourseCreated($event)"
+          ></app-course-create-edit-form>
         } @else {
           <h4>Course was created successfully!</h4>
           <button mat-button matStepperNext>Next</button>
@@ -19,20 +21,24 @@
         class="course__stepper__course-photo"
         label="Upload course photo"
         [completed]="isPhotoUploaded()"
-        [editable]="isCourseCreated">
+        [editable]="isCourseCreated"
+      >
         @if (!isPhotoUploaded()) {
           <app-file-upload (fileChange)="handlePhotoUploaded($event)"></app-file-upload>
         } @else {
           <h4>Course photo uploaded successfully!</h4>
           <button mat-button matStepperNext>Next</button>
         }
-      </mat-step>
+      </mat-step> -->
       <mat-step
         class="course__stepper__lectures"
         label="Add course lectures"
         [completed]="areLecturesAdded()"
         [editable]="isCourseCreated">
-        @if (!areLecturesAdded) {
+        @if (!areLecturesAdded()) {
+          <app-lecture-management
+            [courseId]="courseId()"
+            (addedLectures)="handleLecturesAdded($event)"></app-lecture-management>
         } @else {
           <h4>Lectures are added successfully!</h4>
           <button mat-button matStepperNext>Next</button>
