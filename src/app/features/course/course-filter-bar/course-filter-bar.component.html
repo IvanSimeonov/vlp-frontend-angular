@@ -1,4 +1,10 @@
 <div class="filter-bar">
+  @if (isUserCourseOwner) {
+    <button class="create-btn" mat-fab extended color="primary" (click)="navigateToCourseCreation()">
+      <mat-icon>add</mat-icon>
+      Create course
+    </button>
+  }
   <mat-form-field class="filter-bar__search" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Search</mat-label>
     <input matInput type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" placeholder="Search courses" />
@@ -34,5 +40,5 @@
     </mat-select>
   </mat-form-field>
 
-  <button mat-fab extended color="primary" (click)="resetFiltersAndSorting()">Reset</button>
+  <button class="reset-btn" mat-fab extended color="primary" (click)="resetFiltersAndSorting()">Reset</button>
 </div>

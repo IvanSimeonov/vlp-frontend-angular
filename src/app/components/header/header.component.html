@@ -35,14 +35,8 @@
       <mat-menu #managementMenu="matMenu" class="header__menu">
         <a class="header__menu-item" routerLink="/management/courses">Courses</a>
         <a class="header__menu-item" routerLink="/management/users">Users</a>
+        <a class="header__menu-item" routerLink="/management/topics">Topics</a>
       </mat-menu>
-      <a
-        class="header__nav-link"
-        routerLink="/requests"
-        routerLinkActive="header__nav-link--active"
-        aria-current="page">
-        Requests
-      </a>
       <a class="header__nav-link header__nav-link--menu" aria-current="page" [matMenuTriggerFor]="notificationMenu">
         <mat-icon
           [matBadge]="notifications?.length"
@@ -54,7 +48,7 @@
       <mat-menu #notificationMenu="matMenu">
         <div class="header__menu-notification__layout">
           <div class="header__menu-notification__layout__btn-container">
-            <button mat-flat-button type="button">Mark All Read</button>
+            <button (click)="markAllNotificationsRead()" mat-flat-button type="button">Mark All Read</button>
           </div>
           <mat-divider></mat-divider>
           @if (notifications) {
@@ -88,8 +82,8 @@
           </div>
         </div>
         <mat-divider></mat-divider>
-        <a class="header__menu-item" routerLink="/profile">Profile</a>
-        <a class="header__menu-item" routerLink="/account-settings">Account Settings</a>
+        <a class="header__menu-item" routerLink="/user/1/profile">Profile</a>
+        <a class="header__menu-item" routerLink="/user/edit-profile">Account Settings</a>
         <a class="header__menu-item" (click)="logout()" (keydown)="logout()" tabindex="{0}">Logout</a>
       </mat-menu>
     }

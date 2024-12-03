@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { Router } from '@angular/router';
 
 export interface IFilterOption {
   id: string;
@@ -31,6 +32,7 @@ export interface IFilterOption {
 export class CourseFilterBarComponent {
   @Input() filters: IFilterOption[] = [];
   @Input() sortOptions: { id: string; label: string }[] = [];
+  @Input() isUserCourseOwner = false;
   @Output() search = new EventEmitter<string>();
   @Output() filterChange = new EventEmitter<Record<string, string>>();
   @Output() sortChange = new EventEmitter<string>();
@@ -38,6 +40,12 @@ export class CourseFilterBarComponent {
 
   searchQuery = '';
   activeFilters: Record<string, string> = {};
+
+  constructor(private router: Router) {}
+
+  navigateToCourseCreation() {
+    this.router.navigate(['/courses/create']);
+  }
 
   onSearchInput(): void {
     this.search.emit(this.searchQuery);

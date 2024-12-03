@@ -11,6 +11,7 @@ import { Editor, NgxEditorModule, schema, Toolbar } from 'ngx-editor';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { merge } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-edit-profile',
@@ -69,7 +70,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
     retypeNewPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(16)]],
   });
 
-  constructor() {
+  constructor(private router: Router) {
     this.initErrorSubscriptionsPersonalData();
     this.initErrorSubscriptionsSecurityData();
   }
@@ -88,6 +89,17 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.editor.destroy();
+  }
+
+  navigateToPublicProfile() {
+    // TODO: API call
+    const userId = 1;
+    this.router.navigate([`user/${userId}/profile`]);
+  }
+
+  onRequestTeacherAccess() {
+    // TODO: API call
+    this.isAccessRequested = true;
   }
 
   onImageUpload(file: IFile): void {

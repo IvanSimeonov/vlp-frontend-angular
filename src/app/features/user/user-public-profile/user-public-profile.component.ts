@@ -32,6 +32,7 @@ export class UserPublicProfileComponent {
     role: 'ROLE_TEACHER',
     enrolledCourses: [
       {
+        id: 1,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -40,6 +41,7 @@ export class UserPublicProfileComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 2,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -48,6 +50,7 @@ export class UserPublicProfileComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 3,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -57,6 +60,7 @@ export class UserPublicProfileComponent {
       },
 
       {
+        id: 4,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -65,6 +69,7 @@ export class UserPublicProfileComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 5,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -73,6 +78,7 @@ export class UserPublicProfileComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 6,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -83,6 +89,7 @@ export class UserPublicProfileComponent {
     ],
     createdCourses: [
       {
+        id: 1,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -91,6 +98,7 @@ export class UserPublicProfileComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 2,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -99,6 +107,7 @@ export class UserPublicProfileComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 3,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',

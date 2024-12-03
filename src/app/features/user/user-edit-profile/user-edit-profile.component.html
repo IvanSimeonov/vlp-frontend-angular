@@ -11,12 +11,17 @@
           </div>
         </div>
         <div class="user-profile__header__actions">
-          <button class="user-profile__actions__profile-preview" type="button" mat-raised-button>
+          <button
+            class="user-profile__actions__profile-preview"
+            type="button"
+            mat-raised-button
+            (click)="navigateToPublicProfile()">
             Public Profile Preview</button
           ><button
             class="user-profile__actions__request-access"
             type="button"
             mat-raised-button
+            (click)="onRequestTeacherAccess()"
             [disabled]="isAccessRequested">
             Teacher Access Request
           </button>

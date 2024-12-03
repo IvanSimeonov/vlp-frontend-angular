@@ -13,7 +13,13 @@
     flex: 1;
   }
 
-  button {
+  .create-btn {
+    border-radius: 4px;
+    border: 1px solid gray;
+    box-shadow: none;
+  }
+
+  .reset-btn {
     color: red;
     background-color: white;
     border-radius: 4px;

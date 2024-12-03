@@ -42,7 +42,12 @@ export class HeaderComponent {
 
   unreadNotifications = 0;
 
+  markAllNotificationsRead() {
+    // TODO: add API call
+  }
+
   logout() {
+    // TODO: Add API call
     console.log('Logged Out!');
   }
 }

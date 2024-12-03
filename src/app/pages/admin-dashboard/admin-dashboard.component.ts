@@ -119,10 +119,12 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
 
   approveRequest(email: string): void {
+    // TODO: Add API call
     console.log('Approve Request User Email:', email);
   }
 
   denyRequest(email: string): void {
+    // TODO: Add API call
     console.log('Deny Request User Email:', email);
   }
 }
