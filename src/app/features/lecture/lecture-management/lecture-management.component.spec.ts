@@ -15,6 +15,7 @@ describe('LectureManagementComponent', () => {
 
     fixture = TestBed.createComponent(LectureManagementComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('courseId', 1);
     fixture.detectChanges();
   });
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, input, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -18,15 +18,26 @@ export interface IFile {
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.scss',
 })
-export class FileUploadComponent {
+export class FileUploadComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @Input() allowedFileTypes: string[] = ['image/jpeg', 'image/png'];
   @Input() maxFileSizeMB = 10;
+  isEditMode = input<boolean>(false);
+  fileData = input<IFile>();
   @Output() fileChange = new EventEmitter<IFile>();
   file: IFile | undefined;
   filePreviewUrl: string | null = null;
 
   constructor(private snackBar: MatSnackBar) {}
+
+  ngOnInit(): void {
+    if (this.isEditMode() && this.fileData()) {
+      this.file = this.fileData();
+      if (this.file?.file) {
+        this.generateFilePreview(this.file?.file);
+      }
+    }
+  }
 
   get fileAccept() {
     return this.allowedFileTypes.join(',');

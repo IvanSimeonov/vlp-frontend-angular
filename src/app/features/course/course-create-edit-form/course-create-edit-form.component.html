@@ -95,6 +95,6 @@
           maxlength: 'Maximum 3000 characters required.',
         }"></app-rich-text-editor>
     </div>
-    <button mat-flat-button type="submit">Create Course</button>
+    <button mat-flat-button type="submit">{{ isEditMode() ? 'Update Course' : 'Create Course' }}</button>
   </form>
 </div>

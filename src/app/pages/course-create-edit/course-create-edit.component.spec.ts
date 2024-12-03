@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CourseCreateEditComponent } from './course-create-edit.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, of } from 'rxjs';
 
 describe('CourseCreateEditComponent', () => {
   let component: CourseCreateEditComponent;
@@ -10,7 +12,17 @@ describe('CourseCreateEditComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CourseCreateEditComponent],
-      providers: [provideAnimations()],
+      providers: [
+        provideAnimations(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { editMode: false },
+            },
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CourseCreateEditComponent);

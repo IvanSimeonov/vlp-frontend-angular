@@ -1,19 +1,19 @@
 <div class="course">
   <div class="course__stepper">
-    <mat-stepper animationDuration="500" [linear]="true">
-      <!-- <mat-step
+    <mat-stepper animationDuration="500" [linear]="!isEditMode()">
+      <mat-step
         class="course__stepper__course-details"
-        label="Create new course"
+        label="{{ isEditMode() ? 'Edit course' : 'Create new course' }}"
         [completed]="isCourseCreated()"
-        [editable]="false"
-      >
+        [editable]="true">
         @if (!isCourseCreated()) {
           <app-course-create-edit-form
             [topics]="topics()"
-            (createdCourse)="handleCourseCreated($event)"
-          ></app-course-create-edit-form>
+            [isEditMode]="isEditMode()"
+            [courseData]="courseData()"
+            (createdCourse)="handleCourseCreated($event)"></app-course-create-edit-form>
         } @else {
-          <h4>Course was created successfully!</h4>
+          <h4>Course was {{ isEditMode() ? 'updated' : 'created' }} successfully!</h4>
           <button mat-button matStepperNext>Next</button>
         }
       </mat-step>
@@ -21,23 +21,27 @@
         class="course__stepper__course-photo"
         label="Upload course photo"
         [completed]="isPhotoUploaded()"
-        [editable]="isCourseCreated"
-      >
+        [editable]="true">
         @if (!isPhotoUploaded()) {
-          <app-file-upload (fileChange)="handlePhotoUploaded($event)"></app-file-upload>
+          <app-file-upload
+            [isEditMode]="isEditMode()"
+            [fileData]="courseData()?.courseImage"
+            (fileChange)="handlePhotoUploaded($event)"></app-file-upload>
         } @else {
           <h4>Course photo uploaded successfully!</h4>
           <button mat-button matStepperNext>Next</button>
         }
-      </mat-step> -->
+      </mat-step>
       <mat-step
         class="course__stepper__lectures"
         label="Add course lectures"
         [completed]="areLecturesAdded()"
-        [editable]="isCourseCreated">
+        [editable]="true">
         @if (!areLecturesAdded()) {
           <app-lecture-management
             [courseId]="courseId()"
+            [isEditMode]="isEditMode()"
+            [lecturesData]="courseData()?.lectures"
             (addedLectures)="handleLecturesAdded($event)"></app-lecture-management>
         } @else {
           <h4>Lectures are added successfully!</h4>

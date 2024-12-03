@@ -12,12 +12,25 @@ import { UserEditProfileComponent } from './features/user/user-edit-profile/user
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { MyLearningsComponent } from './pages/my-learnings/my-learnings.component';
 import { CourseDetailsComponent } from './pages/course-details/course-details.component';
+import { CourseCreateEditComponent } from './pages/course-create-edit/course-create-edit.component';
 
 export const routes: Routes = [
   {
     path: '',
     title: 'Homepage',
     component: HomepageComponent,
+  },
+  {
+    path: 'courses/create',
+    title: 'Create Course',
+    component: CourseCreateEditComponent,
+    data: { editMode: false },
+  },
+  {
+    path: 'courses/edit/:id',
+    title: 'Edit Course',
+    component: CourseCreateEditComponent,
+    data: { editMode: true },
   },
   {
     path: 'courses',

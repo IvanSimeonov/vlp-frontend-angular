@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -16,15 +16,7 @@ import { RichTextEditorComponent } from '../../../components/rich-text-editor/ri
 import { CdkDropList, CdkDrag, CdkDragDrop, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Validators as NgxEditorValidators } from 'ngx-editor';
-
-export interface ILecture {
-  title: string;
-  description: string;
-  videoUrl: string;
-  assignmentTask: string;
-  sequenceNumber: number;
-  courseId: number;
-}
+import { ILecture } from '../../../pages/course-create-edit/course-create-edit.component';
 
 export interface LectureTypeForm {
   title: FormControl<string>;
@@ -54,12 +46,13 @@ export interface LectureTypeForm {
   templateUrl: './lecture-management.component.html',
   styleUrl: './lecture-management.component.scss',
 })
-export class LectureManagementComponent {
+export class LectureManagementComponent implements OnInit {
   private fb = inject(NonNullableFormBuilder);
   courseId = input.required<number>();
   isFormValid = signal(true);
   isFormSubmitted = false;
-
+  isEditMode = input<boolean>(false);
+  lecturesData = input<ILecture[] | undefined>();
   addedLectures = output<ILecture[]>();
 
   form: FormGroup<{ lectures: FormArray<FormGroup<LectureTypeForm>> }> = this.fb.group({
@@ -72,8 +65,15 @@ export class LectureManagementComponent {
     return this.form.controls.lectures;
   }
 
-  constructor() {
-    this.addLecture();
+  ngOnInit(): void {
+    if (this.isEditMode() && this.lecturesData()) {
+      this.lectures.clear();
+      this.lecturesData()!.forEach((lecture) => {
+        this.addLecture(lecture);
+      });
+    } else {
+      this.addLecture();
+    }
   }
 
   saveLectures() {
@@ -99,22 +99,26 @@ export class LectureManagementComponent {
     }
   }
 
-  addLecture() {
+  addLecture(lecture?: ILecture) {
     const lectureForm: FormGroup<LectureTypeForm> = this.fb.group<LectureTypeForm>({
-      title: this.fb.control('', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]),
-      description: this.fb.control('', [
+      title: this.fb.control(lecture?.title || '', [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(50),
+      ]),
+      description: this.fb.control(lecture?.description || '', [
         NgxEditorValidators.required(),
         NgxEditorValidators.minLength(50),
         NgxEditorValidators.maxLength(500),
       ]),
-      videoUrl: this.fb.control('', [Validators.required]),
-      assignmentTask: this.fb.control('', [
+      videoUrl: this.fb.control(lecture?.videoUrl || '', [Validators.required]),
+      assignmentTask: this.fb.control(lecture?.assignmentTask || '', [
         NgxEditorValidators.required(),
         NgxEditorValidators.minLength(50),
         NgxEditorValidators.maxLength(500),
       ]),
-      sequenceNumber: this.fb.control(this.lectures.length + 1, Validators.required),
-      courseId: this.fb.control(0, Validators.required),
+      sequenceNumber: this.fb.control(lecture?.sequenceNumber || this.lectures.length + 1, Validators.required),
+      courseId: this.fb.control(lecture?.courseId || this.courseId(), Validators.required),
     });
     this.lectures.push(lectureForm);
     this.initializeErrorSignals(lectureForm, this.lectures.length - 1);

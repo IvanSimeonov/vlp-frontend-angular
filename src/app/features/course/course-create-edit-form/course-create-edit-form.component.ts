@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output, signal, WritableSignal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,16 +11,7 @@ import { NgxEditorModule } from 'ngx-editor';
 import { merge } from 'rxjs';
 import { Validators as NgxEditorValidators } from 'ngx-editor';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
-
-export interface ICourse {
-  title?: string;
-  shortDescription?: string;
-  fullDescription?: string;
-  requirements?: string;
-  passingScore?: number;
-  topic?: string;
-  difficultyLevel?: string;
-}
+import { ICourseDetails } from '../../../pages/course-create-edit/course-create-edit.component';
 
 export interface ITopic {
   id?: number;
@@ -52,11 +43,13 @@ export enum DifficultyLevel {
   templateUrl: './course-create-edit-form.component.html',
   styleUrl: './course-create-edit-form.component.scss',
 })
-export class CourseCreateEditFormComponent {
+export class CourseCreateEditFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   difficultyLevels = Object.values(DifficultyLevel);
   topics = input<ITopic[]>();
-  createdCourse = output<ICourse>();
+  isEditMode = input<boolean>(false);
+  courseData = input<ICourseDetails | null>(null);
+  createdCourse = output<ICourseDetails>();
   titleErrorMsg = signal('');
   shortDescriptionErrorMsg = signal('');
   passingScoreErrorMsg = signal('');
@@ -75,9 +68,23 @@ export class CourseCreateEditFormComponent {
       [NgxEditorValidators.required(), NgxEditorValidators.minLength(50), NgxEditorValidators.maxLength(500)],
     ],
     passingScore: [0, [Validators.required, Validators.min(50), Validators.max(100)]],
-    topic: ['', [Validators.required]],
-    difficultyLevel: ['', [Validators.required]],
+    topic: [0, [Validators.required]],
+    difficultyLevel: [DifficultyLevel.BEGINNER, [Validators.required]],
   });
+
+  ngOnInit(): void {
+    if (this.isEditMode() && this.courseData()) {
+      this.courseForm.patchValue({
+        title: this.courseData()?.title,
+        shortDescription: this.courseData()?.shortDescription,
+        passingScore: this.courseData()?.passingScore,
+        topic: 1,
+        difficultyLevel: this.courseData()?.difficultyLevel,
+        requirements: this.courseData()?.requirements,
+        fullDescription: this.courseData()?.fullDescription,
+      });
+    }
+  }
 
   constructor() {
     this.initErrorSubscriptions();
