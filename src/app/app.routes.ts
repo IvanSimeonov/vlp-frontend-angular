@@ -48,7 +48,7 @@ export const routes: Routes = [
     component: MyLearningsComponent,
   },
   {
-    path: 'user/public-profile',
+    path: 'user/:id/profile',
     title: 'Public Profile',
     component: UserPublicProfileComponent,
   },

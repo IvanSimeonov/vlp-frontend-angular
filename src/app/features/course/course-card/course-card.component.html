@@ -1,9 +1,19 @@
-<mat-card class="course-card">
+<mat-card class="course-card" (click)="openCourseDetails()">
   <img
     mat-card-image
     class="course-card__img"
     [src]="course?.image || '/images/course-default-img.jpeg'"
     alt="Course Image" />
+  @if (isUserCourseOwner) {
+    <div class="course-card__actions">
+      <button mat-mini-fab class="course-card__actions__edit-btn" (click)="editCourse()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-mini-fab class="course-card__actions__delete-btn" (click)="deleteCourse()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  }
   <mat-card-content>
     <h3 class="course-card__title">{{ course?.title || '' }}</h3>
     <p class="course-card__description">{{ course?.description || '' }}</p>

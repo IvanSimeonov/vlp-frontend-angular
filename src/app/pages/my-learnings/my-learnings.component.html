@@ -21,7 +21,7 @@
           <mat-tab [label]="'Created Courses (' + user.createdCourses?.length + ')'">
             <div class="learnings__content__courses__created">
               @for (course of user.createdCourses; track $index) {
-                <app-course-card [course]="course"></app-course-card>
+                <app-course-card [course]="course" [isUserCourseOwner]="true"></app-course-card>
               }
             </div>
             <mat-paginator

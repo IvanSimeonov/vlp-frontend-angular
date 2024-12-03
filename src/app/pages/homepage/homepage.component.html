@@ -29,7 +29,8 @@
           <app-course-card
             [style.transform]="getTransform()"
             class="featured-courses__container__viewport__card"
-            [course]="course"></app-course-card>
+            [course]="course"
+            (click)="navigateToCourseDetails(course.id!)"></app-course-card>
         }
       </div>
 
@@ -51,7 +52,7 @@
         <img [src]="teacher.photo" [alt]="teacher.name" class="homepage-teachers__card__photo" />
         <h3 class="homepage-teachers__card__name">{{ teacher.name }}</h3>
         <p class="homepage-teachers__card__bio">{{ teacher.bio }}</p>
-        <button mat-stroked-button color="primary" (click)="navigateToCourses()">Browse Courses</button>
+        <button mat-stroked-button color="primary" (click)="navigateToTeacherProfile(teacher.id)">View Profile</button>
       </div>
     </div>
   </section>

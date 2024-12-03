@@ -96,6 +96,7 @@ export class MyLearningsComponent {
     ],
     createdCourses: [
       {
+        id: 1,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -104,6 +105,7 @@ export class MyLearningsComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 2,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
@@ -112,6 +114,7 @@ export class MyLearningsComponent {
         author: 'Ivan Simeonov',
       },
       {
+        id: 3,
         title: 'The Complete Python Bootcamp From Zero to Hero in Python',
         difficultyLevel: 'ADVANCED',
         image: '/images/innovation_3.jpg',
