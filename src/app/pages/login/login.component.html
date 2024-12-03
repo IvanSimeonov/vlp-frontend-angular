@@ -20,9 +20,9 @@
           <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
       </mat-form-field>
-      <a href="#" class="login__forgot">Forgot your password?</a>
+      <a routerLink="/reset-password" class="login__forgot">Forgot your password?</a>
       <button class="login__btn" type="submit" mat-flat-button aria-label="Sign In">Sign In</button>
-      <p class="login__register">Don't have an account yet?<a href="#"> Register now!</a></p>
+      <p class="login__register">Don't have an account yet?<a routerLink="/register"> Register now!</a></p>
     </div>
   </div>
 </main>
