@@ -1,4 +1,4 @@
-.topic-dialog-layout {
+.topic-dialog {
   display: flex;
   flex-direction: column;
   padding: 1rem;
@@ -15,12 +15,11 @@
     flex-direction: column;
     row-gap: 1rem;
 
-    &__title,
-    &__description {
+    &__field {
       margin: 0;
     }
 
-    &__btns {
+    &__actions {
       display: flex;
       justify-content: space-between;
     }

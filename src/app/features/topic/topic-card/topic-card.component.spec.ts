@@ -13,6 +13,12 @@ describe('TopicCardComponent', () => {
 
     fixture = TestBed.createComponent(TopicCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('topic', {
+      id: 1,
+      title: 'Dummy Topic Title',
+      description: 'Dummy Topic Description',
+      coursesAmount: 55,
+    });
     fixture.detectChanges();
   });
 

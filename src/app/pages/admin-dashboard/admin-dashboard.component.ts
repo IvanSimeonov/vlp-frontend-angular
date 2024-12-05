@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { ITopic } from '../../features/topic/topic-management/topic-management.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -12,6 +11,13 @@ interface TeacherAccessRequest {
   firstName: string;
   lastName: string;
   email: string;
+}
+
+interface ITopic {
+  id?: number;
+  title?: string;
+  description?: string;
+  totalCourses?: number;
 }
 
 @Component({

@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ITopic } from '../topic-management/topic-management.component';
+import { Component, computed, input, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TopicOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 @Component({
   selector: 'app-topic-card',
@@ -12,13 +12,19 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './topic-card.component.scss',
 })
 export class TopicCardComponent {
-  @Input() topic: ITopic = {};
-  @Output() edit = new EventEmitter<ITopic>();
+  topic = input.required<TopicOverviewDto>();
+  edit = output<TopicOverviewDto>();
+  delete = output<number>();
 
-  isCourseAssigned() {
-    if (this.topic && this.topic.totalCourses) {
-      return this.topic.totalCourses > 0;
+  isCourseAssigned = computed(() => (this.topic()?.coursesAmount ?? 0) > 0);
+
+  onEdit() {
+    this.edit.emit(this.topic());
+  }
+
+  onDelete() {
+    if (this.topic()?.id) {
+      this.delete.emit(this.topic().id!);
     }
-    return false;
   }
 }

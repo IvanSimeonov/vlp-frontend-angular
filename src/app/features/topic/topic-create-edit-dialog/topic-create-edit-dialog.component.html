@@ -1,21 +1,21 @@
-<div class="topic-dialog-layout">
-  <h1 class="topic-dialog-layout__title">{{ data ? 'Edit Topic' : 'Create New Topic' }}</h1>
-  <form class="topic-dialog-layout__form" [formGroup]="topicForm" (ngSubmit)="onSubmit()">
-    <mat-form-field class="topic-dialog-layout__form__title" appearance="outline">
+<div class="topic-dialog">
+  <h1 class="topic-dialog__title">{{ isEditMode() ? 'Edit Topic' : 'Create New Topic' }}</h1>
+  <form class="topic-dialog__form" [formGroup]="topicForm" (ngSubmit)="onSubmit()">
+    <mat-form-field class="topic-dialog__form__field" appearance="outline">
       <mat-label>Title</mat-label>
-      <input matInput formControlName="title" (blur)="markAsTouched('title')" />
-      @if (topicForm.get('title')!.invalid) {
+      <input matInput formControlName="title" (blur)="markAsTouched('title')" aria-label="Topic Title" />
+      @if (topicForm.controls.title.invalid) {
         <mat-error>{{ titleErrorMsg() }}</mat-error>
       }
     </mat-form-field>
-    <mat-form-field class="topic-dialog-layout__form__description" appearance="outline">
+    <mat-form-field class="topic-dialog__form__field" appearance="outline">
       <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description" rows="3"></textarea>
+      <textarea matInput formControlName="description" rows="3" aria-label="Topic Description"></textarea>
     </mat-form-field>
 
-    <div class="topic-dialog-layout__form__btns">
+    <div class="topic-dialog__form__actions">
       <button mat-flat-button type="submit" [disabled]="topicForm.invalid">
-        {{ data ? 'Update Topic' : 'Create Topic' }}
+        {{ isEditMode() ? 'Update Topic' : 'Create Topic' }}
       </button>
       <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
     </div>

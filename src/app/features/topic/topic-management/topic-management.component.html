@@ -2,7 +2,7 @@
   <div class="topic-management-layout__header">
     <h4 class="topic-management-layout__title">Topic Management</h4>
     <div class="topic-management-layout__new"></div>
-    <button mat-flat-button type="button" (click)="openDialog()">Add Topic</button>
+    <button mat-flat-button type="button" (click)="openCreateDialog()">Add Topic</button>
   </div>
   <div class="topic-management-layout__actions">
     <div class="topic-management-layout__actions__search">
@@ -11,35 +11,22 @@
         appearance="outline"
         class="topic-management-layout__actions__search__field">
         <mat-label>Search by title</mat-label>
-        <input matInput [(ngModel)]="title" placeholder="Search by title" />
+        <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Search by title" />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
     </div>
     <div class="topic-management-layout__actions__spacer"></div>
-    <div class="topic-management-layout__actions__results">{{ topics.length }} total results</div>
+    <div class="topic-management-layout__actions__results">{{ (topics$ | async)?.length }} total results</div>
+
     <div class="topic-management-layout__actions__sort-btn">
       <mat-form-field subscriptSizing="dynamic" appearance="outline">
         <mat-label class="topic-management-layout__actions__sort-btn__label">
           <mat-icon> sort </mat-icon>
           <span>Sort By</span>
         </mat-label>
-        <mat-select>
-          <mat-option value="option1">
-            Title
-            <mat-icon>arrow_upward</mat-icon>
-          </mat-option>
-          <mat-option value="option2">
-            Title
-            <mat-icon>arrow_downward</mat-icon>
-          </mat-option>
-          <mat-option value="option1">
-            Courses
-            <mat-icon>arrow_upward</mat-icon>
-          </mat-option>
-          <mat-option value="option2">
-            Courses
-            <mat-icon>arrow_downward</mat-icon>
-          </mat-option>
+        <mat-select (selectionChange)="onSortChange($event)">
+          <mat-option value="title:asc"> Title: A-Z </mat-option>
+          <mat-option value="title:desc"> Title: Z-A </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -49,16 +36,19 @@
       <mat-spinner></mat-spinner>
     } @else {
       <div class="topic-management-layout__content__cards">
-        @for (topic of topics; let idx = $index; track idx) {
-          <app-topic-card [topic]="topic" (edit)="openDialog(topic)"></app-topic-card>
+        @for (topic of topics$ | async; let idx = $index; track idx) {
+          <app-topic-card
+            [topic]="topic"
+            (edit)="openEditDialog(topic)"
+            (delete)="deleteTopic(topic.id!)"></app-topic-card>
         }
       </div>
       <mat-paginator
         class="topic-management-layout__content__paginator"
-        [length]="topics.length"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[10, 25, 50, 100]"
-        (page)="paginate($event)"></mat-paginator>
+        [length]="(totalTopics$ | async) || 0"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"></mat-paginator>
     }
   </div>
 </div>

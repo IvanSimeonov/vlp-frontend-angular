@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -32,6 +32,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@ivannicksim/vlp-backend-openapi-client": "^0.0.6",
     "@swimlane/ngx-charts": "^21.0.0",
     "ngx-editor": "^18.0.0",
     "rxjs": "~7.8.0",

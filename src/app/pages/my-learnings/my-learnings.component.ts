@@ -5,7 +5,6 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CourseCardComponent, ICourse } from '../../features/course/course-card/course-card.component';
 import { CourseFilterBarComponent } from '../../features/course/course-filter-bar/course-filter-bar.component';
-import { ITopic } from '../../features/topic/topic-management/topic-management.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CourseRateDialogComponent } from '../../features/course/course-rate-dialog/course-rate-dialog.component';
 
@@ -19,6 +18,13 @@ interface IUser {
   enrolledCourses?: ICourse[];
   createdCourses?: ICourse[];
   completedCourses?: ICourse[];
+}
+
+interface ITopic {
+  id?: number;
+  title?: string;
+  description?: string;
+  totalCourses?: number;
 }
 
 @Component({
