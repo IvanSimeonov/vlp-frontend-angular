@@ -6,18 +6,19 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import {
+  AdminControllerService,
+  CourseAnalyticsDto,
+  CourseControllerService,
+  TopicAnalyticsDto,
+  TopicControllerService,
+  UserAnalyticsDto,
+} from '@ivannicksim/vlp-backend-openapi-client';
 
 interface TeacherAccessRequest {
   firstName: string;
   lastName: string;
   email: string;
-}
-
-interface ITopic {
-  id?: number;
-  title?: string;
-  description?: string;
-  totalCourses?: number;
 }
 
 @Component({
@@ -29,6 +30,10 @@ interface ITopic {
 })
 export class AdminDashboardComponent implements OnInit, AfterViewInit {
   private router = inject(Router);
+  private courseService = inject(CourseControllerService);
+  private adminService = inject(AdminControllerService);
+  private topicService = inject(TopicControllerService);
+
   displayedColumns: string[] = ['firstName', 'lastName', 'email', 'actions'];
   dataSource!: MatTableDataSource<TeacherAccessRequest>;
 
@@ -41,87 +46,27 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
     { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
     { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
-  ];
-  topics: ITopic[] = [
-    {
-      id: 1,
-      title: 'Software Development',
-      description: 'Learn programming languages and tools to build efficient software solutions.',
-      totalCourses: 5,
-    },
-    {
-      id: 2,
-      title: 'Science',
-      description: 'Explore major scientific disciplines and discover how science explains our world.',
-      totalCourses: 4,
-    },
-    {
-      id: 3,
-      title: 'Business',
-      description: 'Master essential business skills from management to finance for organizational success.',
-      totalCourses: 4,
-    },
-    {
-      id: 4,
-      title: 'Engineering',
-      description: 'Study engineering principles and technologies across various engineering fields.',
-      totalCourses: 3,
-    },
-    {
-      id: 5,
-      title: 'Personal Development',
-      description: 'Develop life skills, productivity habits, and strategies for personal growth.',
-      totalCourses: 4,
-    },
-    {
-      id: 6,
-      title: 'Design',
-      description: 'Learn visual design principles and tools for creating compelling digital content.',
-      totalCourses: 2,
-    },
-    {
-      id: 7,
-      title: 'Health & Wellness',
-      description: 'Discover practices for improving physical and mental well-being.',
-      totalCourses: 2,
-    },
+    { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+    { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+    { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+    { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+    { firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
   ];
 
-  coursesPerTopicData = this.topics.map((topic) => ({
-    name: topic.title,
-    value: topic.totalCourses,
-  }));
-
-  teacherRequests = [
-    { name: 'Alice', email: 'alice@example.com' },
-    { name: 'Bob', email: 'bob@example.com' },
-  ];
-
-  userAnalyticsData = [
-    { name: 'Active Users', value: 155 },
-    { name: 'Students', value: 120 },
-    { name: 'Teachers', value: 30 },
-    { name: 'Admins', value: 5 },
-  ];
-
-  courseAnalyticsData = [
-    { name: 'Published', value: 40 },
-    { name: 'Draft', value: 60 },
-  ];
-
-  colorScheme = { domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'] };
+  userAnalyticsData: { name?: string; value?: number }[] = [];
+  courseAnalyticsData: { name?: string; value?: number }[] = [];
+  topicAnalyticsData: { name?: string; value?: number }[] = [];
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource(this.teacherAccessRequests);
+    this.fetchCourseAnalyticsData();
+    this.fetchUserAnalyticsData();
+    this.fetchTopicAnalyticsData();
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  navigateTo(route: string): void {
-    this.router.navigate([route]);
   }
 
   approveRequest(email: string): void {
@@ -132,5 +77,36 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   denyRequest(email: string): void {
     // TODO: Add API call
     console.log('Deny Request User Email:', email);
+  }
+
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  private fetchCourseAnalyticsData() {
+    this.courseService.getCourseAnalytics().subscribe((result: CourseAnalyticsDto[]) => {
+      this.courseAnalyticsData = result.map((res) => ({
+        name: res.difficultyLevel,
+        value: res.totalCourses,
+      }));
+    });
+  }
+
+  private fetchUserAnalyticsData() {
+    this.adminService.getUserAnalytics().subscribe((result: UserAnalyticsDto[]) => {
+      this.userAnalyticsData = result.map((res) => ({
+        name: res.userGroup,
+        value: res.totalUsers,
+      }));
+    });
+  }
+
+  private fetchTopicAnalyticsData() {
+    this.topicService.getTopicAnalytics().subscribe((result: TopicAnalyticsDto[]) => {
+      this.topicAnalyticsData = result.map((res) => ({
+        name: res.title,
+        value: res.totalCourses,
+      }));
+    });
   }
 }

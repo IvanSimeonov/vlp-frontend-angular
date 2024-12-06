@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdminDashboardComponent } from './admin-dashboard.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -10,7 +11,7 @@ describe('AdminDashboardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AdminDashboardComponent],
-      providers: [provideAnimations()],
+      providers: [provideAnimations(), provideHttpClient()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminDashboardComponent);

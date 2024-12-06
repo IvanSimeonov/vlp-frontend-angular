@@ -93,10 +93,10 @@ export class TopicManagementComponent implements OnInit {
 
   deleteTopic(topicId: number) {
     this.topicStateService.deleteTopic(topicId);
+    this.fetchTopics();
   }
 
   fetchTopics(): void {
-    console.log('Fetch');
     this.isLoading.set(true);
     this.topicStateService.getAllTopics(
       this.pageNumber(),
@@ -109,7 +109,6 @@ export class TopicManagementComponent implements OnInit {
   }
 
   onPageChange(event: PageEvent): void {
-    console.log('PAge event: ', event);
     this.pageNumber.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
     this.fetchTopics();
@@ -123,7 +122,6 @@ export class TopicManagementComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    console.log('Search changed');
     this.pageNumber.set(0);
     this.searchSubject.next(this.searchTerm());
   }
