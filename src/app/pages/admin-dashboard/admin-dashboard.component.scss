@@ -1,23 +1,21 @@
 .dashboard {
   display: grid;
   grid-template-areas:
-    'users users courses courses'
-    'topics topics topics requests';
+    'users courses'
+    'topics requests';
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 2rem;
   padding: 2rem 3rem;
+  margin: 0 auto;
   box-sizing: border-box;
 
   &__topics {
     grid-area: topics;
-
-    &__chart {
-      min-height: 250px;
-    }
   }
 
   &__users {
     grid-area: users;
-
     &__header {
       button {
         margin-right: 25px;
@@ -27,6 +25,20 @@
 
   &__requests {
     grid-area: requests;
+    position: relative;
+    &__spinner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.15);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1rem;
+    }
   }
 
   &__courses {
@@ -41,6 +53,18 @@
     flex-direction: column;
     padding: 2rem;
     border-radius: 1rem;
+  }
+
+  &__topics__chart,
+  &__users__chart,
+  &__courses__chart,
+  &__requests__chart {
+    min-height: 150px;
+  }
+
+  &__topics__chart,
+  &__requests__chart {
+    min-height: 300px;
   }
 
   &__users__header,
@@ -67,6 +91,20 @@
       'topics'
       'requests';
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
+
+    &__topics__chart {
+      min-height: 350px;
+    }
+
+    &__courses__chart,
+    &__requests__chart {
+      min-height: 200px;
+    }
+
+    &__users__chart {
+      min-height: 150px;
+    }
   }
 
   @media (max-width: 768px) {
@@ -78,16 +116,19 @@
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 1rem;
-  }
 
-  &__topics__chart,
-  &__users__chart,
-  &__courses__chart,
-  &__requests__chart {
-    min-height: 200px;
+    &__topics,
+    &__users,
+    &__courses,
+    &__requests {
+      min-height: 300px;
+      width: 100%;
+      overflow: scroll;
+    }
   }
+}
 
-  .hidden {
-    display: none;
-  }
+.dashboard__requests__table--loading {
+  opacity: 0.6;
+  pointer-events: none;
 }
