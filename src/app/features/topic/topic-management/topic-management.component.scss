@@ -10,6 +10,7 @@ $result-bg-color-white: #fff;
 .topic-management-layout {
   display: flex;
   flex-direction: column;
+  position: relative;
   padding: 2rem 3rem;
   row-gap: 1.5rem;
 
@@ -44,6 +45,20 @@ $result-bg-color-white: #fff;
     }
   }
 
+  &__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+  }
+
   &__content {
     display: flex;
     flex-direction: column;
@@ -51,12 +66,99 @@ $result-bg-color-white: #fff;
 
     &__cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-rows: auto auto;
       gap: 1rem;
     }
 
     &__divider {
       margin: 1rem 0;
+    }
+  }
+}
+
+.topic-management-layout--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .topic-management-layout {
+    &__actions {
+      display: flex;
+      justify-content: space-between;
+
+      &__spacer {
+        display: none;
+      }
+
+      &__search__field {
+        width: 100%;
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      &__cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .topic-management-layout {
+    &__header {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &__actions {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+
+      &__spacer {
+        display: none;
+      }
+
+      &__search {
+        width: 100%;
+
+        &__field {
+          width: 100%;
+        }
+      }
+
+      &__results {
+        width: 100%;
+      }
+
+      &__sort-btn {
+        width: 100%;
+
+        mat-form-field {
+          width: 100%;
+        }
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      &__cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 0 auto;
+      }
     }
   }
 }

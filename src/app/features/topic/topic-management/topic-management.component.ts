@@ -12,9 +12,13 @@ import { TopicCreateEditDialogComponent } from '../topic-create-edit-dialog/topi
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { TopicCreateDto, TopicOverviewDto, TopicUpdateDto } from '@ivannicksim/vlp-backend-openapi-client';
-import { TopicStateService } from '../../../services/topic/topic-state.service';
-import { BehaviorSubject, debounceTime } from 'rxjs';
+import {
+  TopicControllerService,
+  TopicCreateDto,
+  TopicOverviewDto,
+  TopicUpdateDto,
+} from '@ivannicksim/vlp-backend-openapi-client';
+import { debounceTime, delay, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-topic-management',
@@ -39,22 +43,45 @@ import { BehaviorSubject, debounceTime } from 'rxjs';
 })
 export class TopicManagementComponent implements OnInit {
   private dialog = inject(MatDialog);
-  private topicStateService = inject(TopicStateService);
-  private searchSubject = new BehaviorSubject<string>('');
+  private topicService = inject(TopicControllerService);
+  private searchSubject = new Subject<string>();
 
-  topics$ = this.topicStateService.topics$;
-  totalTopics$ = this.topicStateService.totalTopics$;
-  isLoading = signal(false);
-
-  pageNumber = signal(0);
-  pageSize = signal(5);
-  sortBy = signal('title');
-  sortDirection = signal('asc');
-  searchTerm = signal('');
+  topics = signal<TopicOverviewDto[]>([]);
+  totalTopics = signal<number>(0);
+  isLoading = signal<boolean>(false);
+  searchTerm = '';
+  paginationSortingFiltering = signal({
+    pageNumber: 0,
+    pageSize: 5,
+    sortBy: 'title',
+    sortDirection: 'asc',
+    searchTerm: '',
+  });
 
   ngOnInit(): void {
-    this.searchSubject.pipe(debounceTime(300)).subscribe(() => this.fetchTopics());
+    this.searchSubject.pipe(debounceTime(300)).subscribe((searchValue) => {
+      this.performSearch(searchValue);
+    });
     this.fetchTopics();
+  }
+
+  fetchTopics(): void {
+    this.isLoading.set(true);
+    const { pageNumber, pageSize, sortBy, sortDirection, searchTerm } = this.paginationSortingFiltering();
+    this.topicService
+      .getAllTopics(pageNumber, pageSize, sortBy, sortDirection, searchTerm)
+      .pipe(delay(300))
+      .subscribe({
+        next: (res) => {
+          this.topics.set(res.content || []);
+          this.totalTopics.set(res.totalElements || 0);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error: ', err);
+          this.isLoading.set(false);
+        },
+      });
   }
 
   openEditDialog(topic: TopicOverviewDto) {
@@ -68,8 +95,17 @@ export class TopicManagementComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((result: TopicUpdateDto) => {
+        this.isLoading.set(true);
         if (result) {
-          this.topicStateService.updateTopic(result);
+          this.topicService
+            .updateTopic(result.id, result)
+            .pipe(delay(300))
+            .subscribe({
+              next: () => this.handleRequestSuccess(),
+              error: (err) => this.handleRequestError(err),
+            });
+        } else {
+          this.isLoading.set(false);
         }
       });
   }
@@ -85,44 +121,72 @@ export class TopicManagementComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((result: TopicCreateDto) => {
+        this.isLoading.set(true);
         if (result) {
-          this.topicStateService.addTopic(result);
+          this.topicService
+            .createTopic(result)
+            .pipe(delay(300))
+            .subscribe({
+              next: () => this.handleRequestSuccess(),
+              error: (err) => this.handleRequestError(err),
+            });
+        } else {
+          this.isLoading.set(false);
         }
       });
   }
 
   deleteTopic(topicId: number) {
-    this.topicStateService.deleteTopic(topicId);
-    this.fetchTopics();
-  }
-
-  fetchTopics(): void {
     this.isLoading.set(true);
-    this.topicStateService.getAllTopics(
-      this.pageNumber(),
-      this.pageSize(),
-      this.sortBy(),
-      this.sortDirection(),
-      this.searchTerm()
-    );
-    this.isLoading.set(false);
+    this.topicService
+      .deleteTopicById(topicId)
+      .pipe(delay(300))
+      .subscribe({
+        next: () => this.handleRequestSuccess(),
+        error: (err) => this.handleRequestError(err),
+      });
   }
 
   onPageChange(event: PageEvent): void {
-    this.pageNumber.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      pageNumber: event.pageIndex,
+      pageSize: event.pageSize,
+    }));
     this.fetchTopics();
   }
 
   onSortChange(event: MatSelectChange): void {
     const [sortBy, sortDirection] = event.value.split(':');
-    this.sortBy.set(sortBy);
-    this.sortDirection.set(sortDirection);
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      pageNumber: 0,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+    }));
     this.fetchTopics();
   }
 
   onSearchChange(): void {
-    this.pageNumber.set(0);
-    this.searchSubject.next(this.searchTerm());
+    this.searchSubject.next(this.searchTerm);
+  }
+
+  private performSearch(searchTerm: string) {
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      searchTerm,
+      pageNumber: 0,
+    }));
+    this.fetchTopics();
+  }
+
+  private handleRequestSuccess() {
+    this.isLoading.set(false);
+    this.fetchTopics();
+  }
+
+  private handleRequestError(err: Error) {
+    this.isLoading.set(false);
+    console.error('Error: ', err);
   }
 }

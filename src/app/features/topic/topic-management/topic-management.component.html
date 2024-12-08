@@ -1,4 +1,4 @@
-<div class="topic-management-layout">
+<div class="topic-management-layout" [ngClass]="{ 'topic-management-layout--loading': isLoading() }">
   <div class="topic-management-layout__header">
     <h4 class="topic-management-layout__title">Topic Management</h4>
     <div class="topic-management-layout__new"></div>
@@ -16,7 +16,7 @@
       </mat-form-field>
     </div>
     <div class="topic-management-layout__actions__spacer"></div>
-    <div class="topic-management-layout__actions__results">{{ (topics$ | async)?.length }} total results</div>
+    <div class="topic-management-layout__actions__results">{{ topics().length }} total results</div>
 
     <div class="topic-management-layout__actions__sort-btn">
       <mat-form-field subscriptSizing="dynamic" appearance="outline">
@@ -31,24 +31,26 @@
       </mat-form-field>
     </div>
   </div>
-  <div class="topic-management-layout__content">
-    @if (isLoading()) {
+  @if (isLoading()) {
+    <div class="topic-management-layout__spinner">
       <mat-spinner></mat-spinner>
-    } @else {
-      <div class="topic-management-layout__content__cards">
-        @for (topic of topics$ | async; let idx = $index; track idx) {
-          <app-topic-card
-            [topic]="topic"
-            (edit)="openEditDialog(topic)"
-            (delete)="deleteTopic(topic.id!)"></app-topic-card>
-        }
-      </div>
-      <mat-paginator
-        class="topic-management-layout__content__paginator"
-        [length]="(totalTopics$ | async) || 0"
-        [pageSize]="pageSize()"
-        [pageSizeOptions]="[5, 10, 25, 50]"
-        (page)="onPageChange($event)"></mat-paginator>
-    }
+    </div>
+  }
+  <div class="topic-management-layout__content">
+    <div class="topic-management-layout__content__cards">
+      @for (topic of topics(); let idx = $index; track idx) {
+        <app-topic-card
+          [topic]="topic"
+          (edit)="openEditDialog(topic)"
+          (delete)="deleteTopic(topic.id!)"></app-topic-card>
+      }
+    </div>
+    <mat-paginator
+      class="topic-management-layout__content__paginator"
+      [length]="totalTopics() || 0"
+      [pageIndex]="paginationSortingFiltering().pageNumber"
+      [pageSize]="paginationSortingFiltering().pageSize"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"></mat-paginator>
   </div>
 </div>
