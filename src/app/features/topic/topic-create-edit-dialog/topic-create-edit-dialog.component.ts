@@ -1,5 +1,5 @@
 import { Component, inject, Inject, OnInit, signal } from '@angular/core';
-import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -27,11 +27,10 @@ import { TopicCreateDto, TopicUpdateDto } from '@ivannicksim/vlp-backend-openapi
 export class TopicCreateEditDialogComponent implements OnInit {
   private fb = inject(NonNullableFormBuilder);
   isEditMode = signal(false);
-  titleErrorMsg = signal('');
-
+  errorMessages = signal<Record<string, string>>({});
   topicForm = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(5)]],
-    description: [''],
+    title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
+    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(100)]],
   });
 
   constructor(
@@ -39,9 +38,14 @@ export class TopicCreateEditDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: TopicUpdateDto | null
   ) {
     this.isEditMode.set(!!data);
-    merge(this.topicForm.controls.title.statusChanges, this.topicForm.controls.title.valueChanges)
+    merge(
+      this.topicForm.controls.title.statusChanges,
+      this.topicForm.controls.title.valueChanges,
+      this.topicForm.controls.description.statusChanges,
+      this.topicForm.controls.description.valueChanges
+    )
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateErrorMsg());
+      .subscribe(() => this.updateErrorMessages());
   }
 
   ngOnInit(): void {
@@ -81,14 +85,22 @@ export class TopicCreateEditDialogComponent implements OnInit {
     }
   }
 
-  updateErrorMsg() {
-    const titleControl = this.topicForm.controls.title;
-    this.titleErrorMsg.set(
-      titleControl.hasError('required')
-        ? 'Enter valid topic title.'
-        : titleControl.hasError('minlength')
-          ? 'Title must be at least 5 characters long.'
-          : ''
-    );
+  private updateErrorMessages() {
+    const controls = this.topicForm.controls;
+
+    this.errorMessages.set({
+      title: this.getErrorMessage(controls.title, 'Title', 5, 50),
+      description: this.getErrorMessage(controls.description, 'Description', 10, 100),
+    });
+  }
+
+  private getErrorMessage(control: FormControl, fieldName: string, minLength: number, maxLength: number): string {
+    if (control.hasError('required')) {
+      return `Enter valid ${fieldName.toLowerCase()}.`;
+    }
+    if (control.hasError('minlength') || control.hasError('maxlength')) {
+      return `${fieldName} must be between ${minLength} and ${maxLength} characters long.`;
+    }
+    return '';
   }
 }
