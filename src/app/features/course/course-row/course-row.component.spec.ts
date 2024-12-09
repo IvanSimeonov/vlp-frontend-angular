@@ -13,6 +13,7 @@ describe('CourseRowComponent', () => {
 
     fixture = TestBed.createComponent(CourseRowComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('course', {});
     fixture.detectChanges();
   });
 

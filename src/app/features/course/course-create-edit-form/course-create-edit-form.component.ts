@@ -12,6 +12,7 @@ import { merge } from 'rxjs';
 import { Validators as NgxEditorValidators } from 'ngx-editor';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
 import { ICourseDetails } from '../../../pages/course-create-edit/course-create-edit.component';
+import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 
 export interface ITopic {
   id?: number;
@@ -102,16 +103,7 @@ export class CourseCreateEditFormComponent implements OnInit {
   }
 
   formatDifficultyLevel(difficulyLevel: DifficultyLevel): string {
-    switch (difficulyLevel) {
-      case DifficultyLevel.BEGINNER:
-        return 'Beginner';
-      case DifficultyLevel.INTERMEDIATE:
-        return 'Intermediate';
-      case DifficultyLevel.ADVANCED:
-        return 'Advanced';
-      default:
-        return difficulyLevel;
-    }
+    return EnumUtils.formatDifficultyLevel(difficulyLevel);
   }
 
   private initErrorSubscriptions(): void {

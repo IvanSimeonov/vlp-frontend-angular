@@ -21,6 +21,7 @@
 
       &__subtitle,
       &__author,
+      &__difficulty,
       &__students {
         font-size: 0.9rem;
         font-weight: 400;
@@ -43,10 +44,50 @@
     &__actions {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      align-items: flex-end;
       min-width: 125px;
-      align-items: stretch;
       gap: 1rem;
+
+      mat-icon {
+        color: #343dff;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .course-layout {
+    display: flex;
+    flex-direction: column;
+    &__content__layout {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      &__spacer {
+        display: none;
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+
+      &__layout__subtitle,
+      &__layout__title {
+        text-align: center;
+      }
+
+      &__filters {
+        position: relative;
+      }
+
+      &__actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
   }
 }

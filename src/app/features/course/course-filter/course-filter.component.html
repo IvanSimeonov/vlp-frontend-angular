@@ -1,36 +1,45 @@
-<div class="course-filter">
+<div class="course-filter" [formGroup]="filterForm">
   <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
     <mat-label>Course Title</mat-label>
-    <input matInput [(ngModel)]="title" placeholder="Search by title" />
+    <input matInput formControlName="title" placeholder="Search by title" />
   </mat-form-field>
 
   <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
     <mat-label>Author</mat-label>
-    <input matInput [(ngModel)]="author" placeholder="Search by author" />
+    <input matInput formControlName="author" placeholder="Search by author" />
   </mat-form-field>
 
   <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
-    <mat-label>Difficulty</mat-label>
-    <mat-select [(ngModel)]="selectedDifficulty">
+    <mat-label>Topic</mat-label>
+    <mat-select formControlName="topic">
       <mat-option value="">All</mat-option>
-      <mat-option *ngFor="let level of difficultyLevels" [value]="level">
-        {{ level }}
+      <mat-option *ngFor="let topic of topics()" [value]="topic.title">
+        {{ topic.title }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
-    <mat-label>Topic</mat-label>
-    <mat-select [(ngModel)]="selectedTopic">
+    <mat-label>Difficulty</mat-label>
+    <mat-select formControlName="difficulty">
       <mat-option value="">All</mat-option>
-      <mat-option *ngFor="let topic of topics" [value]="topic">
-        {{ topic }}
+      <mat-option *ngFor="let level of difficultyLevels" [value]="level">
+        {{ formatDifficultyLevel(level) }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status">
+      <mat-option value="">All</mat-option>
+      <mat-option *ngFor="let status of statuses" [value]="status">
+        {{ formatStatus(status) }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
   <div class="course-filter__actions">
-    <button mat-button color="primary" (click)="onFilter()">Apply Filters</button>
     <button mat-button color="warn" (click)="onReset()">Reset</button>
   </div>
 </div>

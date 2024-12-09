@@ -19,3 +19,48 @@
     }
   }
 }
+
+@media (max-width: 1024px) {
+  .topic-management-layout {
+    &__actions {
+      display: flex;
+      justify-content: space-between;
+
+      &__spacer {
+        display: none;
+      }
+
+      &__search__field {
+        width: 100%;
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      &__cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .course-filter {
+    display: flex;
+
+    &__field {
+      width: 100%;
+    }
+
+    &__actions {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

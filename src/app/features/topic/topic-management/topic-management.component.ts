@@ -52,7 +52,7 @@ export class TopicManagementComponent implements OnInit {
   searchTerm = '';
   paginationSortingFiltering = signal({
     pageNumber: 0,
-    pageSize: 5,
+    pageSize: 10,
     sortBy: 'title',
     sortDirection: 'asc',
     searchTerm: '',

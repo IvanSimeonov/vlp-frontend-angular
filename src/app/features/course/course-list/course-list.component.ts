@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CourseCardComponent, ICourse } from '../course-card/course-card.component';
 import { CourseFilterComponent } from '../course-filter/course-filter.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { CourseManagementDto, CourseSearchCriteriaDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 @Component({
   selector: 'app-course-list',
@@ -25,6 +26,27 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './course-list.component.scss',
 })
 export class CourseListComponent {
+  paginationSortingFiltering = signal<{
+    pageNumber: number;
+    pageSize: number;
+    sortBy: string;
+    sortDirection: string;
+    searchTitle: string;
+    searchAuthor: string;
+    topic: string | undefined;
+    difficultyLevel: CourseManagementDto.DifficultyLevelEnum | undefined;
+    status: CourseSearchCriteriaDto.StatusEnum | undefined;
+  }>({
+    pageNumber: 0,
+    pageSize: 10,
+    sortBy: 'title',
+    sortDirection: 'asc',
+    searchTitle: '',
+    searchAuthor: '',
+    topic: '',
+    difficultyLevel: undefined,
+    status: undefined,
+  });
   courses: ICourse[] = [
     {
       id: 1,
@@ -225,12 +247,18 @@ export class CourseListComponent {
     this.isHidden = !this.isHidden;
   }
 
-  applyFilters(filters: { title: string; author: string; difficulty: string }) {
-    console.log(filters);
-    this.title = filters.title;
-  }
-
-  resetFilters() {
-    console.log('');
+  applyFilters(filters: {
+    title: string;
+    author: string;
+    topic: string | undefined;
+    difficulty: CourseSearchCriteriaDto.DifficultyLevelEnum | undefined;
+    status: CourseSearchCriteriaDto.StatusEnum | undefined;
+  }): void {
+    console.log('Filters: ', filters);
+    this.paginationSortingFiltering().searchTitle = filters.title;
+    this.paginationSortingFiltering().searchAuthor = filters.author;
+    this.paginationSortingFiltering().topic = filters.topic;
+    this.paginationSortingFiltering().difficultyLevel = filters.difficulty;
+    this.paginationSortingFiltering().status = filters.status;
   }
 }
