@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserDialogComponent } from './user-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('UserDialogComponent', () => {
   let component: UserDialogComponent;
@@ -21,6 +22,7 @@ describe('UserDialogComponent', () => {
           useValue: [],
         },
         provideAnimations(),
+        provideHttpClient(),
       ],
     }).compileComponents();
 

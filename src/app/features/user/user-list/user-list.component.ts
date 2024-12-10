@@ -23,16 +23,6 @@ import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 import { debounceTime, delay, distinctUntilChanged } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-export interface IUser {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  role?: string;
-  status?: string;
-  accountCreationDate?: string;
-  createdCoursesCount?: number;
-}
-
 @Component({
   selector: 'app-user-list',
   standalone: true,
@@ -137,7 +127,13 @@ export class UserListComponent implements OnInit, AfterViewInit {
     this.isLoading.set(true);
     const { pageNumber, pageSize, sortBy, sortDirection, searchTerm, role, status } = this.paginationSortingFiltering();
     this.adminService
-      .getUsers({ firstName: searchTerm, roleType: role, enabled: status }, pageNumber, pageSize, sortBy, sortDirection)
+      .getUsers(
+        { searchTerm: searchTerm, roleType: role, enabled: status },
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection
+      )
       .pipe(delay(300))
       .subscribe({
         next: (res) => {
@@ -175,29 +171,34 @@ export class UserListComponent implements OnInit, AfterViewInit {
     this.fetchUsers();
   }
 
-  openUserDialog(user: IUser): void {
-    this.dialog.open(UserDialogComponent, {
-      data: user,
-      maxWidth: '20vw',
-      minWidth: '20vw',
-      minHeight: '50vh',
-      maxHeight: '80vh',
-      enterAnimationDuration: '200ms',
-      exitAnimationDuration: '100ms',
-      autoFocus: false,
-    });
+  openUserDialog(user: UserOverviewDto): void {
+    this.dialog
+      .open(UserDialogComponent, {
+        data: user.id,
+        width: '20vw',
+        minHeight: '30vh',
+        enterAnimationDuration: '200ms',
+        exitAnimationDuration: '100ms',
+      })
+      .afterClosed()
+      .subscribe(() => {
+        this.fetchUsers();
+      });
   }
 
   createAdminDialog(): void {
-    this.dialog.open(UserNewAdminDialogComponent, {
-      minWidth: '350px',
-      maxWidth: '500px',
-      minHeight: '50vh',
-      maxHeight: '80vh',
-      enterAnimationDuration: '0ms',
-      exitAnimationDuration: '0ms',
-      autoFocus: false,
-    });
+    this.dialog
+      .open(UserNewAdminDialogComponent, {
+        width: '20vw',
+        minHeight: '30vh',
+        maxHeight: '80vh',
+        enterAnimationDuration: '0ms',
+        exitAnimationDuration: '0ms',
+      })
+      .afterClosed()
+      .subscribe(() => {
+        this.fetchUsers();
+      });
   }
 
   formatRole(role: UserSearchCriteriaDto.RoleTypeEnum) {

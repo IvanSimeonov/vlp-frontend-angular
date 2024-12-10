@@ -1,48 +1,31 @@
 <div class="user-dialog">
   <div class="user-dialog__header">
-    <img [src]="data.photo || '/images/user-default-img.webp'" alt="User photo" class="user-dialog__photo" />
-    <h2 class="user-dialog__name">{{ data.firstName }} {{ data.lastName }}</h2>
-    <p class="user-dialog__email">{{ data.email }}</p>
+    <!-- <img [src]="user()?.photo || '/images/user-default-img.webp'" alt="User photo" class="user-dialog__photo" /> -->
+    <img [src]="'/images/user-default-img.webp'" alt="User photo" class="user-dialog__photo" />
+    <h2 class="user-dialog__name">{{ user()?.firstName }} {{ user()?.lastName }}</h2>
+    <p class="user-dialog__email">{{ user()?.email }}</p>
   </div>
 
-  <div class="user-dialog__details">
+  <div class="user-dialog__details" [formGroup]="userAccessForm">
     <mat-form-field appearance="outline" class="user-dialog__field">
       <mat-label>Role</mat-label>
-      <mat-select [(ngModel)]="data.role" [disabled]="!isEditable">
-        <mat-option *ngFor="let role of roles" [value]="role">{{ role }}</mat-option>
+      <mat-select formControlName="role">
+        <mat-option *ngFor="let role of roles" [value]="role">{{ formatRole(role) }}</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="user-dialog__field">
       <mat-label>Status</mat-label>
-      <mat-select [(ngModel)]="data.status" [disabled]="!isEditable">
-        <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
+      <mat-select formControlName="status">
+        <mat-option *ngFor="let status of statuses" [value]="status">{{ formatStatus(status) }}</mat-option>
       </mat-select>
     </mat-form-field>
-
-    <div class="user-dialog__info">
-      <div class="user-dialog__info__title">
-        <mat-icon>schedule</mat-icon>
-        <span>Creation date:</span>
-      </div>
-      <span class="user-dialog__info__value">{{ data.accountCreationDate | date: 'fullDate' }}</span>
-    </div>
-
-    @if (data.role === 'Teacher') {
-      <div class="user-dialog__info">
-        <div class="user-dialog__info__title">
-          <mat-icon>inventory_2</mat-icon>
-          <span>Courses: </span>
-        </div>
-        <span class="user-dialog__info__value">{{ data.createdCoursesCount }}</span>
-      </div>
-    }
   </div>
 
-  @if (isEditable) {
-    <div class="user-dialog__actions">
-      <button mat-flat-button color="primary" class="user-dialog__save" (click)="save()">Update</button>
-      <button mat-stroked-button class="user-dialog__cancel" (click)="cancel()">Cancel</button>
-    </div>
-  }
+  <div class="user-dialog__actions">
+    <button mat-flat-button color="primary" class="user-dialog__save" (click)="save()" [disabled]="!isEditable()">
+      Update
+    </button>
+    <button mat-stroked-button class="user-dialog__cancel" (click)="cancel()">Cancel</button>
+  </div>
 </div>

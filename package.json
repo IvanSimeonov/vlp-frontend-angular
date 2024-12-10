@@ -32,7 +32,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
-    "@ivannicksim/vlp-backend-openapi-client": "^0.0.16",
+    "@ivannicksim/vlp-backend-openapi-client": "^0.0.17",
     "@swimlane/ngx-charts": "^21.0.0",
     "ngx-editor": "^18.0.0",
     "rxjs": "~7.8.0",
