@@ -1,5 +1,5 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge } from 'rxjs';
+import { AdminControllerService } from '@ivannicksim/vlp-backend-openapi-client';
 
 @Component({
   selector: 'app-user-new-admin-dialog',
@@ -16,7 +17,8 @@ import { merge } from 'rxjs';
   styleUrl: './user-new-admin-dialog.component.scss',
 })
 export class UserNewAdminDialogComponent {
-  private formBuilder = inject(FormBuilder);
+  private formBuilder = inject(NonNullableFormBuilder);
+  private adminService = inject(AdminControllerService);
   dialogRef = inject(MatDialogRef<UserNewAdminDialogComponent>);
   hide = signal(true);
   firstNameErrorMsg = signal('');
@@ -42,7 +44,24 @@ export class UserNewAdminDialogComponent {
 
   createAdmin(): void {
     console.warn(this.createAdminForm.value);
-    this.dialogRef.close();
+    if (this.createAdminForm.valid) {
+      this.adminService
+        .createAdminUser({
+          firstName: this.createAdminForm.value.firstName,
+          lastName: this.createAdminForm.value.lastName,
+          email: this.createAdminForm.value.email,
+          password: this.createAdminForm.value.password,
+        })
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+          },
+          error: (err) => {
+            console.error('Error: ', err);
+          },
+        });
+      this.dialogRef.close();
+    }
   }
 
   cancel(): void {

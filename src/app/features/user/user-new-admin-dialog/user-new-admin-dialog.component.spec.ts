@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserNewAdminDialogComponent } from './user-new-admin-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('UserNewAdminDialogComponent', () => {
   let component: UserNewAdminDialogComponent;
@@ -21,6 +22,7 @@ describe('UserNewAdminDialogComponent', () => {
           useValue: [],
         },
         provideAnimations(),
+        provideHttpClient(),
       ],
     }).compileComponents();
 
