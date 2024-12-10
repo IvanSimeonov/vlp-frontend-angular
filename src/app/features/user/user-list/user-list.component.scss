@@ -9,6 +9,20 @@ $border-color: #ddd;
   padding: 2rem 3rem;
   row-gap: 1.5rem;
 
+  &__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+  }
+
   &__actions {
     display: flex;
     justify-content: space-between;
@@ -68,6 +82,37 @@ $border-color: #ddd;
     &__paginator {
       margin: 1rem 0;
       background-color: $table-bg-color;
+    }
+  }
+}
+
+.user-management-layout--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .user-management-layout {
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+
+    &__actions {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+
+      &__filters {
+        position: relative;
+      }
+
+      &__table {
+        overflow-x: scroll;
+      }
     }
   }
 }

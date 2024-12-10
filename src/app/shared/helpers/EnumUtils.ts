@@ -1,4 +1,4 @@
-import { CourseSearchCriteriaDto } from '@ivannicksim/vlp-backend-openapi-client';
+import { CourseSearchCriteriaDto, UserSearchCriteriaDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 export class EnumUtils {
   static formatDifficultyLevel(difficulyLevel: CourseSearchCriteriaDto.DifficultyLevelEnum): string {
@@ -23,5 +23,24 @@ export class EnumUtils {
       default:
         return status;
     }
+  }
+
+  static formatUserRole(role: UserSearchCriteriaDto.RoleTypeEnum): string {
+    switch (role) {
+      case UserSearchCriteriaDto.RoleTypeEnum.Student:
+        return 'Student';
+      case UserSearchCriteriaDto.RoleTypeEnum.Teacher:
+        return 'Teacher';
+      case UserSearchCriteriaDto.RoleTypeEnum.Admin:
+        return 'Admin';
+      case UserSearchCriteriaDto.RoleTypeEnum.RootAdmin:
+        return 'Root Admin';
+      default:
+        return role;
+    }
+  }
+
+  static formatUserStatus(status: boolean) {
+    return status ? 'Active' : 'Inactive';
   }
 }

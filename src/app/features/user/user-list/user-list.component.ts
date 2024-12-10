@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, signal, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,10 +10,18 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserDialogComponent } from '../user-dialog/user-dialog.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { UserNewAdminDialogComponent } from '../user-new-admin-dialog/user-new-admin-dialog.component';
+import {
+  AdminControllerService,
+  UserOverviewDto,
+  UserSearchCriteriaDto,
+} from '@ivannicksim/vlp-backend-openapi-client';
+import { EnumUtils } from '../../../shared/helpers/EnumUtils';
+import { debounceTime, delay, distinctUntilChanged } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface IUser {
   firstName?: string;
@@ -43,105 +51,128 @@ export interface IUser {
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
 })
-export class UserListComponent implements AfterViewInit {
+export class UserListComponent implements OnInit, AfterViewInit {
+  private dialog = inject(MatDialog);
+  private adminService = inject(AdminControllerService);
+  private fb = inject(FormBuilder);
+
   displayedColumns = ['firstName', 'lastName', 'email', 'role', 'status'];
-  dataSource = new MatTableDataSource<IUser>([]);
-  roles = ['ROOT_ADMIN', 'Admin', 'Teacher', 'Student'];
-  statuses = ['Active', 'Inactive'];
-  searchTerm = '';
-  roleFilter = '';
-  statusFilter = '';
-  pageSize = 10;
-  totalUsers = 0;
+  dataSource = signal<MatTableDataSource<UserOverviewDto>>(new MatTableDataSource());
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  private dialog = inject(MatDialog);
+  roles = Object.values(UserSearchCriteriaDto.RoleTypeEnum);
+  statuses = [true, false];
 
-  constructor() {
+  users = signal<UserOverviewDto[]>([]);
+  totalUsers = signal<number>(0);
+  isLoading = signal<boolean>(false);
+  paginationSortingFiltering = signal<{
+    pageNumber: number;
+    pageSize: number;
+    sortBy: string;
+    sortDirection: string;
+    searchTerm: string;
+    role: UserSearchCriteriaDto.RoleTypeEnum | undefined;
+    status: boolean | undefined;
+  }>({
+    pageNumber: 0,
+    pageSize: 10,
+    sortBy: 'firstName',
+    sortDirection: 'asc',
+    searchTerm: '',
+    role: undefined,
+    status: undefined,
+  });
+  filterForm: FormGroup = this.fb.group({
+    searchTerm: [''],
+    role: [''],
+    status: [''],
+  });
+
+  ngOnInit(): void {
+    this.filterForm.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe((filters) => {
+      this.applyFilters({
+        searchTerm: filters.searchTerm ? filters.searchTerm.trim() : '',
+        role: filters.role !== '' ? filters.role : undefined,
+        status: filters.status !== '' ? filters.status : undefined,
+      });
+    });
     this.fetchUsers();
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      pageNumber: event.pageIndex,
+      pageSize: event.pageSize,
+    }));
+    this.fetchUsers();
+  }
+
+  onSortChange(event: Sort): void {
+    console.log(event);
+    this.paginator.pageIndex = 0;
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      pageNumber: 0,
+      sortBy: event.active === 'status' ? 'enabled' : event.active,
+      sortDirection: event.direction,
+    }));
+    this.fetchUsers();
   }
 
   fetchUsers(): void {
-    const users: IUser[] = [
-      {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        role: 'Teacher',
-        status: 'Active',
-        accountCreationDate: '10-11-2005',
-        createdCoursesCount: 253,
-      },
-      {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane@example.com',
-        role: 'Admin',
-        status: 'Inactive',
-        accountCreationDate: '12.18.2002',
-      },
-      {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane@example.com',
-        role: 'Admin',
-        status: 'Inactive',
-        accountCreationDate: '12.18.2002',
-      },
-      {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane@example.com',
-        role: 'Admin',
-        status: 'Inactive',
-        accountCreationDate: '12.18.2002',
-      },
-      {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane@example.com',
-        role: 'Admin',
-        status: 'Inactive',
-        accountCreationDate: '12.18.2002',
-      },
-      {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane@example.com',
-        role: 'Admin',
-        status: 'Inactive',
-        accountCreationDate: '12.18.2002',
-      },
-    ];
-    this.totalUsers = users.length;
-    this.dataSource = new MatTableDataSource(users);
+    this.isLoading.set(true);
+    const { pageNumber, pageSize, sortBy, sortDirection, searchTerm, role, status } = this.paginationSortingFiltering();
+    this.adminService
+      .getUsers({ firstName: searchTerm, roleType: role, enabled: status }, pageNumber, pageSize, sortBy, sortDirection)
+      .pipe(delay(300))
+      .subscribe({
+        next: (res) => {
+          console.log(res.content);
+          this.dataSource.set(new MatTableDataSource(res.content || []));
+          this.paginator.length = res.totalElements || 0;
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error: ', err);
+          this.isLoading.set(false);
+        },
+      });
   }
 
-  applyFilters(): void {
-    const filteredData = this.dataSource.data.filter((user) => {
-      const matchesSearch = `${user.firstName} ${user.lastName} ${user.email}`
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase());
-      const matchesRole = this.roleFilter ? user.role === this.roleFilter : true;
-      const matchesStatus = this.statusFilter ? user.status === this.statusFilter : true;
-      return matchesSearch && matchesRole && matchesStatus;
-    });
-    this.dataSource.data = filteredData;
+  applyFilters(filters: {
+    searchTerm: string;
+    role: UserSearchCriteriaDto.RoleTypeEnum | undefined;
+    status: boolean | undefined;
+  }): void {
+    this.paginationSortingFiltering().searchTerm = filters.searchTerm;
+    this.paginationSortingFiltering().role = filters.role;
+    this.paginationSortingFiltering().status = filters.status;
+    this.paginationSortingFiltering().pageNumber = 0;
+    this.fetchUsers();
+    console.log(filters);
   }
 
-  paginate(event: PageEvent): void {
-    this.pageSize = event.pageSize;
+  resetFilters() {
+    this.paginationSortingFiltering().searchTerm = '';
+    this.paginationSortingFiltering().role = undefined;
+    this.paginationSortingFiltering().status = undefined;
+    this.paginationSortingFiltering().pageNumber = 0;
+    this.filterForm.reset();
+    this.fetchUsers();
   }
 
   openUserDialog(user: IUser): void {
@@ -167,5 +198,13 @@ export class UserListComponent implements AfterViewInit {
       exitAnimationDuration: '0ms',
       autoFocus: false,
     });
+  }
+
+  formatRole(role: UserSearchCriteriaDto.RoleTypeEnum) {
+    return EnumUtils.formatUserRole(role);
+  }
+
+  formatStatus(status: boolean) {
+    return EnumUtils.formatUserStatus(status);
   }
 }
