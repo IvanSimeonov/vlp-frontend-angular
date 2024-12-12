@@ -22,6 +22,9 @@
         {{ formatStatus(course().status) }}
       </mat-slide-toggle>
       <mat-icon matTooltip="Status cannot be changed if lectures are less than 3!">info</mat-icon>
+      <button mat-icon-button aria-label="Show audit" (click)="openAuditDialogForCourse()">
+        <mat-icon>history</mat-icon>
+      </button>
     </div>
   </div>
 </div>

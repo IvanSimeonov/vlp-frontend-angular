@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>
+  Audit Course: <b>{{ data?.actual?.title }}</b>
+</h2>
+<mat-dialog-content>
+  <table mat-table [dataSource]="data.shadows" multiTemplateDataRows class="mat-elevation-z8">
+    <ng-container matColumnDef="version">
+      <th mat-header-cell *matHeaderCellDef>Version</th>
+      <td mat-cell *matCellDef="let element">{{ element.version }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="datetime">
+      <th mat-header-cell *matHeaderCellDef>Datetime</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitMetadata.commitDate | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="isInitial">
+      <th mat-header-cell *matHeaderCellDef>Is initial</th>
+      <td mat-cell *matCellDef="let element">{{ element.isInitial ? 'YES' : 'NO' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="changes">
+      <th mat-header-cell *matHeaderCellDef>Changed fields</th>
+      <td mat-cell *matCellDef="let element">{{ element.changed.length }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="author">
+      <th mat-header-cell *matHeaderCellDef>Author</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitMetadata.author }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          mat-icon-button
+          aria-label="expand row"
+          (click)="
+            expandedElementVersion = expandedElementVersion === element.version ? -1 : element.version;
+            $event.stopPropagation()
+          ">
+          @if (expandedElementVersion === element.version) {
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          } @else {
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          }
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
+        <div [@detailExpand]="element.version === expandedElementVersion ? 'expanded' : 'collapsed'">
+          <div class="audit-element-description">
+            @for (item of element.changes; track $index) {
+              <div class="audit-element-description-item">
+                <div>{{ element.changed[$index] }}</div>
+                <div>{{ element.changes[$index] }}</div>
+              </div>
+            }
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+    <tr
+      mat-row
+      *matRowDef="let element; columns: columnsToDisplayWithExpand"
+      class="audit-element-row"
+      [class.audit-expanded-row]="expandedElementVersion === element.version"
+      (click)="expandedElementVersion = expandedElementVersion === element.version ? -1 : element.version"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="audit-detail-row"></tr>
+  </table>
+</mat-dialog-content>

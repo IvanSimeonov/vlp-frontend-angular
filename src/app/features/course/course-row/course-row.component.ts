@@ -1,6 +1,5 @@
-import { Component, input, OnInit, output } from '@angular/core';
+import { Component, inject, input, OnInit, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StarRatingComponent } from '../../../components/star-rating/star-rating.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +12,9 @@ import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { AuditEntityDialogComponent } from '../../../components/audit-entity-dialog/audit-entity-dialog.component';
+import { AuditService } from '../../../services/audit/audit.service';
 
 export interface ICourse {
   title?: string;
@@ -30,15 +32,7 @@ export interface ICourse {
 @Component({
   selector: 'app-course-row',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    StarRatingComponent,
-    MatButtonModule,
-    MatSlideToggleModule,
-    MatTooltipModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatSlideToggleModule, MatTooltipModule, MatIconModule],
   templateUrl: './course-row.component.html',
   styleUrl: './course-row.component.scss',
 })
@@ -48,6 +42,23 @@ export class CourseRowComponent implements OnInit {
   courseImageUrl: string | undefined;
   isPublished = false;
   statusChange = output<{ courseId: number; courseStatusUpdateDto: CourseStatusUpdateDto }>();
+  auditDialog = inject(MatDialog);
+  auditService = inject(AuditService);
+
+  openAuditDialogForCourse() {
+    this.auditService.getDemoShadows('xxx', 3).subscribe((shadows) => {
+      this.auditDialog.open(AuditEntityDialogComponent, {
+        data: {
+          actual: this.course(),
+          shadows: shadows,
+        },
+        width: '80%',
+        maxWidth: '100vw',
+        height: '80%',
+        maxHeight: '100vh',
+      });
+    });
+  }
 
   ngOnInit(): void {
     this.isPublished = this.course().status === CourseSearchCriteriaDto.StatusEnum.Published;
