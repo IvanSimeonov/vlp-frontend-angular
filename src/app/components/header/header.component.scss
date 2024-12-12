@@ -168,3 +168,17 @@ mat-icon {
     margin: 0;
   }
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+
+    &__logo {
+      &-text {
+        font-size: 1rem;
+        font-weight: bold;
+        color: $color-purple;
+      }
+    }
+  }
+}
