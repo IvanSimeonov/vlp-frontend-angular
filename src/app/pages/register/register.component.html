@@ -1,37 +1,79 @@
 <main class="container">
   <div class="register">
     <h1 class="register__title">Register</h1>
-    <div class="register__content">
+    <form [formGroup]="registerForm" (submit)="onSubmit()" class="register__content">
       <mat-form-field class="register__form-field" appearance="outline">
         <mat-icon matPrefix>perm_identity</mat-icon>
         <mat-label>First Name</mat-label>
-        <input matInput type="email" />
+        <input
+          matInput
+          type="text"
+          formControlName="firstName"
+          (blur)="
+            registerForm.controls.firstName.markAsTouched(); registerForm.controls.firstName.updateValueAndValidity()
+          " />
+        @if (registerForm.controls.firstName.invalid) {
+          <mat-error>{{ firstNameErrorMsg() }}</mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="register__form-field" appearance="outline">
         <mat-icon matPrefix>perm_identity</mat-icon>
         <mat-label>Last Name</mat-label>
-        <input matInput type="email" />
+        <input
+          matInput
+          type="text"
+          formControlName="lastName"
+          (blur)="
+            registerForm.controls.lastName.markAsTouched(); registerForm.controls.lastName.updateValueAndValidity()
+          " />
+        @if (registerForm.controls.lastName.invalid) {
+          <mat-error>{{ lastNameErrorMsg() }}</mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="register__form-field" appearance="outline">
         <mat-icon matPrefix>email</mat-icon>
         <mat-label>E-Mail</mat-label>
-        <input matInput type="email" />
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          (blur)="registerForm.controls.email.markAsTouched(); registerForm.controls.email.updateValueAndValidity()" />
+        @if (registerForm.controls.email.invalid) {
+          <mat-error>{{ emailErrorMsg() }}</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-icon matPrefix>lock</mat-icon>
         <mat-label>Password</mat-label>
-        <input matInput [type]="hide() ? 'password' : 'text'" />
+        <input
+          matInput
+          [type]="hide() ? 'password' : 'text'"
+          formControlName="password"
+          (blur)="
+            registerForm.controls.password.markAsTouched(); registerForm.controls.password.updateValueAndValidity()
+          " />
         <button
           mat-icon-button
           matSuffix
+          type="button"
           (click)="togglePasswordVisibility($event)"
           [attr.aria-label]="hide() ? 'Show password' : 'Hide password'"
           [attr.aria-pressed]="hide()">
           <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
+        @if (registerForm.controls.password.invalid) {
+          <mat-error>{{ passwordErrorMsg() }}</mat-error>
+        }
       </mat-form-field>
-      <button class="register__btn" type="submit" mat-flat-button aria-label="Sign Up">Register</button>
+      <button
+        class="register__btn"
+        type="submit"
+        mat-flat-button
+        aria-label="Sign Up"
+        [disabled]="!registerForm.valid && formSubmitted">
+        Register
+      </button>
       <p class="register__register">Already have an account yet?<a routerLink="/login"> Login now!</a></p>
-    </div>
+    </form>
   </div>
 </main>

@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,17 +31,13 @@ export interface INotification {
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  user = signal<UserOverviewDto | null>(null);
+  user = computed(() => this.authService.user());
   notifications = signal<INotification[]>([]);
   unreadNotifications = computed(() => this.notifications().filter((n) => !n.isRead).length);
-
-  ngOnInit(): void {
-    this.user.set(this.authService.user());
-  }
 
   isUserLoggedIn() {
     return this.authService.isLoggedIn();

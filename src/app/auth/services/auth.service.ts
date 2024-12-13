@@ -43,8 +43,7 @@ export class AuthService {
     return this.authBeService.register(registerData).pipe(
       tap({
         next: (response: AuthResponse) => {
-          this.storageService.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
-          this.storageService.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
+          console.log(response);
         },
         error: (err) => {
           console.error('Register failed: ', err);
