@@ -1,16 +1,16 @@
 <main class="container">
   <div class="login">
     <h1 class="login__title">Sign In</h1>
-    <div class="login__content">
+    <form class="login__content" [formGroup]="loginForm" (submit)="login()">
       <mat-form-field class="login__form-field" appearance="outline">
         <mat-icon matPrefix>email</mat-icon>
         <mat-label>E-Mail</mat-label>
-        <input matInput type="email" />
+        <input matInput type="email" formControlName="email" />
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-icon matPrefix>lock</mat-icon>
         <mat-label>Password</mat-label>
-        <input matInput [type]="hide() ? 'password' : 'text'" />
+        <input matInput formControlName="password" [type]="hide() ? 'password' : 'text'" />
         <button
           mat-icon-button
           matSuffix
@@ -22,7 +22,10 @@
       </mat-form-field>
       <a routerLink="/reset-password" class="login__forgot">Forgot your password?</a>
       <button class="login__btn" type="submit" mat-flat-button aria-label="Sign In">Sign In</button>
+      @if (errorResponse() !== null) {
+        <div class="login__error-msg">{{ errorResponse() }}</div>
+      }
       <p class="login__register">Don't have an account yet?<a routerLink="/register"> Register now!</a></p>
-    </div>
+    </form>
   </div>
 </main>

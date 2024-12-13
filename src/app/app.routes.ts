@@ -13,6 +13,9 @@ import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard
 import { MyLearningsComponent } from './pages/my-learnings/my-learnings.component';
 import { CourseDetailsComponent } from './pages/course-details/course-details.component';
 import { CourseCreateEditComponent } from './pages/course-create-edit/course-create-edit.component';
+import { anonymousGuard } from './auth/guards/anonymous.guard';
+import { adminGuard } from './auth/guards/admin.guard';
+import { authGuard } from './auth/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -45,6 +48,7 @@ export const routes: Routes = [
   {
     path: 'my-courses',
     title: 'My Learnings',
+    canActivate: [authGuard],
     component: MyLearningsComponent,
   },
   {
@@ -55,36 +59,43 @@ export const routes: Routes = [
   {
     path: 'user/edit-profile',
     title: 'Edit Profile',
+    canActivate: [authGuard],
     component: UserEditProfileComponent,
   },
   {
     path: 'dashboard',
     title: 'Dashboard',
+    canActivate: [adminGuard],
     component: AdminDashboardComponent,
   },
   {
     path: 'management/courses',
     title: 'Course Management',
+    canActivate: [adminGuard],
     component: CourseManagementComponent,
   },
   {
     path: 'management/users',
     title: 'User Management',
+    canActivate: [adminGuard],
     component: UserListComponent,
   },
   {
     path: 'management/topics',
     title: 'Topic Management',
+    canActivate: [adminGuard],
     component: TopicManagementComponent,
   },
   {
     path: 'login',
     title: 'Login',
+    canActivate: [anonymousGuard],
     component: LoginComponent,
   },
   {
     path: 'register',
     title: 'Register',
+    canActivate: [anonymousGuard],
     component: RegisterComponent,
   },
   {

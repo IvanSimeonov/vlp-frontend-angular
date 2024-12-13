@@ -1,22 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
-
-export interface User {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  avatar?: string;
-}
+import { AuthService } from '../../auth/services/auth.service';
+import { UserOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 export interface INotification {
   type: string;
   message: string;
+  isRead: boolean;
 }
 
 @Component({
@@ -35,19 +31,40 @@ export interface INotification {
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent {
-  user: User | undefined;
+export class HeaderComponent implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  notifications: INotification[] | undefined;
+  user = signal<UserOverviewDto | null>(null);
+  notifications = signal<INotification[]>([]);
+  unreadNotifications = computed(() => this.notifications().filter((n) => !n.isRead).length);
 
-  unreadNotifications = 0;
+  ngOnInit(): void {
+    this.user.set(this.authService.user());
+  }
 
-  markAllNotificationsRead() {
-    // TODO: add API call
+  isUserLoggedIn() {
+    return this.authService.isLoggedIn();
+  }
+
+  isUserAdmin() {
+    return this.authService.hasAnyRole([UserOverviewDto.RoleEnum.Admin, UserOverviewDto.RoleEnum.RootAdmin]);
+  }
+
+  isUserTeacherOrStudent() {
+    return this.authService.hasAnyRole([UserOverviewDto.RoleEnum.Teacher, UserOverviewDto.RoleEnum.Student]);
+  }
+
+  navigateToPublicProfile() {
+    return this.user()?.id ? `/user/${this.user()?.id}/profile` : '/';
   }
 
   logout() {
-    // TODO: Add API call
-    console.log('Logged Out!');
+    this.authService.clearTokens();
+    this.router.navigateByUrl('/');
+  }
+
+  markAllNotificationsRead() {
+    // TODO: add API call
   }
 }

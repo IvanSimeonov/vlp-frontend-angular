@@ -10,13 +10,19 @@
     <a class="header__nav-link" routerLink="/courses" routerLinkActive="header__nav-link--active" aria-current="page">
       Explore Courses
     </a>
-    <a class="header__nav-link" routerLink="/login" routerLinkActive="header__nav-link--active" aria-current="page">
-      Login
-    </a>
-    <a class="header__nav-link" routerLink="/register" routerLinkActive="header__nav-link--active" aria-current="page">
-      Register
-    </a>
-    @if (user) {
+    @if (!isUserLoggedIn()) {
+      <a class="header__nav-link" routerLink="/login" routerLinkActive="header__nav-link--active" aria-current="page">
+        Login
+      </a>
+      <a
+        class="header__nav-link"
+        routerLink="/register"
+        routerLinkActive="header__nav-link--active"
+        aria-current="page">
+        Register
+      </a>
+    }
+    @if (isUserLoggedIn() && isUserTeacherOrStudent()) {
       <a
         class="header__nav-link"
         routerLink="/my-courses"
@@ -24,6 +30,8 @@
         aria-current="page">
         My Learnings
       </a>
+    }
+    @if (isUserLoggedIn() && isUserAdmin()) {
       <a
         class="header__nav-link"
         routerLink="/dashboard"
@@ -37,11 +45,10 @@
         <a class="header__menu-item" routerLink="/management/users">Users</a>
         <a class="header__menu-item" routerLink="/management/topics">Topics</a>
       </mat-menu>
+    }
+    @if (isUserLoggedIn()) {
       <a class="header__nav-link header__nav-link--menu" aria-current="page" [matMenuTriggerFor]="notificationMenu">
-        <mat-icon
-          [matBadge]="notifications?.length"
-          [matBadgeHidden]="notifications && notifications.length > 0 ? false : true"
-          aria-hidden="false"
+        <mat-icon [matBadge]="unreadNotifications()" [matBadgeHidden]="unreadNotifications() === 0" aria-hidden="false"
           >notifications</mat-icon
         >
       </a>
@@ -51,8 +58,8 @@
             <button (click)="markAllNotificationsRead()" mat-flat-button type="button">Mark All Read</button>
           </div>
           <mat-divider></mat-divider>
-          @if (notifications) {
-            @for (notification of notifications; track $index) {
+          @if (notifications()) {
+            @for (notification of notifications(); track $index) {
               <h4 class="header__menu-notification__layout__notification-header">{{ notification.type }}</h4>
               <p class="header__menu-notification__layout__notification-content">{{ notification.message }}</p>
               <mat-divider class="divider"></mat-divider>
@@ -74,15 +81,15 @@
         <div class="header__profile">
           <img
             class="header__profile-avatar"
-            [src]="user.avatar || '/images/user-default-img.webp'"
-            alt="{{ user.firstName }} {{ user.lastName }} avatar" />
+            [src]="'/images/user-default-img.webp'"
+            alt="{{ user()?.firstName }} {{ user()?.lastName }} avatar" />
           <div>
-            <span class="header__profile-name">{{ user.firstName }} {{ user.lastName }}</span>
-            <span class="header__profile-email">{{ user.email }}</span>
+            <span class="header__profile-name">{{ user()?.firstName }} {{ user()?.lastName }}</span>
+            <span class="header__profile-email">{{ user()?.email }}</span>
           </div>
         </div>
         <mat-divider></mat-divider>
-        <a class="header__menu-item" routerLink="/user/1/profile">Profile</a>
+        <a class="header__menu-item" [routerLink]="navigateToPublicProfile()">Profile</a>
         <a class="header__menu-item" routerLink="/user/edit-profile">Account Settings</a>
         <a class="header__menu-item" (click)="logout()" (keydown)="logout()" tabindex="{0}">Logout</a>
       </mat-menu>
