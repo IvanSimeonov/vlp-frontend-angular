@@ -5,12 +5,23 @@
       <mat-form-field class="login__form-field" appearance="outline">
         <mat-icon matPrefix>email</mat-icon>
         <mat-label>E-Mail</mat-label>
-        <input matInput type="email" formControlName="email" />
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          (blur)="loginForm.controls.email.markAsTouched(); loginForm.controls.email.updateValueAndValidity()" />
+        @if (loginForm.controls.email.invalid) {
+          <mat-error>{{ emailErrorMsg() }}</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-icon matPrefix>lock</mat-icon>
         <mat-label>Password</mat-label>
-        <input matInput formControlName="password" [type]="hide() ? 'password' : 'text'" />
+        <input
+          matInput
+          [type]="hide() ? 'password' : 'text'"
+          formControlName="password"
+          (blur)="loginForm.controls.password.markAsTouched(); loginForm.controls.password.updateValueAndValidity()" />
         <button
           mat-icon-button
           matSuffix
@@ -20,6 +31,9 @@
           [attr.aria-pressed]="hide()">
           <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
+        @if (loginForm.controls.password.invalid) {
+          <mat-error>{{ passwordErrorMsg() }}</mat-error>
+        }
       </mat-form-field>
       <a routerLink="/reset-password" class="login__forgot">Forgot your password?</a>
       <button class="login__btn" type="submit" mat-flat-button aria-label="Sign In">Sign In</button>
