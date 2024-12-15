@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
 import { FileUploadComponent, IFile } from '../../../components/file-upload/file-upload.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,9 +9,17 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { Editor, NgxEditorModule, schema, Toolbar } from 'ngx-editor';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { merge } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
+import {
+  AdminControllerService,
+  UserControllerService,
+  UserOverviewDto,
+  UserPublicProfileDto,
+} from '@ivannicksim/vlp-backend-openapi-client';
+import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 
 @Component({
   selector: 'app-user-edit-profile',
@@ -32,7 +40,10 @@ import { Router } from '@angular/router';
   styleUrl: './user-edit-profile.component.scss',
 })
 export class UserEditProfileComponent implements OnInit, OnDestroy {
-  private formBuilder = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private userService = inject(UserControllerService);
+  private adminService = inject(AdminControllerService);
+  private formBuilder = inject(NonNullableFormBuilder);
   accordion = viewChild.required(MatAccordion);
   allowedFileTypes: string[] = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   maxFileSizeMB = 10;
@@ -48,11 +59,15 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   ];
   html = '';
 
+  userId = computed(() => this.authService.user()?.id);
+  user = signal<UserPublicProfileDto | null>(null);
+  userProfileImage = signal<Blob | string | undefined>(undefined);
   hideCurrentPassword = signal(true);
   hideNewPassword = signal(true);
   hideRetypeNewPassword = signal(true);
   firstNameErrorMsg = signal('');
   lastNameErrorMsg = signal('');
+  imageErrorMsg = signal('');
   passwordErrorMsg = signal('');
   newPasswordErrorMsg = signal('');
   retypeNewPasswordErrorMsg = signal('');
@@ -85,6 +100,35 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
       keyboardShortcuts: true,
       inputRules: true,
     });
+    const id = this.userId();
+    if (id) {
+      this.userService.getUserPublicProfile(id).subscribe({
+        next: (userProfile: UserPublicProfileDto) => {
+          this.user.set(userProfile);
+          this.updatePersonalDataForm.patchValue({
+            firstName: userProfile?.firstName,
+            lastName: userProfile?.lastName,
+            linkedInProfile: userProfile?.linkedInProfileUrl,
+            about: userProfile?.bio,
+          });
+          const imagePath = userProfile.profileImagePath;
+          if (imagePath) {
+            this.userService.getProfileImage(imagePath).subscribe({
+              next: (img) => {
+                const imageUrl = URL.createObjectURL(img);
+                this.userProfileImage.set(imageUrl);
+              },
+              error: (err) => {
+                console.error('Error fetching profile image: ', err);
+              },
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error: ', err);
+        },
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -92,20 +136,30 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   }
 
   navigateToPublicProfile() {
-    // TODO: API call
-    const userId = 1;
-    this.router.navigate([`user/${userId}/profile`]);
+    const userId = this.userId();
+    if (userId) {
+      this.router.navigate([`user/${userId}/profile`]);
+    }
   }
 
   onRequestTeacherAccess() {
-    // TODO: API call
     this.isAccessRequested = true;
+    this.userService.requestTeacherAccess().subscribe({
+      next: (res) => console.log(res),
+      error: (err) => console.log('Error: ', err),
+    });
   }
 
   onImageUpload(file: IFile): void {
-    console.log(file);
-    if (file) {
-      console.log('Uploading file...');
+    if (file && !this.user()?.profileImagePath?.includes(file.name)) {
+      const formData = new FormData();
+      formData.append('file', file.file);
+      this.adminService.updateUserAvatar(this.userId()!, file.file).subscribe({
+        next: (res) => console.log(res),
+        error: (err) => console.error('Error: ', err),
+      });
+    } else {
+      this.imageErrorMsg.set('Image with this name already exists.');
     }
   }
 
@@ -141,7 +195,20 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   }
 
   onPersonalDataUpdate() {
-    console.log(this.updatePersonalDataForm.value);
+    if (this.updatePersonalDataForm.valid) {
+      console.log(this.updatePersonalDataForm.value);
+      this.adminService
+        .updateUserProfile(this.userId()!, {
+          firstName: this.updatePersonalDataForm.controls.firstName.value,
+          lastName: this.updatePersonalDataForm.controls.lastName.value,
+          linkedInProfileUrl: this.updatePersonalDataForm.controls.linkedInProfile.value,
+          bio: this.updatePersonalDataForm.controls.about.value,
+        })
+        .subscribe({
+          next: (res) => console.log(res),
+          error: (err) => console.error('Error: ', err),
+        });
+    }
   }
 
   onChangePassword() {
@@ -243,5 +310,18 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
       }
     }
     errorMsgSignal.set('');
+  }
+
+  isUserTeacherOrAdmin() {
+    const role = this.user()?.role;
+    return role
+      ? [UserOverviewDto.RoleEnum.Admin, UserOverviewDto.RoleEnum.RootAdmin, UserOverviewDto.RoleEnum.Teacher].includes(
+          role
+        )
+      : false;
+  }
+
+  formatRole(role: UserPublicProfileDto.RoleEnum | undefined) {
+    return role ? EnumUtils.formatUserRole(role) : '';
   }
 }

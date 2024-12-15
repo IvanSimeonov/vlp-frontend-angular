@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserEditProfileComponent } from './user-edit-profile.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('UserEditProfileComponent', () => {
   let component: UserEditProfileComponent;
@@ -11,7 +12,7 @@ describe('UserEditProfileComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UserEditProfileComponent],
-      providers: [provideAnimations(), provideRouter([])],
+      providers: [provideAnimations(), provideRouter([]), provideHttpClient()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserEditProfileComponent);
