@@ -1,10 +1,25 @@
 .user-profile {
-  max-width: 50vw;
+  max-width: 60vw;
   margin: 0 auto;
   padding: 2rem 0;
   display: flex;
   flex-direction: column;
   row-gap: 2rem;
+  position: relative;
+
+  &__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+  }
 
   &__header {
     display: flex;
@@ -80,4 +95,74 @@
 
 .full-width {
   width: 100%;
+}
+
+.user-profile__loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .user-profile {
+    max-width: 85vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .mat-expansion-panel-header-description {
+    display: none;
+  }
+  .user-profile {
+    max-width: 100%;
+    padding: 1.5rem;
+    &__header {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+
+      &__data {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        row-gap: 1rem;
+
+        &__img {
+          margin: 0;
+        }
+
+        &__txt {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+
+    &__panel__personal-data {
+      row-gap: 1rem;
+      padding: 0.25rem;
+    }
+
+    &__panel__security__name {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+      padding: 0.25rem;
+    }
+
+    &__panel__security {
+      row-gap: 1rem;
+      padding: 0.25rem;
+
+      &__name {
+        display: flex;
+        column-gap: 1rem;
+        width: 100%;
+      }
+
+      &__btn {
+        width: 100%;
+      }
+    }
+  }
 }

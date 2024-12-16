@@ -1,5 +1,10 @@
 <div class="user-profile">
-  <mat-card>
+  @if (isSaving()) {
+    <div class="user-profile__spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+  <mat-card [ngClass]="{ 'user-profile__loading': isSaving() }">
     <mat-card-content>
       <div class="user-profile__header">
         <div class="user-profile__header__data">
@@ -17,24 +22,26 @@
           <button
             class="user-profile__actions__profile-preview"
             type="button"
-            mat-raised-button
+            mat-flat-button
             (click)="navigateToPublicProfile()">
             Public Profile Preview</button
           ><button
             class="user-profile__actions__request-access"
             type="button"
-            mat-raised-button
+            mat-flat-button
             (click)="onRequestTeacherAccess()"
-            [disabled]="isAccessRequested || isUserTeacherOrAdmin()">
+            [disabled]="isAccessRequested() || isUserTeacherOrAdmin()">
             Teacher Access Request
           </button>
-          <button class="user-profile__actions__profile-preview" type="button" mat-flat-button>Logout</button>
+          <button class="user-profile__actions__profile-preview" type="button" mat-flat-button (click)="logout()">
+            Logout
+          </button>
         </div>
       </div>
     </mat-card-content>
   </mat-card>
 
-  <mat-accordion>
+  <mat-accordion [ngClass]="{ 'user-profile__loading': isSaving() }">
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -107,7 +114,7 @@
         <app-file-upload
           [allowedFileTypes]="allowedFileTypes"
           [maxFileSizeMB]="maxFileSizeMB"
-          (fileChange)="onImageUpload($event)"></app-file-upload>
+          (fileChange)="onImageUpload($event.file)"></app-file-upload>
       </div>
     </mat-expansion-panel>
 
@@ -125,8 +132,9 @@
             <mat-label>Current Password</mat-label>
             <input
               matInput
-              [type]="hideCurrentPassword() ? 'password' : 'text'"
+              autocomplete="on"
               formControlName="currentPassword"
+              [type]="hideCurrentPassword() ? 'password' : 'text'"
               (blur)="markAsSecurityDataFormTouched('currentPassword')" />
             <button
               mat-icon-button
@@ -146,6 +154,7 @@
             <mat-label>New Password</mat-label>
             <input
               matInput
+              autocomplete="on"
               formControlName="newPassword"
               (blur)="markAsSecurityDataFormTouched('newPassword')"
               [type]="hideNewPassword() ? 'password' : 'text'" />
@@ -167,6 +176,7 @@
             <mat-label>Retype New Password</mat-label>
             <input
               matInput
+              autocomplete="on"
               formControlName="retypeNewPassword"
               (blur)="markAsSecurityDataFormTouched('retypeNewPassword')"
               [type]="hideRetypeNewPassword() ? 'password' : 'text'" />

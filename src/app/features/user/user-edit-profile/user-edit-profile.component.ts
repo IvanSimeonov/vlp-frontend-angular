@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
-import { FileUploadComponent, IFile } from '../../../components/file-upload/file-upload.component';
+import { FileUploadComponent } from '../../../components/file-upload/file-upload.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Editor, NgxEditorModule, schema, Toolbar } from 'ngx-editor';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { merge } from 'rxjs';
+import { delay, merge } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import {
@@ -20,6 +20,8 @@ import {
   UserPublicProfileDto,
 } from '@ivannicksim/vlp-backend-openapi-client';
 import { EnumUtils } from '../../../shared/helpers/EnumUtils';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-user-edit-profile',
@@ -35,6 +37,8 @@ import { EnumUtils } from '../../../shared/helpers/EnumUtils';
     MatInputModule,
     MatCardModule,
     NgxEditorModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './user-edit-profile.component.html',
   styleUrl: './user-edit-profile.component.scss',
@@ -44,10 +48,13 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   private userService = inject(UserControllerService);
   private adminService = inject(AdminControllerService);
   private formBuilder = inject(NonNullableFormBuilder);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
+
   accordion = viewChild.required(MatAccordion);
   allowedFileTypes: string[] = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   maxFileSizeMB = 10;
-  isAccessRequested = false;
+  isAccessRequested = signal(false);
   editor!: Editor;
   toolbar: Toolbar = [
     ['bold', 'italic', 'underline', 'strike'],
@@ -72,6 +79,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   newPasswordErrorMsg = signal('');
   retypeNewPasswordErrorMsg = signal('');
   wrongPasswordErrorMsg = signal('');
+  isSaving = signal(false);
 
   updatePersonalDataForm = this.formBuilder.group({
     firstName: ['', Validators.required],
@@ -86,7 +94,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
     retypeNewPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(16)]],
   });
 
-  constructor(private router: Router) {
+  constructor() {
     this.initErrorSubscriptionsPersonalData();
     this.initErrorSubscriptionsSecurityData();
     this.updateSecurityDataForm.addValidators(passwordCompareValidator);
@@ -104,32 +112,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
     });
     const id = this.userId();
     if (id) {
-      this.userService.getUserPublicProfile(id).subscribe({
-        next: (userProfile: UserPublicProfileDto) => {
-          this.user.set(userProfile);
-          this.updatePersonalDataForm.patchValue({
-            firstName: userProfile?.firstName,
-            lastName: userProfile?.lastName,
-            linkedInProfile: userProfile?.linkedInProfileUrl,
-            about: userProfile?.bio,
-          });
-          const imagePath = userProfile.profileImagePath;
-          if (imagePath) {
-            this.userService.getProfileImage(imagePath).subscribe({
-              next: (img) => {
-                const imageUrl = URL.createObjectURL(img);
-                this.userProfileImage.set(imageUrl);
-              },
-              error: (err) => {
-                console.error('Error fetching profile image: ', err);
-              },
-            });
-          }
-        },
-        error: (err) => {
-          console.error('Error: ', err);
-        },
-      });
+      this.loadUserProfile(id);
     }
   }
 
@@ -145,26 +128,80 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   }
 
   onRequestTeacherAccess() {
-    this.isAccessRequested = true;
+    this.isAccessRequested.set(true);
+    this.isSaving.set(true);
     this.userService.requestTeacherAccess().subscribe({
-      next: (res) => console.log(res),
-      error: (err) => console.log('Error: ', err),
+      next: () => {
+        this.snackBar.open('Teacher access request sent successfully', 'Close', { duration: 3000 });
+        this.loadUserProfile(this.userId()!);
+      },
+      error: () => {
+        this.snackBar.open('Failed to sent teacher access request', 'Close', { duration: 3000 });
+        this.isSaving.set(false);
+      },
     });
   }
 
-  onImageUpload(file: IFile): void {
-    if (file && !this.user()?.profileImagePath?.includes(file.name)) {
-      const formData = new FormData();
-      formData.append('file', file.file);
-      this.adminService.updateUserAvatar(this.userId()!, file.file).subscribe({
-        next: (res) => {
-          console.log(res);
-          window.location.reload();
-        },
-        error: (err) => console.error('Error: ', err),
-      });
-    } else {
-      this.imageErrorMsg.set('Image with this name already exists.');
+  logout() {
+    this.authService.clearTokens();
+    this.router.navigateByUrl('/');
+  }
+
+  onPersonalDataUpdate() {
+    if (this.updatePersonalDataForm.valid) {
+      this.isSaving.set(true);
+      this.adminService
+        .updateUserProfile(this.userId()!, {
+          firstName: this.updatePersonalDataForm.controls.firstName.value,
+          lastName: this.updatePersonalDataForm.controls.lastName.value,
+          linkedInProfileUrl: this.updatePersonalDataForm.controls.linkedInProfile.value,
+          bio: this.updatePersonalDataForm.controls.about.value,
+        })
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Profile data updated successfully', 'Close', { duration: 3000 });
+            this.loadUserProfile(this.userId()!);
+          },
+          error: () => {
+            this.snackBar.open('Failed to updated profile data', 'Close', { duration: 3000 });
+            this.isSaving.set(false);
+          },
+        });
+    }
+  }
+
+  onImageUpload(file: File): void {
+    this.isSaving.set(true);
+    this.adminService.updateUserAvatar(this.userId()!, file).subscribe({
+      next: () => {
+        this.snackBar.open('Image uploaded successfully', 'Close', { duration: 3000 });
+        this.loadUserProfile(this.userId()!);
+      },
+      error: () => {
+        this.snackBar.open('Failed to upload image', 'Close', { duration: 3000 });
+        this.isSaving.set(false);
+      },
+    });
+  }
+
+  onChangePassword() {
+    if (this.updateSecurityDataForm.valid) {
+      this.isSaving.set(true);
+      this.adminService
+        .changePassword(this.userId()!, {
+          currentPassword: this.updateSecurityDataForm.controls.currentPassword.value,
+          newPassword: this.updateSecurityDataForm.controls.newPassword.value,
+        })
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Password changed successfully!', 'Close', { duration: 3000 });
+            this.loadUserProfile(this.userId()!);
+          },
+          error: () => {
+            this.snackBar.open('Failed to change password. Please, try again!', 'Close', { duration: 3000 });
+            this.isSaving.set(false);
+          },
+        });
     }
   }
 
@@ -199,44 +236,55 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  onPersonalDataUpdate() {
-    if (this.updatePersonalDataForm.valid) {
-      console.log(this.updatePersonalDataForm.value);
-      this.adminService
-        .updateUserProfile(this.userId()!, {
-          firstName: this.updatePersonalDataForm.controls.firstName.value,
-          lastName: this.updatePersonalDataForm.controls.lastName.value,
-          linkedInProfileUrl: this.updatePersonalDataForm.controls.linkedInProfile.value,
-          bio: this.updatePersonalDataForm.controls.about.value,
-        })
-        .subscribe({
-          next: (res) => {
-            console.log(res);
-            window.location.reload();
-          },
-          error: (err) => console.error('Error: ', err),
-        });
-    }
+  isUserTeacherOrAdmin() {
+    const role = this.user()?.role;
+    return role
+      ? [UserOverviewDto.RoleEnum.Admin, UserOverviewDto.RoleEnum.RootAdmin, UserOverviewDto.RoleEnum.Teacher].includes(
+          role
+        )
+      : false;
   }
 
-  onChangePassword() {
-    if (this.updateSecurityDataForm.valid) {
-      console.log(this.updateSecurityDataForm.value);
-      this.adminService
-        .changePassword(this.userId()!, {
-          currentPassword: this.updateSecurityDataForm.controls.currentPassword.value,
-          newPassword: this.updateSecurityDataForm.controls.newPassword.value,
-        })
-        .subscribe({
-          next: () => {
-            this.authService.clearTokens();
-            this.router.navigate(['/login']);
-          },
-          error: () => {
-            this.wrongPasswordErrorMsg.set('You have entered wrong password, please try again!');
-          },
-        });
-    }
+  formatRole(role: UserPublicProfileDto.RoleEnum | undefined) {
+    return role ? EnumUtils.formatUserRole(role) : '';
+  }
+
+  private loadUserProfile(userId: number) {
+    this.isSaving.set(true);
+    this.userService
+      .getUserPublicProfile(userId)
+      .pipe(delay(300))
+      .subscribe({
+        next: (user: UserPublicProfileDto) => {
+          this.isAccessRequested.set(user.isTeacherAccessRequested!);
+          this.user.set(user);
+          this.updatePersonalDataForm.patchValue({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            linkedInProfile: user.linkedInProfileUrl,
+            about: user.bio,
+          });
+          const imagePath = user.profileImagePath;
+          if (imagePath) {
+            this.loadUserProfileImage(imagePath);
+          }
+          this.isSaving.set(false);
+        },
+        error: () => {
+          this.snackBar.open('Failed to load profile.', 'Close', { duration: 3000 });
+          this.isSaving.set(false);
+        },
+      });
+  }
+
+  private loadUserProfileImage(imagePath: string) {
+    this.userService.getProfileImage(imagePath).subscribe({
+      next: (img) => {
+        const imageUrl = URL.createObjectURL(img);
+        this.userProfileImage.set(imageUrl);
+      },
+      error: () => this.snackBar.open('Failed to load profile image.', 'Close', { duration: 3000 }),
+    });
   }
 
   private initErrorSubscriptionsPersonalData(): void {
@@ -336,19 +384,6 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
       }
     }
     errorMsgSignal.set('');
-  }
-
-  isUserTeacherOrAdmin() {
-    const role = this.user()?.role;
-    return role
-      ? [UserOverviewDto.RoleEnum.Admin, UserOverviewDto.RoleEnum.RootAdmin, UserOverviewDto.RoleEnum.Teacher].includes(
-          role
-        )
-      : false;
-  }
-
-  formatRole(role: UserPublicProfileDto.RoleEnum | undefined) {
-    return role ? EnumUtils.formatUserRole(role) : '';
   }
 }
 
