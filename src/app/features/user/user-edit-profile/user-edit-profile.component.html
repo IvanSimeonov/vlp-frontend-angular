@@ -192,6 +192,9 @@
             (click)="onChangePassword()">
             Change Password
           </button>
+          <mat-error>
+            {{ wrongPasswordErrorMsg() }}
+          </mat-error>
         </div>
       </form>
     </mat-expansion-panel>

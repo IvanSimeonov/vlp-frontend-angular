@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { Editor, NgxEditorModule, schema, Toolbar } from 'ngx-editor';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { merge } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -71,6 +71,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   passwordErrorMsg = signal('');
   newPasswordErrorMsg = signal('');
   retypeNewPasswordErrorMsg = signal('');
+  wrongPasswordErrorMsg = signal('');
 
   updatePersonalDataForm = this.formBuilder.group({
     firstName: ['', Validators.required],
@@ -88,6 +89,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   constructor(private router: Router) {
     this.initErrorSubscriptionsPersonalData();
     this.initErrorSubscriptionsSecurityData();
+    this.updateSecurityDataForm.addValidators(passwordCompareValidator);
   }
 
   ngOnInit(): void {
@@ -155,7 +157,10 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
       const formData = new FormData();
       formData.append('file', file.file);
       this.adminService.updateUserAvatar(this.userId()!, file.file).subscribe({
-        next: (res) => console.log(res),
+        next: (res) => {
+          console.log(res);
+          window.location.reload();
+        },
         error: (err) => console.error('Error: ', err),
       });
     } else {
@@ -205,14 +210,33 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
           bio: this.updatePersonalDataForm.controls.about.value,
         })
         .subscribe({
-          next: (res) => console.log(res),
+          next: (res) => {
+            console.log(res);
+            window.location.reload();
+          },
           error: (err) => console.error('Error: ', err),
         });
     }
   }
 
   onChangePassword() {
-    console.log(this.updateSecurityDataForm.value);
+    if (this.updateSecurityDataForm.valid) {
+      console.log(this.updateSecurityDataForm.value);
+      this.adminService
+        .changePassword(this.userId()!, {
+          currentPassword: this.updateSecurityDataForm.controls.currentPassword.value,
+          newPassword: this.updateSecurityDataForm.controls.newPassword.value,
+        })
+        .subscribe({
+          next: () => {
+            this.authService.clearTokens();
+            this.router.navigate(['/login']);
+          },
+          error: () => {
+            this.wrongPasswordErrorMsg.set('You have entered wrong password, please try again!');
+          },
+        });
+    }
   }
 
   private initErrorSubscriptionsPersonalData(): void {
@@ -277,6 +301,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
           required: 'Enter your password',
           minlength: 'Enter a password that is 8 to 16 characters long',
           maxlength: 'Enter a password that is 8 to 16 characters long',
+          matchError: 'Passwords do not match',
         },
       },
       {
@@ -286,6 +311,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
           required: 'Enter your password',
           minlength: 'Enter a password that is 8 to 16 characters long',
           maxlength: 'Enter a password that is 8 to 16 characters long',
+          matchError: 'Passwords do not match',
         },
       },
     ];
@@ -324,4 +350,21 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   formatRole(role: UserPublicProfileDto.RoleEnum | undefined) {
     return role ? EnumUtils.formatUserRole(role) : '';
   }
+}
+
+function passwordCompareValidator(group: AbstractControl) {
+  const newPasswordControl = group.get('newPassword');
+  const retypeNewPasswordControl = group.get('retypeNewPassword');
+  if (!newPasswordControl || !retypeNewPasswordControl) {
+    return null;
+  }
+  const newPassword = newPasswordControl.value;
+  const retypeNewPassword = retypeNewPasswordControl.value;
+
+  if (newPassword !== retypeNewPassword) {
+    retypeNewPasswordControl.setErrors({ matchError: true });
+    return { matchError: true };
+  }
+  retypeNewPasswordControl.setErrors(null);
+  return null;
 }
