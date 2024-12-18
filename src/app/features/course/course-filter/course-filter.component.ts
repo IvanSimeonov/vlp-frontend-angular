@@ -19,6 +19,7 @@ export class CourseFilterComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   topics = input<TopicAnalyticsDto[]>([]);
+  isManagement = input<boolean>(false);
   filterChange = output<{
     title: '';
     author: '';

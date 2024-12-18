@@ -1,6 +1,7 @@
 $txt-color-gray: #666;
 
 .course-card {
+  width: inherit;
   transition: transform 0.3s ease-in-out;
 
   &__actions {
@@ -23,13 +24,15 @@ $txt-color-gray: #666;
   }
 
   &__img {
+    flex-shrink: 0;
+    max-width: 100%;
     object-fit: cover;
     height: 200px;
   }
 
   &__title {
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1rem;
     line-height: 1.2;
     letter-spacing: 0;
     margin-bottom: 5px;
@@ -40,6 +43,17 @@ $txt-color-gray: #666;
     font-size: 0.8rem;
     line-height: 1.2;
     margin-bottom: 5px;
+  }
+
+  &__title,
+  &__description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    line-height: 1.4;
+    max-height: calc(1.4em * 2);
   }
 
   &__author {

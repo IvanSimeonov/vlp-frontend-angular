@@ -1,7 +1,6 @@
 <div class="homepage">
-  <!-- Banner Section -->
   <section class="homepage-banner">
-    <img class="homepage-banner__image" src="/images/innovation_3.jpg" alt="Virtual Learning Banner" />
+    <img class="homepage-banner__image" src="/images/banner.jpeg" alt="Virtual Learning Banner" />
     <div class="homepage-banner__content">
       <p class="homepage-banner__quote">
         <span class="typewriter line1">“Anyone who stops learning is old, whether at twenty or eighty.</span><br />
@@ -18,40 +17,42 @@
       <button
         mat-icon-button
         class="featured-courses__container__nav-btn featured-courses__container__nav-btn__left"
-        (click)="scroll(-1)">
+        (click)="scroll(-1)"
+        [disabled]="currentIndex === 0">
         <mat-icon>chevron_left</mat-icon>
       </button>
 
-      <!-- Course Cards -->
-
       <div class="featured-courses__container__viewport">
-        @for (course of courses; let idx = $index; track idx) {
+        @for (course of courses(); let idx = $index; track course.id) {
           <app-course-card
             [style.transform]="getTransform()"
             class="featured-courses__container__viewport__card"
             [course]="course"
+            [courseImage]="fetchCourseImage(course)"
             (click)="navigateToCourseDetails(course.id!)"></app-course-card>
         }
       </div>
 
-      <!-- Right Chevron -->
       <button
         mat-icon-button
         class="featured-courses__container__nav-btn featured-courses__container__nav-btn__right"
-        (click)="scroll(1)">
+        (click)="scroll(1)"
+        [disabled]="currentIndex >= maxIndex()">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
   </section>
 
-  <!-- Top Teachers Section -->
   <section class="homepage-teachers">
     <h2 class="homepage-teachers__title">Top Teachers</h2>
     <div class="homepage-teachers__list">
-      <div class="homepage-teachers__card" *ngFor="let teacher of topTeachers">
-        <img [src]="teacher.photo" [alt]="teacher.name" class="homepage-teachers__card__photo" />
-        <h3 class="homepage-teachers__card__name">{{ teacher.name }}</h3>
-        <p class="homepage-teachers__card__bio">{{ teacher.bio }}</p>
+      <div class="homepage-teachers__card" *ngFor="let teacher of teachers()">
+        <img
+          [src]="fetchUserImage(teacher)"
+          [alt]="teacher.firstName + ' ' + teacher.lastName"
+          class="homepage-teachers__card__photo" />
+        <h3 class="homepage-teachers__card__name">{{ teacher.firstName }} {{ teacher.lastName }}</h3>
+        <p class="homepage-teachers__card__bio">{{ teacher.email }}</p>
         <button mat-stroked-button color="primary" (click)="navigateToTeacherProfile(teacher.id)">View Profile</button>
       </div>
     </div>

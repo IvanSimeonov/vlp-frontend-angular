@@ -118,6 +118,14 @@ export class CourseManagementComponent implements OnInit {
       });
   }
 
+  fetchCourseImage(course: CourseManagementDto) {
+    const imgPath = course.imagePath;
+    if (imgPath) {
+      return this.courseService.getCourseImage(imgPath);
+    }
+    return undefined;
+  }
+
   onPageChange(event: PageEvent): void {
     this.paginationSortingFiltering.update((state) => ({
       ...state,

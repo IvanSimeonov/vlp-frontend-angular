@@ -3,10 +3,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTabsModule } from '@angular/material/tabs';
-import { CourseCardComponent, ICourse } from '../../features/course/course-card/course-card.component';
+import { CourseCardComponent } from '../../features/course/course-card/course-card.component';
 import { CourseFilterBarComponent } from '../../features/course/course-filter-bar/course-filter-bar.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CourseRateDialogComponent } from '../../features/course/course-rate-dialog/course-rate-dialog.component';
+import { CourseOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 interface IUser {
   firstName?: string;
@@ -15,9 +16,9 @@ interface IUser {
   profileImg?: string;
   linkedIn?: string;
   role?: string;
-  enrolledCourses?: ICourse[];
-  createdCourses?: ICourse[];
-  completedCourses?: ICourse[];
+  enrolledCourses?: CourseOverviewDto[];
+  createdCourses?: CourseOverviewDto[];
+  completedCourses?: CourseOverviewDto[];
 }
 
 interface ITopic {
@@ -49,121 +50,9 @@ export class MyLearningsComponent {
     email: 'ivan@simeonov.bg',
     linkedIn: 'https://linkedin.com/',
     role: 'ROLE_TEACHER',
-    enrolledCourses: [
-      {
-        id: 1,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 2,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 3,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-
-      {
-        id: 4,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 5,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 6,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-    ],
-    createdCourses: [
-      {
-        id: 1,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 2,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 3,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-    ],
-    completedCourses: [
-      {
-        id: 1,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 2,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-      {
-        id: 3,
-        title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-        difficultyLevel: 'ADVANCED',
-        image: '/images/innovation_3.jpg',
-        rating: 4.6,
-        totalVotes: 522235,
-        author: 'Ivan Simeonov',
-      },
-    ],
+    enrolledCourses: [],
+    createdCourses: [],
+    completedCourses: [],
   };
 
   topics: ITopic[] = [
@@ -282,7 +171,7 @@ export class MyLearningsComponent {
     return this.user.role?.split('_')[1];
   }
 
-  handleRate(course: ICourse): void {
+  handleRate(course: CourseOverviewDto): void {
     const dialogRef = this.dialog.open(CourseRateDialogComponent, {
       width: '400px',
       data: { course },

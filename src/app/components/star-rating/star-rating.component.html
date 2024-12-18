@@ -1,17 +1,17 @@
 <div class="star-rating" [ngClass]="{ 'star-rating-editable': editable }">
-  <span *ngIf="!editable" class="star-rating__value">{{ rating }}</span>
+  <span *ngIf="!editable()" class="star-rating__value">{{ rating() | number: '1.1-1' }}</span>
   <ng-container *ngFor="let star of displayStars; let i = index">
     <mat-icon
       class="star-rating__icon"
       [ngClass]="{
-        'star-rating__icon--editable': editable,
-        'star-rating__icon--hovered': editable && i < hoveredRating,
+        'star-rating__icon--editable': editable(),
+        'star-rating__icon--hovered': editable() && i < hoveredRating(),
       }"
-      (mouseenter)="editable && onHover(i + 1)"
-      (mouseleave)="editable && onHover(0)"
-      (click)="editable && onRate(i + 1)">
+      (mouseenter)="editable() && onHover(i + 1)"
+      (mouseleave)="editable() && onHover(0)"
+      (click)="editable() && onRate(i + 1)">
       {{ star }}
     </mat-icon>
   </ng-container>
-  <span *ngIf="!editable" class="star-rating__votes">({{ totalVotes | whiteSpaceNumber }})</span>
+  <span *ngIf="!editable()" class="star-rating__votes">({{ totalVotes() | whiteSpaceNumber }})</span>
 </div>

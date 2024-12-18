@@ -31,11 +31,17 @@
     <div
       class="course-management-layout__content__filters mat-elevation-z8"
       [ngClass]="areFiltersVisible() ? '' : 'hidden'">
-      <app-course-filter [topics]="topics()" (filterChange)="applyFilters($event)"></app-course-filter>
+      <app-course-filter
+        [topics]="topics()"
+        [isManagement]="true"
+        (filterChange)="applyFilters($event)"></app-course-filter>
     </div>
     <div class="course-management-layout__content__courses mat-elevation-z8">
       @for (course of courses(); let idx = $index; track idx) {
-        <app-course-row [course]="course" (statusChange)="onCourseStatusEdit($event)"></app-course-row>
+        <app-course-row
+          [course]="course"
+          [courseImage]="fetchCourseImage(course)"
+          (statusChange)="onCourseStatusEdit($event)"></app-course-row>
         <mat-divider class="course-management-layout__content__courses__divider"></mat-divider>
       }
       <mat-paginator

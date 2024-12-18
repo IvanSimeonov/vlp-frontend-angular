@@ -1,61 +1,50 @@
-<div class="filter-sort">
-  <div class="filter__actions">
-    <button mat-stroked-button class="filter-sort__actions__filters" (click)="toggleVisibilty()">
-      Filter
-      <mat-icon> filter_list </mat-icon>
-    </button>
+<div class="course-layout" [ngClass]="{ 'course-layout--loading': isLoading() }">
+  <h4 class="course-layout__title">Explore courses</h4>
+  @if (isLoading()) {
+    <div class="course-layout__spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+  <div class="course-layout__actions">
+    <div class="course-layout__actions__filters-btn">
+      <button mat-fab extended (click)="toggleFiltersVisibility()">
+        <mat-icon> filter_list </mat-icon>
+        Filters
+      </button>
+    </div>
+    <div class="course-layout__actions__spacer"></div>
+    <div class="course-layout__actions__results">{{ totalCourses() }} total results</div>
+    <div class="course-layout__actions__sort-btn">
+      <mat-form-field subscriptSizing="dynamic" appearance="outline">
+        <mat-label class="course-layout__actions__sort-btn__label">
+          <mat-icon> sort </mat-icon>
+          <span>Sort By</span>
+        </mat-label>
+        <mat-select (selectionChange)="onSortChange($event)">
+          <mat-option value="title:asc"> Title: A-Z </mat-option>
+          <mat-option value="title:desc"> Title: Z-A </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
-  <div class="filter-sort__sort-results">
-    <mat-form-field appearance="outline" class="sort-form-field">
-      <mat-label class="sort-label">
-        <mat-icon> sort </mat-icon>
-        <span>Sort By</span>
-      </mat-label>
-      <mat-select>
-        <mat-option value="option1">
-          Title
-          <mat-icon>arrow_upward</mat-icon>
-        </mat-option>
-        <mat-option value="option2">
-          Title
-          <mat-icon>arrow_downward</mat-icon>
-        </mat-option>
-        <mat-option value="option1">
-          Rating
-          <mat-icon>arrow_upward</mat-icon>
-        </mat-option>
-        <mat-option value="option2">
-          Rating
-          <mat-icon>arrow_downward</mat-icon>
-        </mat-option>
-        <mat-option value="option1">
-          Votes
-          <mat-icon>arrow_upward</mat-icon>
-        </mat-option>
-        <mat-option value="option2">
-          Votes
-          <mat-icon>arrow_downward</mat-icon>
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    {{ courses.length }} results
-  </div>
-</div>
-<div class="course-layout">
-  <!-- Filter Section -->
-  <div class="course-layout__filter" [ngClass]="{ hidden: isHidden }">
-    <!-- <app-course-filter (filter)="applyFilters($event)"></app-course-filter> -->
-  </div>
-
-  <!-- Course List Section -->
-  <div class="course-layout__list">
-    @if (isLoading) {
-      <div class="loading-spinner">
-        <mat-spinner></mat-spinner>
+  <div class="course-layout__content">
+    <div class="course-layout__content__filters mat-elevation-z8" [ngClass]="areFiltersVisible() ? '' : 'hidden'">
+      <app-course-filter [topics]="topics()" (filterChange)="applyFilters($event)"></app-course-filter>
+    </div>
+    <div class="course-layout__content__courses mat-elevation-z8">
+      <div class="course-layout__content__courses__cards">
+        @for (course of courses(); let i = $index; track i) {
+          <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
+        }
       </div>
-    }
-    @for (course of courses; let i = $index; track i) {
-      <app-course-card class="course-list" [course]="course"></app-course-card>
-    }
+      <mat-paginator
+        class="course-layout__content__courses__paginator"
+        showFirstLastButtons
+        [length]="totalCourses() || 0"
+        [pageIndex]="paginationSortingFiltering().pageNumber"
+        [pageSize]="paginationSortingFiltering().pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"></mat-paginator>
+    </div>
   </div>
 </div>

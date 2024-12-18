@@ -1,9 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CourseCardComponent, ICourse } from '../../features/course/course-card/course-card.component';
+import { CourseCardComponent } from '../../features/course/course-card/course-card.component';
 import { Router } from '@angular/router';
+import {
+  CourseControllerService,
+  CourseOverviewDto,
+  TeacherOverviewDto,
+  UserControllerService,
+} from '@ivannicksim/vlp-backend-openapi-client';
 
 @Component({
   selector: 'app-homepage',
@@ -12,143 +18,83 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, MatIconModule, MatButtonModule, CourseCardComponent],
 })
-export class HomepageComponent {
-  courses: ICourse[] = [
-    {
-      id: 1,
-      title: '1 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 2,
-      title: '2 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 3,
-      title: '3 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 4,
-      title: '4 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 5,
-      title: '5 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 6,
-      title: '6 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 7,
-      title: '7 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 8,
-      title: '8 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 9,
-      title: '9 The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-  ];
+export class HomepageComponent implements OnInit {
+  private router = inject(Router);
+  private courseService = inject(CourseControllerService);
+  private userService = inject(UserControllerService);
 
-  topTeachers = [
-    {
-      id: 1,
-      name: 'John Doe',
-      bio: 'Expert in Machine Learning and AI with 10+ years of experience.',
-      photo: '/images/user-default-img.webp',
-    },
-    {
-      id: 2,
-      name: 'John Doe',
-      bio: 'Expert in Machine Learning and AI with 10+ years of experience.',
-      photo: '/images/user-default-img.webp',
-    },
-    {
-      id: 3,
-      name: 'John Doe',
-      bio: 'Expert in Machine Learning and AI with 10+ years of experience.',
-      photo: '/images/user-default-img.webp',
-    },
-  ];
+  courses = signal<CourseOverviewDto[]>([]);
+  teachers = signal<TeacherOverviewDto[]>([]);
+  teacherImages = new Map<number, string>();
 
   currentIndex = 0;
   slideDirection = 0;
+  maxIndex = computed(() => {
+    const totalCourses = this.courses().length;
+    return Math.max(0, totalCourses - 4);
+  });
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    this.fetchCourses();
+    this.fetchTeachers();
+  }
+
+  fetchCourses() {
+    this.courseService.getTopCoursesByStudentCount().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.courses.set(res);
+      },
+      error: (err) => {
+        console.error('Error: ', err);
+      },
+    });
+  }
+
+  fetchTeachers() {
+    this.userService.getTopTeachersByStudentCount().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.teachers.set(res);
+      },
+      error: (err) => {
+        console.error('Error: ', err);
+      },
+    });
+  }
+
+  fetchUserImage(user: TeacherOverviewDto): string {
+    const userId = user.id;
+    if (userId) {
+      if (this.teacherImages.has(userId)) {
+        return this.teacherImages.get(userId)!;
+      }
+      const imgPath = user.profileImagePath;
+      if (imgPath) {
+        this.userService.getProfileImage(imgPath).subscribe({
+          next: (res) => {
+            const imageUrl = URL.createObjectURL(res);
+            this.teacherImages.set(userId, imageUrl);
+          },
+          error: () => {
+            this.teacherImages.set(userId, '/images/user-default-img.webp');
+          },
+        });
+      } else {
+        this.teacherImages.set(userId, '/images/user-default-img.webp');
+      }
+    }
+
+    return '/images/user-default-img.webp';
+  }
+
+  fetchCourseImage(course: CourseOverviewDto) {
+    const imgPath = course.imagePath;
+    if (imgPath) {
+      return this.courseService.getCourseImage(imgPath);
+    }
+    return undefined;
+  }
 
   navigateToCourses() {
     this.router.navigate(['/courses']);
@@ -158,21 +104,24 @@ export class HomepageComponent {
     this.router.navigate(['/courses/', courseId]);
   }
 
-  navigateToTeacherProfile(userId: number) {
-    this.router.navigate([`user/${userId}/profile`]);
+  navigateToTeacherProfile(userId: number | undefined) {
+    if (userId) {
+      this.router.navigate([`user/${userId}/profile`]);
+    }
   }
 
   scroll(direction: number) {
-    const totalCourses = this.courses.length - 2;
-    if (direction === 1) {
-      this.currentIndex = (this.currentIndex + 1) % totalCourses;
-    } else if (direction === -1) {
-      this.currentIndex = (this.currentIndex - 1 + totalCourses) % totalCourses;
+    if (direction === 1 && this.currentIndex < this.maxIndex()) {
+      this.currentIndex++;
+    } else if (direction === -1 && this.currentIndex > 0) {
+      this.currentIndex--;
     }
   }
 
   getTransform(): string {
-    const cardWidth = 100;
-    return `translateX(-${this.currentIndex * cardWidth}%)`;
+    const cardWidth = 300;
+    const gap = 16;
+    const totalCardWidth = cardWidth + gap;
+    return `translateX(-${this.currentIndex * totalCardWidth}px)`;
   }
 }

@@ -12,6 +12,7 @@ import {
 import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { Observable } from 'rxjs';
 
 export interface ICourse {
   title?: string;
@@ -43,11 +44,23 @@ export interface ICourse {
 })
 export class CourseRowComponent implements OnInit {
   course = input.required<CourseManagementDto>();
+  courseImage = input<Observable<Blob> | undefined>(undefined);
+  courseImageUrl: string | undefined;
   isPublished = false;
   statusChange = output<{ courseId: number; courseStatusUpdateDto: CourseStatusUpdateDto }>();
 
   ngOnInit(): void {
     this.isPublished = this.course().status === CourseSearchCriteriaDto.StatusEnum.Published;
+    if (this.courseImage()) {
+      this.courseImage()?.subscribe({
+        next: (res) => {
+          this.courseImageUrl = URL.createObjectURL(res);
+        },
+        error: () => {
+          this.courseImageUrl = undefined;
+        },
+      });
+    }
   }
 
   onStatusChange(isPublished: boolean): void {

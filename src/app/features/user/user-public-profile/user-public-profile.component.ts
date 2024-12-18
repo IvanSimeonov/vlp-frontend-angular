@@ -5,7 +5,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { CourseCardComponent } from '../../course/course-card/course-card.component';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import {
-  CourseUserProfileDto,
+  CourseOverviewDto,
   UserControllerService,
   UserPublicProfileDto,
 } from '@ivannicksim/vlp-backend-openapi-client';
@@ -26,8 +26,8 @@ export class UserPublicProfileComponent implements OnInit {
 
   user = signal<UserPublicProfileDto>({});
   userProfileImage = signal<Blob | string | undefined>(undefined);
-  currentPageCreatedCourses = signal<CourseUserProfileDto[]>([]);
-  currentPageEnrolledCourses = signal<CourseUserProfileDto[]>([]);
+  currentPageCreatedCourses = signal<CourseOverviewDto[]>([]);
+  currentPageEnrolledCourses = signal<CourseOverviewDto[]>([]);
 
   createdCoursesPageSize = 10;
   enrolledCoursesPageSize = 10;
@@ -85,12 +85,14 @@ export class UserPublicProfileComponent implements OnInit {
   private updateEnrolledCoursesPage(pageIndex: number, pageSize: number) {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    this.currentPageCreatedCourses.set(this.user().createdCourses?.slice(start, end) || []);
+    console.log(end);
+    // this.currentPageCreatedCourses.set(this.user().createdCourses?.slice(start, end) || []);
   }
 
   private updateCreatedCoursesPage(pageIndex: number, pageSize: number) {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    this.currentPageEnrolledCourses.set(this.user().enrolledCourses?.slice(start, end) || []);
+    console.log(end);
+    // this.currentPageEnrolledCourses.set(this.user().enrolledCourses?.slice(start, end) || []);
   }
 }

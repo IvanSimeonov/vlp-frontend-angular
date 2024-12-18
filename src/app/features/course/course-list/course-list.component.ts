@@ -1,13 +1,20 @@
-import { Component, signal } from '@angular/core';
-import { CourseCardComponent, ICourse } from '../course-card/course-card.component';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CourseCardComponent } from '../course-card/course-card.component';
 import { CourseFilterComponent } from '../course-filter/course-filter.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { CourseManagementDto, CourseSearchCriteriaDto } from '@ivannicksim/vlp-backend-openapi-client';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import {
+  CourseControllerService,
+  CourseOverviewDto,
+  TopicAnalyticsDto,
+  TopicControllerService,
+} from '@ivannicksim/vlp-backend-openapi-client';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-course-list',
@@ -20,12 +27,22 @@ import { CourseManagementDto, CourseSearchCriteriaDto } from '@ivannicksim/vlp-b
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
+    MatPaginatorModule,
     CommonModule,
   ],
   templateUrl: './course-list.component.html',
   styleUrl: './course-list.component.scss',
 })
-export class CourseListComponent {
+export class CourseListComponent implements OnInit {
+  private courseService = inject(CourseControllerService);
+  private topicService = inject(TopicControllerService);
+
+  courses = signal<CourseOverviewDto[]>([]);
+  totalCourses = signal<number>(0);
+  topics = signal<TopicAnalyticsDto[]>([]);
+  isLoading = signal(false);
+  areFiltersVisible = signal(true);
+
   paginationSortingFiltering = signal<{
     pageNumber: number;
     pageSize: number;
@@ -34,8 +51,7 @@ export class CourseListComponent {
     searchTitle: string;
     searchAuthor: string;
     topic: string | undefined;
-    difficultyLevel: CourseManagementDto.DifficultyLevelEnum | undefined;
-    status: CourseSearchCriteriaDto.StatusEnum | undefined;
+    difficultyLevel: CourseOverviewDto.DifficultyLevelEnum | undefined;
   }>({
     pageNumber: 0,
     pageSize: 10,
@@ -45,220 +61,99 @@ export class CourseListComponent {
     searchAuthor: '',
     topic: '',
     difficultyLevel: undefined,
-    status: undefined,
   });
-  courses: ICourse[] = [
-    {
-      id: 1,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 2,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 3,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 4,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 5,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 6,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 7,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 8,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 9,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 10,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 11,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 12,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 13,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-    {
-      id: 14,
-      title: 'The Complete Python Bootcamp From Zero to Hero in Python',
-      description:
-        'Learn Python like a Professional Start from the basics and go all the way to creating your own applications and games.',
-      difficultyLevel: 'ADVANCED',
-      image: '/images/innovation_3.jpg',
-      rating: 4.6,
-      totalVotes: 522235,
-      author: 'Ivan Simeonov',
-      totalLectures: 3,
-    },
-  ];
-  isLoading = false;
-  isHidden = false;
-  title = '';
 
-  toggleVisibilty() {
-    this.isHidden = !this.isHidden;
+  ngOnInit(): void {
+    this.fetchCourses();
+    this.fetchTopics();
+  }
+
+  fetchTopics(): void {
+    this.topicService.getTopicAnalytics().subscribe({
+      next: (res) => {
+        this.topics.set(res);
+      },
+      error: (err) => {
+        console.error('Error: ', err);
+      },
+    });
+  }
+
+  fetchCourses(): void {
+    this.isLoading.set(true);
+    const { pageNumber, pageSize, sortBy, sortDirection, searchTitle, searchAuthor, topic, difficultyLevel } =
+      this.paginationSortingFiltering();
+    this.courseService
+      .getCourseOverview(
+        {
+          title: searchTitle,
+          authorName: searchAuthor,
+          difficultyLevel: difficultyLevel,
+          topic: topic,
+        },
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection
+      )
+      .pipe(delay(300))
+      .subscribe({
+        next: (res) => {
+          console.log(res.content);
+          this.courses.set(res.content || []);
+          this.totalCourses.set(res.totalElements || 0);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error: ', err);
+          this.isLoading.set(false);
+        },
+      });
+  }
+
+  fetchCourseImage(course: CourseOverviewDto) {
+    const imgPath = course.imagePath;
+    if (imgPath) {
+      return this.courseService.getCourseImage(imgPath);
+    }
+    return undefined;
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      pageNumber: event.pageIndex,
+      pageSize: event.pageSize,
+    }));
+    this.fetchCourses();
+  }
+
+  onSortChange(event: MatSelectChange): void {
+    const [sortBy, sortDirection] = event.value.split(':');
+    this.paginationSortingFiltering.update((state) => ({
+      ...state,
+      pageNumber: 0,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+    }));
+    this.fetchCourses();
+  }
+
+  toggleFiltersVisibility(): void {
+    this.areFiltersVisible.set(!this.areFiltersVisible());
   }
 
   applyFilters(filters: {
     title: string;
     author: string;
     topic: string | undefined;
-    difficulty: CourseSearchCriteriaDto.DifficultyLevelEnum | undefined;
-    status: CourseSearchCriteriaDto.StatusEnum | undefined;
+    difficulty: CourseOverviewDto.DifficultyLevelEnum | undefined;
   }): void {
-    console.log('Filters: ', filters);
     this.paginationSortingFiltering().searchTitle = filters.title;
     this.paginationSortingFiltering().searchAuthor = filters.author;
     this.paginationSortingFiltering().topic = filters.topic;
     this.paginationSortingFiltering().difficultyLevel = filters.difficulty;
-    this.paginationSortingFiltering().status = filters.status;
+    this.paginationSortingFiltering().pageNumber = 0;
+    this.fetchCourses();
   }
 }

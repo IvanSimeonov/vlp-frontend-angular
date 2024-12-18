@@ -1,8 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { ICourse } from '../course-card/course-card.component';
 import { StarRatingComponent } from '../../../components/star-rating/star-rating.component';
 import { MatButtonModule } from '@angular/material/button';
+import { CourseOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 @Component({
   selector: 'app-course-rate-dialog',
@@ -16,7 +16,7 @@ export class CourseRateDialogComponent {
 
   constructor(
     private dialogRef: MatDialogRef<CourseRateDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { course: ICourse }
+    @Inject(MAT_DIALOG_DATA) public data: { course: CourseOverviewDto }
   ) {}
 
   onRatingChange(rating: number): void {

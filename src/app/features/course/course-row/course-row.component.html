@@ -1,6 +1,5 @@
 <div class="course-layout">
-  <img class="course-layout__img" [src]="'/images/course-default-img.jpeg'" alt="Course Thumbnail" />
-  <!-- <img class="course-layout__img" [src]="course?.image || '/images/course-default-img.jpeg'" alt="Course Thumbnail" /> -->
+  <img class="course-layout__img" [src]="courseImageUrl || '/images/course-default-img.jpeg'" alt="Course Thumbnail" />
   <div class="course-layout__content">
     <div class="course-layout__content__layout">
       <p class="course-layout__content__layout__subtitle">
@@ -12,11 +11,6 @@
         {{ course().author?.firstName }} {{ course().author?.lastName }}
       </p>
       <div class="course-layout__content__layout__spacer"></div>
-      <!-- @if (course && course.rating && course.totalVotes) {
-        <div class="course-layout__content__layout__rating">
-          <app-star-rating [rating]="course.rating" [totalVotes]="course.totalVotes"></app-star-rating>
-        </div>
-      } -->
       <p class="course-layout__content__layout__difficulty">{{ formatDifficultyLevel(course().difficultyLevel) }}</p>
       <p class="course-layout__content__layout__students">Students: {{ course().totalStudents }}</p>
     </div>

@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CourseListComponent } from './course-list.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('CourseListComponent', () => {
   let component: CourseListComponent;
@@ -10,7 +11,7 @@ describe('CourseListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CourseListComponent],
-      providers: [provideAnimations()],
+      providers: [provideAnimations(), provideHttpClient()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CourseListComponent);

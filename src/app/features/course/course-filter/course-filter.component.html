@@ -29,15 +29,17 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
-    <mat-label>Status</mat-label>
-    <mat-select formControlName="status">
-      <mat-option value="">All</mat-option>
-      <mat-option *ngFor="let status of statuses" [value]="status">
-        {{ formatStatus(status) }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  @if (isManagement()) {
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="course-filter__field">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let status of statuses" [value]="status">
+          {{ formatStatus(status) }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  }
 
   <div class="course-filter__actions">
     <button mat-button color="warn" (click)="onReset()">Reset</button>

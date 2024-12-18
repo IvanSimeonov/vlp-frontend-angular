@@ -16,7 +16,7 @@
     &__content {
       position: absolute;
       top: 50%;
-      left: 50%;
+      left: 30%;
       transform: translate(-50%, -50%);
       display: flex;
       flex-direction: column;
@@ -39,19 +39,19 @@
         visibility: hidden;
 
         &.line1 {
-          animation: typing1 4s steps(60) 0.5s forwards;
+          animation: typing1 2s steps(60) 0.5s forwards;
           animation-fill-mode: forwards;
           border-right: none;
         }
 
         &.line2 {
-          animation: typing2 4s steps(60) 4.5s forwards;
+          animation: typing2 2s steps(60) 2.5s forwards;
           animation-fill-mode: forwards;
           border-right: none;
         }
 
         &.line3 {
-          animation: typing3 6s steps(65) 7s forwards;
+          animation: typing3 2s steps(65) 4s forwards;
           animation-fill-mode: forwards;
           border-right: none;
         }
@@ -63,7 +63,7 @@
       font-weight: bold;
       padding: 0.5rem 1.5rem;
       opacity: 0;
-      animation: fade-in 1.5s ease-in-out 13s forwards;
+      animation: fade-in 1.5s ease-in-out 6s forwards;
     }
   }
 
@@ -125,22 +125,24 @@
     }
 
     &__container {
-      max-width: 900px;
+      width: 1300px;
       position: relative;
       display: flex;
       align-items: center;
 
       &__viewport {
-        max-width: 900px;
         display: flex;
         overflow: hidden;
-        padding: 1rem 0;
         position: relative;
+        gap: 16px;
+        width: 1300px;
 
         &__card {
+          box-sizing: border-box;
           width: 300px;
+          margin: 16px 0;
           transition: transform 0.5s ease-in-out;
-          padding: 0 1rem;
+          flex-shrink: 0;
         }
       }
 
@@ -164,7 +166,8 @@
   }
 
   &-teachers {
-    padding: 2rem;
+    background-color: #f1f0f0;
+    padding: 2rem 2rem 4rem 2rem;
     text-align: center;
 
     &__title {
@@ -196,8 +199,8 @@
       }
 
       &__photo {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
         margin-bottom: 1rem;
         object-fit: cover;
@@ -219,6 +222,34 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
       }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .homepage {
+    .homepage-banner {
+      &__content {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+      }
+      &__quote {
+        font-size: 0.6rem;
+        width: 100%;
+      }
+    }
+  }
+
+  .featured-courses__container__viewport {
+    width: 400px !important;
+  }
+
+  .homepage-teachers {
+    &__list {
+      display: flex;
+      flex-direction: column;
     }
   }
 }
