@@ -7,51 +7,79 @@
       achievement with every step forward.
     </p>
   </div>
-  <div class="learnings__content">
-    <div class="learnings__content__filters">
-      <app-course-filter-bar
-        [filters]="activeTab === 'enrolled' ? enrolledCourseFilters : createdCourseFilters"
-        [sortOptions]="activeTab === 'enrolled' ? enrolledCourseSortOptions : createdCourseSortOptions"
-        (filterChange)="handleFiltersChange($event)"
-        (sortChange)="handleSortChange($event)"></app-course-filter-bar>
+  @if (isLoading()) {
+    <div class="learnings__spinner">
+      <mat-spinner></mat-spinner>
     </div>
+  }
+  <div class="learnings__content">
     <div class="learnings__content__courses">
-      <mat-tab-group animationDuration="1000ms" (selectedIndexChange)="handleTabChange($event)">
-        @if (user.role === 'ROLE_TEACHER') {
-          <mat-tab [label]="'Created Courses (' + user.createdCourses?.length + ')'">
+      <mat-tab-group
+        animationDuration="1000ms"
+        (selectedIndexChange)="handleTabChange($event)"
+        [ngClass]="{ 'learnings__content--loading': isLoading() }">
+        @if (isUserTeacher()) {
+          <mat-tab [label]="'Created Courses (' + this.totalCreatedCourses() + ')'">
+            <app-course-filter-bar
+              [topics]="topics()"
+              [isUserTeacher]="isUserTeacher()"
+              [sortOptions]="createdCourseSortOptions"
+              (filterChange)="handleCreatedCoursesFiltersChange($event)"
+              (sortChange)="sortCreatedCourses($event)"></app-course-filter-bar>
             <div class="learnings__content__courses__created">
-              @for (course of user.createdCourses; track $index) {
-                <app-course-card [course]="course" [isUserCourseOwner]="true"></app-course-card>
+              @for (course of createdCourses(); track $index) {
+                <app-course-card
+                  [course]="course"
+                  [courseImage]="fetchCourseImage(course)"
+                  [isUserCourseOwner]="isUserCourseOwner(course)"
+                  (delete)="handleDelete(course)"></app-course-card>
               }
             </div>
             <mat-paginator
-              [length]="user.createdCourses?.length"
-              [pageSize]="createdCoursesPageSize"
-              [pageSizeOptions]="[10, 25, 50, 100]"
+              [length]="totalCreatedCourses() || 0"
+              [pageIndex]="paginationSortingFilteringCreated().pageNumber"
+              [pageSize]="paginationSortingFilteringCreated().pageSize"
+              [pageSizeOptions]="[1, 25, 50, 100]"
               (page)="paginateCreatedCourses($event)"></mat-paginator>
           </mat-tab>
         }
-        <mat-tab [label]="'Enrolled Courses (' + user.enrolledCourses?.length + ')'">
+        <mat-tab [label]="'Enrolled Courses (' + totalEnrolledCourses() + ')'">
+          <app-course-filter-bar
+            [topics]="topics()"
+            [sortOptions]="enrolledCourseSortOptions"
+            (filterChange)="handleEnrolledCoursesFiltersChange($event)"
+            (sortChange)="sortEnrolledCourses($event)"></app-course-filter-bar>
           <div class="learnings__content__courses__enrolled">
-            @for (course of user.enrolledCourses; track $index) {
-              <app-course-card [course]="course"></app-course-card>
+            @for (course of enrolledCourses(); track $index) {
+              <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
             }
           </div>
           <mat-paginator
-            [length]="user.enrolledCourses?.length"
-            [pageSize]="enrolledCoursesPageSize"
+            [length]="totalEnrolledCourses()"
+            [pageIndex]="paginationSortingFilteringEnrolled().pageNumber"
+            [pageSize]="paginationSortingFilteringEnrolled().pageSize"
             [pageSizeOptions]="[10, 25, 50, 100]"
             (page)="paginateEnrolledCourses($event)"></mat-paginator>
         </mat-tab>
-        <mat-tab [label]="'Completed Courses (' + user.completedCourses?.length + ')'">
+        <mat-tab [label]="'Completed Courses (' + totalCompletedCourses() + ')'">
+          <app-course-filter-bar
+            [topics]="topics()"
+            [sortOptions]="completedCourseSortOptions"
+            (filterChange)="handleCompletedCoursesFiltersChange($event)"
+            (sortChange)="sortCompletedCourses($event)"></app-course-filter-bar>
           <div class="learnings__content__courses__completed">
-            @for (course of user.completedCourses; track $index) {
-              <app-course-card [course]="course" [canRateCourse]="true" (rate)="handleRate(course)"></app-course-card>
+            @for (course of completedCourses(); track $index) {
+              <app-course-card
+                [course]="course"
+                [courseImage]="fetchCourseImage(course)"
+                [canRateCourse]="true"
+                (rate)="handleRate(course)"></app-course-card>
             }
           </div>
           <mat-paginator
-            [length]="user.completedCourses?.length"
-            [pageSize]="completedCoursesPageSize"
+            [length]="totalCompletedCourses() || 0"
+            [pageIndex]="paginationSortingFilteringCompleted().pageNumber"
+            [pageSize]="paginationSortingFilteringCompleted().pageSize"
             [pageSizeOptions]="[10, 25, 50, 100]"
             (page)="paginateCompletedCourses($event)"></mat-paginator>
         </mat-tab>

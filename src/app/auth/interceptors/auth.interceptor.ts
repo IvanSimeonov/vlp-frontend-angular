@@ -12,7 +12,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const authToken = this.authService.getAccessToken();
-    const isWhiteListed = this.WHITE_LISTED_URLS.some((url) => request.url.includes(url));
+    const isWhiteListed = this.WHITE_LISTED_URLS.some((url) => request.url === url);
     if (authToken && !isWhiteListed) {
       request = request.clone({
         headers: request.headers.set('Authorization', `Bearer ${authToken}`),

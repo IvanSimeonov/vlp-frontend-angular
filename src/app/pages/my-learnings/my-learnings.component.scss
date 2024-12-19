@@ -2,10 +2,25 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  position: relative;
+
+  &__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+  }
 
   &__header {
     text-align: left;
-    padding: 6rem 50rem 6rem 3rem;
+    padding: 6rem 40rem 6rem 3rem;
     background: linear-gradient(to right, #73479a 30%, #9c7cc0);
     color: white;
 
@@ -39,4 +54,25 @@
       justify-content: start;
     }
   }
+}
+
+@media (max-width: 1600px) {
+  .learnings {
+    &__header {
+      padding: 6rem 20rem 6rem 3rem;
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  .learnings {
+    &__header {
+      padding: 6rem 3rem 6rem 3rem;
+    }
+  }
+}
+
+.learnings__content--loading {
+  opacity: 0.6;
+  pointer-events: none;
 }

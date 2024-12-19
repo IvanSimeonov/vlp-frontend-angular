@@ -1,44 +1,40 @@
 <div class="filter-bar">
-  @if (isUserCourseOwner) {
+  @if (isUserTeacher) {
     <button class="create-btn" mat-fab extended color="primary" (click)="navigateToCourseCreation()">
       <mat-icon>add</mat-icon>
       Create course
     </button>
   }
-  <mat-form-field class="filter-bar__search" appearance="outline" subscriptSizing="dynamic">
-    <mat-label>Search</mat-label>
-    <input matInput type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" placeholder="Search courses" />
-    @if (searchQuery) {
-      <button matSuffix mat-icon-button (click)="resetFiltersAndSorting()">
-        <mat-icon>close</mat-icon>
-      </button>
-    } @else {
+  <form [formGroup]="filterForm" class="filter-bar__form">
+    <mat-form-field class="filter-bar__form__search" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Search</mat-label>
+      <input matInput type="text" formControlName="title" placeholder="Enter course title" />
       <mat-icon matSuffix>search</mat-icon>
-    }
-  </mat-form-field>
-  @for (filter of filters; track $index) {
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-bar__filter">
-      <mat-label>{{ filter.label }}</mat-label>
-      <mat-select [value]="activeFilters[filter.id] || ''" (selectionChange)="onFilterChange(filter.id, $event.value)">
-        @for (option of filter.options; track $index) {
-          <mat-option [value]="option">
-            {{ option }}
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="filter-ber__form__topic">
+      <mat-label>Topic</mat-label>
+      <mat-select formControlName="topic">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let topic of topics" [value]="topic.title">
+          {{ topic.title }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-bar__form__sort">
+      <mat-label>Sort by</mat-label>
+      <mat-select formControlName="sort" (selectionChange)="onSortChange($event)">
+        @for (sort of sortOptions; track $index) {
+          <mat-option [value]="sort.id">
+            {{ sort.label }}
           </mat-option>
         }
       </mat-select>
     </mat-form-field>
-  }
 
-  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-bar__sort">
-    <mat-label>Sort by</mat-label>
-    <mat-select (selectionChange)="onSortChange($event.value)">
-      @for (sort of sortOptions; track $index) {
-        <mat-option [value]="sort.id">
-          {{ sort.label }}
-        </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-
-  <button class="reset-btn" mat-fab extended color="primary" (click)="resetFiltersAndSorting()">Reset</button>
+    <button class="filter-bar__form__reset-btn" mat-fab extended color="primary" (click)="resetFiltersAndSorting()">
+      Reset
+    </button>
+  </form>
 </div>

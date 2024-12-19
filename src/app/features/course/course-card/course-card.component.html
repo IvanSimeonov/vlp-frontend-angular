@@ -6,10 +6,10 @@
     alt="Course Image" />
   @if (isUserCourseOwner()) {
     <div class="course-card__actions">
-      <button mat-mini-fab class="course-card__actions__edit-btn" (click)="editCourse()">
+      <button mat-mini-fab class="course-card__actions__edit-btn" (click)="editCourse($event)">
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-mini-fab class="course-card__actions__delete-btn" (click)="deleteCourse()">
+      <button mat-mini-fab class="course-card__actions__delete-btn" (click)="deleteCourse($event)">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
@@ -30,7 +30,7 @@
       <span>{{ course().difficultyLevel | titlecase }}</span>
       <span>{{ course().topic?.title | titlecase }}</span>
       @if (canRateCourse()) {
-        <button mat-button (click)="onRate()">Rate</button>
+        <button mat-button (click)="onRate($event)">Rate</button>
       }
     </div>
   </mat-card-content>

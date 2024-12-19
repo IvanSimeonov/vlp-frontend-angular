@@ -23,6 +23,7 @@ export class CourseCardComponent implements OnInit {
   canRateCourse = input<boolean>(false);
   isUserCourseOwner = input<boolean>(false);
   rate = output();
+  delete = output();
 
   ngOnInit(): void {
     if (this.courseImage()) {
@@ -37,15 +38,18 @@ export class CourseCardComponent implements OnInit {
     }
   }
 
-  onRate(): void {
+  onRate(event: MouseEvent): void {
+    event.stopPropagation();
     this.rate.emit();
   }
 
-  editCourse() {
+  editCourse(event: MouseEvent) {
+    event.stopPropagation();
     this.router.navigate(['/courses/edit', this.course().id]);
   }
-  deleteCourse() {
-    this.router.navigate(['/courses/edit', this.course().id]);
+  deleteCourse(event: MouseEvent) {
+    event.stopPropagation();
+    this.delete.emit();
   }
 
   openCourseDetails() {
