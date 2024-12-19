@@ -28,8 +28,10 @@ export class UserPublicProfileComponent implements OnInit {
   userProfileImage = signal<Blob | string | undefined>(undefined);
   currentPageCreatedCourses = signal<CourseOverviewDto[]>([]);
   currentPageEnrolledCourses = signal<CourseOverviewDto[]>([]);
+  currentPageCompletedCourses = signal<CourseOverviewDto[]>([]);
 
   createdCoursesPageSize = 10;
+  completedCoursesPageSize = 10;
   enrolledCoursesPageSize = 10;
 
   ngOnInit(): void {
@@ -40,6 +42,7 @@ export class UserPublicProfileComponent implements OnInit {
           this.user.set(res);
           this.updateCreatedCoursesPage(0, this.createdCoursesPageSize);
           this.updateEnrolledCoursesPage(0, this.enrolledCoursesPageSize);
+          this.updateCompletedCoursesPage(0, this.completedCoursesPageSize);
           const imagePath = res.profileImagePath;
           if (imagePath) {
             this.userService.getProfileImage(imagePath).subscribe({
@@ -65,13 +68,14 @@ export class UserPublicProfileComponent implements OnInit {
     this.updateEnrolledCoursesPage(event.pageIndex, event.pageSize);
   }
 
+  paginateCompletedCourses(event: PageEvent): void {
+    this.completedCoursesPageSize = event.pageSize;
+    this.updateCompletedCoursesPage(event.pageIndex, event.pageSize);
+  }
+
   paginateEnrolledCourses(event: PageEvent): void {
     this.enrolledCoursesPageSize = event.pageSize;
     this.updateCreatedCoursesPage(event.pageIndex, event.pageSize);
-  }
-
-  getTotalStudents() {
-    return this.user().createdCourses?.reduce((total, course) => total + (course.totalStudents || 0), 0) || 0;
   }
 
   isUserTeacher() {
@@ -86,13 +90,20 @@ export class UserPublicProfileComponent implements OnInit {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
     console.log(end);
-    // this.currentPageCreatedCourses.set(this.user().createdCourses?.slice(start, end) || []);
+    this.currentPageCreatedCourses.set(this.user().createdCourses?.slice(start, end) || []);
   }
 
   private updateCreatedCoursesPage(pageIndex: number, pageSize: number) {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
     console.log(end);
-    // this.currentPageEnrolledCourses.set(this.user().enrolledCourses?.slice(start, end) || []);
+    this.currentPageEnrolledCourses.set(this.user().enrolledCourses?.slice(start, end) || []);
+  }
+
+  private updateCompletedCoursesPage(pageIndex: number, pageSize: number) {
+    const start = pageIndex * pageSize;
+    const end = start + pageSize;
+    console.log(end);
+    this.currentPageCompletedCourses.set(this.user().completedCourses?.slice(start, end) || []);
   }
 }

@@ -12,16 +12,6 @@
             <h2 class="public-profile__layout__main-info__details__data__name">
               {{ user().firstName }} {{ user().lastName }}
             </h2>
-            @if (isUserTeacher()) {
-              <section class="public-profile__layout__main-info__details__data__stats">
-                <div class="public-profile__layout__main-info__details__data__stats__students">
-                  <h4 class="public-profile__layout__main-info__details__data__stats__students__label">Students</h4>
-                  <h4 class="public-profile__layout__main-info__details__data__stats__students__value">
-                    {{ getTotalStudents() }}
-                  </h4>
-                </div>
-              </section>
-            }
           </div>
         </div>
 
@@ -55,6 +45,19 @@
               [pageSize]="enrolledCoursesPageSize"
               [pageSizeOptions]="[10, 25, 50, 100]"
               (page)="paginateEnrolledCourses($event)"
+              showFirstLastButtons="true"></mat-paginator>
+          </mat-tab>
+          <mat-tab [label]="'Completed Courses (' + user().completedCourses?.length + ')'">
+            <div class="public-profile__layout__courses__completed">
+              @for (course of currentPageCompletedCourses(); track $index) {
+                <app-course-card [course]="course"></app-course-card>
+              }
+            </div>
+            <mat-paginator
+              [length]="user().completedCourses?.length"
+              [pageSize]="completedCoursesPageSize"
+              [pageSizeOptions]="[10, 25, 50, 100]"
+              (page)="paginateCompletedCourses($event)"
               showFirstLastButtons="true"></mat-paginator>
           </mat-tab>
           @if (isUserTeacher()) {
