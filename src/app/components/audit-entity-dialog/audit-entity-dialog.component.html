@@ -55,7 +55,7 @@
             @for (item of element.changes; track $index) {
               <div class="audit-element-description-item">
                 <div>{{ element.changed[$index] }}</div>
-                <div>{{ element.changes[$index] }}</div>
+                <div>{{ element.changes[$index] | json }}</div>
               </div>
             }
           </div>

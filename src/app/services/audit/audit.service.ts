@@ -27,8 +27,6 @@ export class AuditService {
   constructor(private http: HttpClient) {}
 
   getDemoShadows(type: string, id: number): Observable<JaversShadowDto[]> {
-    type = 'bg.tusofia.vlp.lecture.domain.Lecture';
-    id = 42;
-    return this.http.get(`/api/v1/audit/shadows?typeName=${type}&id=${id}`) as Observable<JaversShadowDto[]>;
+    return this.http.get<JaversShadowDto[]>(`/api/v1/audit/shadows?typeName=${type}&id=${id}`);
   }
 }

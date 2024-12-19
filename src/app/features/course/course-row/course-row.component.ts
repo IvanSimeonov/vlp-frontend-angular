@@ -46,7 +46,7 @@ export class CourseRowComponent implements OnInit {
   auditService = inject(AuditService);
 
   openAuditDialogForCourse() {
-    this.auditService.getDemoShadows('xxx', 3).subscribe((shadows) => {
+    this.auditService.getDemoShadows('bg.tusofia.vlp.course.domain.Course', this.course().id!).subscribe((shadows) => {
       this.auditDialog.open(AuditEntityDialogComponent, {
         data: {
           actual: this.course(),
