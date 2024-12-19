@@ -10,6 +10,7 @@ import { CourseRateDialogComponent } from '../../features/course/course-rate-dia
 import {
   CourseControllerService,
   CourseOverviewDto,
+  CourseRatingDto,
   TopicAnalyticsDto,
   TopicControllerService,
 } from '@ivannicksim/vlp-backend-openapi-client';
@@ -235,8 +236,25 @@ export class MyLearningsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((rating) => {
-      if (rating) {
+      const courseId = course.id;
+      const userId = this.user()?.id;
+
+      if (rating && courseId && userId) {
         console.log('Rated with: ', rating);
+        const courseRatingDto: CourseRatingDto = {
+          courseId,
+          userId,
+          rating,
+        };
+        this.courseService.rateCourseById(courseId, courseRatingDto).subscribe({
+          next: () => {
+            this.snackBar.open('Course rated successfully', 'Close', { duration: 3000 });
+            this.fetchCompletedCourses();
+          },
+          error: () => {
+            this.snackBar.open('Failed to rate the course', 'Close', { duration: 3000 });
+          },
+        });
       }
     });
   }
