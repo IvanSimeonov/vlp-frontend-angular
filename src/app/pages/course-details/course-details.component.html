@@ -1,24 +1,30 @@
 <div class="course">
   <section class="course__header">
     <div class="course__header__content">
-      <h1 class="course__header__content__title">{{ course?.title }}</h1>
+      <h1 class="course__header__content__title">{{ course()?.title }}</h1>
       <p class="course__header__content__short-desc">
-        {{ course?.shortDescription }}
+        {{ course()?.shortDescription }}
       </p>
       <div class="course__header__content__topic">
         <mat-icon>subject</mat-icon>
-        <span>{{ course?.topic }}</span>
+        <span>{{ course()?.topicOverviewDto?.title }}</span>
+      </div>
+      <div class="course__header__content__difficulty">
+        <mat-icon>speed</mat-icon>
+        <span>{{ formatDifficultyLevel() }}</span>
       </div>
       <div class="course__header__content__rating">
-        <app-star-rating [rating]="course?.rating ?? 0" [totalVotes]="course?.totalVotes ?? 0"></app-star-rating>
+        <app-star-rating
+          [rating]="course()?.averageRating ?? 0"
+          [totalVotes]="course()?.totalRatings ?? 0"></app-star-rating>
       </div>
       <div class="course__header__content__updated">
         <mat-icon>schedule</mat-icon>
-        <span>Last Updated: {{ course?.lastUpdated | date: 'longDate' }}</span>
+        <span>Last Updated: {{ course()?.modificationDate | date: 'longDate' }}</span>
       </div>
       <div class="course__header__content__created">
         <mat-icon>account_circle</mat-icon>
-        <span>Created by: {{ course?.author }}</span>
+        <span>Created by: {{ course()?.author?.firstName }} {{ course()?.author?.lastName }}</span>
       </div>
     </div>
   </section>
@@ -28,15 +34,15 @@
         <div class="course__body__tab-desc">
           <div class="course__body__tab-desc__req">
             <h4 class="course__body__tab-desc__req__title">Requirements</h4>
-            <p class="course__body__tab-desc__req__content" [innerHTML]="course?.requirements"></p>
+            <p class="course__body__tab-desc__req__content" [innerHTML]="course()?.requirements"></p>
           </div>
           <div class="course__body__tab-desc__desc">
             <h4 class="course__body__tab-desc__desc__title">Description</h4>
-            <p class="course__body__tab-desc__desc__content" [innerHTML]="course?.fullDescription"></p>
+            <p class="course__body__tab-desc__desc__content" [innerHTML]="course()?.fullDescription"></p>
           </div>
         </div>
       </mat-tab>
-      <mat-tab [disabled]="!isUserCourseAuthor && !isUserEnrolled">
+      <mat-tab [disabled]="!isUserCourseAuthor() && !isUserEnrolled() && !isUserCompletedCourse()">
         <ng-template mat-tab-label>
           Cirriculum
           <mat-icon
@@ -47,7 +53,7 @@
         </ng-template>
         <div class="course__body__lecture course__body__tab-cirriculum">
           <mat-accordion>
-            @for (lecture of course?.lectures; let idx = $index; track idx) {
+            @for (lecture of lectures(); let idx = $index; track idx) {
               <mat-expansion-panel>
                 <mat-expansion-panel-header>{{
                   formatLecturePanelTitle(idx, lecture?.title)
@@ -67,7 +73,7 @@
                       allowfullscreen></iframe>
                   </div>
                   <div class="course__body__lecture__body__assignment-task">
-                    <p>{{ lecture.assignmentTask }}</p>
+                    <p>{{ assignments }}</p>
                   </div>
                   <div class="course__body__lecture__body__assignment-solution"></div>
                 </div>
@@ -76,18 +82,19 @@
           </mat-accordion>
         </div>
       </mat-tab>
-      <mat-tab>
+      <mat-tab [disabled]="!isUserCourseAuthor() && !isUserEnrolled() && !isUserCompletedCourse()">
         <ng-template mat-tab-label> Submissions </ng-template>
         <div class="course__body__lecture course__body__tab-cirriculum">
           <mat-accordion>
-            <ng-container *ngFor="let lecture of course?.lectures; let idx = index">
+            <ng-container *ngFor="let lecture of lectures(); let idx = index">
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title> {{ idx + 1 }}. {{ lecture.title }} </mat-panel-title>
                 </mat-expansion-panel-header>
-                <app-assignment-solution-list
+                <!-- <app-assignment-solution-list
                   [assignmentSolutions]="lecture!.assignmentSolutions"
-                  [isTeacher]="isUserCourseAuthor"></app-assignment-solution-list>
+                  [isTeacher]="isUserCourseAuthor()"
+                ></app-assignment-solution-list> -->
               </mat-expansion-panel>
             </ng-container>
           </mat-accordion>
@@ -97,7 +104,7 @@
   </div>
   <div class="course__side-content mat-elevation-z8">
     <div class="course__side-content__header">
-      <img src="/images/course-default-img.jpeg" alt="course image" />
+      <img [src]="courseImageUrl || '/images/course-default-img.jpeg'" alt="course image" />
     </div>
     <div class="course__side-content__content">
       <h4 class="course__side-content__content__title">Your Success Starts Here</h4>
@@ -108,11 +115,11 @@
       <mat-list>
         <mat-list-item>
           <mat-icon matListItemIcon>smart_display</mat-icon>
-          <div matListItemTitle>{{ course?.lectures?.length }} Video Lectures</div>
+          <div matListItemTitle>{{ course()?.totalLectures }} Video Lectures</div>
         </mat-list-item>
         <mat-list-item>
           <mat-icon matListItemIcon>assignment</mat-icon>
-          <div matListItemTitle>{{ course?.lectures?.length }} Assignments</div>
+          <div matListItemTitle>{{ course()?.totalAssignments }} Assignments</div>
         </mat-list-item>
         <mat-list-item>
           <mat-icon matListItemIcon>all_inclusive</mat-icon>
@@ -123,15 +130,18 @@
       <mat-list>
         <mat-list-item>
           <mat-icon matListItemIcon>fact_check</mat-icon>
-          <div matListItemTitle>{{ course?.passingScore + '/100' }}%</div>
+          <div matListItemTitle>{{ course()?.passingScore + '/100' }}%</div>
         </mat-list-item>
       </mat-list>
-      <button
-        [style.visibility]="isUserLoggedIn && !isUserEnrolled && !isUserCourseAuthor ? 'visible' : 'hidden'"
-        type="button"
-        mat-flat-button>
+      <button [ngClass]="canUserEnroll() ? 'showed' : 'hidden'" type="button" mat-flat-button (click)="onEnroll()">
         Enroll
       </button>
+      <span class="current-state" [ngClass]="isUserEnrolled() ? 'showed' : 'hidden'"> Continue Learning </span>
+      <span class="current-state success" [ngClass]="isUserCompletedCourse() ? 'showed' : 'hidden'"> Completed </span>
+      <div class="course-owner-actions" [ngClass]="canUserEditDeteleCourse() ? '' : 'hidden'">
+        <button class="current-state" type="button" mat-flat-button (click)="onEdit()">Edit</button>
+        <button class="current-state" type="button" mat-flat-button (click)="onDelete()">Delete</button>
+      </div>
     </div>
   </div>
 </div>

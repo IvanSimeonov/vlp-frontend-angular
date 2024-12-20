@@ -37,7 +37,7 @@
           <mat-tab [label]="'Enrolled Courses (' + user().enrolledCourses?.length + ')'">
             <div class="public-profile__layout__courses__enrolled">
               @for (course of currentPageEnrolledCourses(); track $index) {
-                <app-course-card [course]="course"></app-course-card>
+                <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
               }
             </div>
             <mat-paginator
@@ -50,7 +50,7 @@
           <mat-tab [label]="'Completed Courses (' + user().completedCourses?.length + ')'">
             <div class="public-profile__layout__courses__completed">
               @for (course of currentPageCompletedCourses(); track $index) {
-                <app-course-card [course]="course"></app-course-card>
+                <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
               }
             </div>
             <mat-paginator
@@ -64,7 +64,7 @@
             <mat-tab [label]="'Created Courses (' + user().createdCourses?.length + ')'">
               <div class="public-profile__layout__courses__created">
                 @for (course of currentPageCreatedCourses(); track $index) {
-                  <app-course-card [course]="course"></app-course-card>
+                  <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
                 }
               </div>
               <mat-paginator

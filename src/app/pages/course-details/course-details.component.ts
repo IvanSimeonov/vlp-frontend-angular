@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -10,6 +10,12 @@ import { SafeUrlPipe } from '../../shared/pipes/safe-url.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AssignmentSolutionListComponent } from '../../features/assignment-solutions/assignment-solution-list/assignment-solution-list.component';
+import { CourseControllerService, CourseDetailsDto, LectureDetailDto } from '@ivannicksim/vlp-backend-openapi-client';
+import { ActivatedRoute, Router } from '@angular/router';
+import { delay, EMPTY, Observable, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { EnumUtils } from '../../shared/helpers/EnumUtils';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { UserProfileService } from '../../services/user/user-profile.service';
 
 export interface IAssignmentSolution {
   id?: number;
@@ -49,6 +55,7 @@ export interface ICourseDetails {
   selector: 'app-course-details',
   standalone: true,
   imports: [
+    MatSnackBarModule,
     MatTabsModule,
     MatIconModule,
     MatButtonModule,
@@ -65,90 +72,158 @@ export interface ICourseDetails {
   templateUrl: './course-details.component.html',
   styleUrl: './course-details.component.scss',
 })
-export class CourseDetailsComponent {
-  isUserEnrolled = true;
-  isUserCourseAuthor = false;
-  isUserLoggedIn = true;
-  course: ICourseDetails | null = {
-    title: 'Mastering Angular',
-    shortDescription: 'Learn Angular from basics to advanced concepts in this comprehensive course.',
-    fullDescription:
-      '<p>This course is designed to provide an in-depth understanding of modern web development, covering both front-end and back-end technologies. Whether you are a complete beginner or have some experience in coding, this course will equip you with the skills and knowledge required to build, maintain, and optimize websites and web applications.</p><p><strong>What you will learn:</strong></p><ul><li>Core concepts of HTML, CSS, and JavaScript.</li><li>Frameworks such as Angular, React, and Vue.js.</li><li>Server-side programming with Node.js and Express.</li><li>Database management with MySQL and MongoDB.</li><li>Version control using Git and GitHub.</li><li>Deployment of web applications to live environments.</li></ul><p>Throughout the course, you will work on multiple hands-on projects, enabling you to apply the concepts in real-world scenarios. These projects include creating responsive websites, dynamic web applications, and RESTful APIs, among others.</p><p>By the end of this course, you will have a portfolio of projects that showcase your skills to potential employers and clients.</p><p><strong>Who should take this course?</strong></p><p>This course is ideal for aspiring web developers, freelancers, and anyone interested in building their own websites or web applications. No prior programming experience is required, but familiarity with computers and basic internet usage is recommended.</p>',
-    requirements:
-      '<ul><li>Basic familiarity with computers and the internet.</li><li>A computer with internet access for hands-on practice.</li><li>Willingness to learn and complete exercises and projects.</li></ul>',
+export class CourseDetailsComponent implements OnInit, OnDestroy {
+  private courseService = inject(CourseControllerService);
+  private userProfileService = inject(UserProfileService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
+  private destroy$ = new Subject<void>();
 
-    topic: 'Web Development',
-    rating: 4.8,
-    totalVotes: 12345,
-    lastUpdated: '2024-11-27',
-    author: 'Jane Doe',
-    lectures: [
-      {
-        title: 'Introduction to Angular',
-        fullDescription:
-          '<p><strong>Welcome to Angular!</strong></p><p>In this lecture, we will cover the basics of Angular, its purpose, and its architecture.</p>',
-        videoUrl: 'HSJBbCN6GjU',
-        assignmentTask: 'Write a brief essay about the benefits of using Angular.',
-        sequenceNumber: 1,
-        assignmentSolutions: [
-          {
-            id: 101,
-            submissionFilePath: '/path/to/file1.pdf',
-            submissionStatus: 'SUBMITTED',
-            grade: 85,
-            student: { id: 1, name: 'John Doe' },
-          },
-          {
-            id: 102,
-            submissionFilePath: '/path/to/file2.pdf',
-            submissionStatus: 'SUBMITTED',
-            grade: undefined,
-            student: { id: 2, name: 'Jane Smith' },
-          },
-          {
-            id: 103,
-            submissionFilePath: '/path/to/file2.pdf',
-            submissionStatus: 'SUBMITTED',
-            grade: undefined,
-            student: { id: 2, name: 'Jane Smith' },
-          },
-          {
-            id: 104,
-            submissionFilePath: '/path/to/file2.pdf',
-            submissionStatus: 'SUBMITTED',
-            grade: undefined,
-            student: { id: 2, name: 'Jane Smith' },
-          },
-          {
-            id: 105,
-            submissionFilePath: '/path/to/file2.pdf',
-            submissionStatus: 'SUBMITTED',
-            grade: undefined,
-            student: { id: 2, name: 'Jane Smith' },
-          },
-        ],
-      },
-      {
-        title: 'Components and Templates',
-        fullDescription:
-          '<p><strong>Understanding Components</strong></p><p>This lecture dives into Angular components and how to use templates to build dynamic UIs.</p>',
-        videoUrl: 'wZ6cST5pexo',
-        assignmentTask: 'Create a simple component that displays your favorite hobby.',
-        sequenceNumber: 2,
-      },
-      {
-        title: 'Directives and Pipes',
-        fullDescription:
-          '<p><strong>Enhancing Templates</strong></p><p>Learn how to use directives and pipes to manipulate DOM elements and format data dynamically.</p>',
-        videoUrl: 'ADQy4805YxY',
-        assignmentTask: 'Implement a custom pipe that formats dates in your preferred format.',
-        sequenceNumber: 3,
-      },
-    ],
-    passingScore: 70,
-  };
+  course = signal<CourseDetailsDto | null>(null);
+  user = computed(() => this.userProfileService.userProfile());
+  isLoading = signal<boolean>(false);
+  lectures = signal<LectureDetailDto[]>([]);
+  totalLectures = computed<number>(() => this.lectures().length);
+  assignments = signal<IAssignmentSolution[]>([]);
+  courseImageUrl: string | undefined;
+
+  isUserEnrolled = computed<boolean>(() => {
+    const currentUser = this.user();
+    const courseId = Number(this.route.snapshot.paramMap.get('id'));
+    return currentUser?.enrolledCoursesIds?.includes(courseId) ?? false;
+  });
+
+  isUserCompletedCourse = computed<boolean>(() => {
+    const currentUser = this.user();
+    const courseId = Number(this.route.snapshot.paramMap.get('id'));
+    return currentUser?.completedCoursesIds?.includes(courseId) ?? false;
+  });
+
+  isUserCourseAuthor = computed<boolean>(() => {
+    const currentUser = this.user();
+    const course = this.course();
+    return currentUser?.id === course?.author?.id;
+  });
+
+  isUserLoggedIn = computed<boolean>(() => this.user() !== null);
+
+  ngOnInit(): void {
+    this.initializeCourse();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  canUserEnroll(): boolean {
+    return (
+      this.isUserLoggedIn() && !this.isUserEnrolled() && !this.isUserCompletedCourse() && !this.isUserCourseAuthor()
+    );
+  }
+
+  canUserEditDeteleCourse(): boolean {
+    return this.isUserLoggedIn() && this.isUserCourseAuthor();
+  }
+
+  private initializeCourse(): void {
+    this.isLoading.set(true);
+    this.route.params
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap((params) => {
+          const courseId = params['id'];
+          if (courseId) {
+            return this.fetchCourse(params['id']);
+          } else {
+            this.isLoading.set(false);
+            return EMPTY;
+          }
+        })
+      )
+      .subscribe({
+        error: this.handleError.bind(this),
+        complete: () => this.isLoading.set(false),
+      });
+  }
+
+  private fetchCourse(courseId: number): Observable<CourseDetailsDto> {
+    return this.courseService.getCourseDetailsById(courseId).pipe(
+      delay(300),
+      tap((course) => {
+        this.course.set(course);
+        this.fetchCourseImage();
+      })
+    );
+  }
+
+  fetchCourseImage() {
+    const imgPath = this.course()?.imagePath;
+    if (imgPath) {
+      this.courseService.getCourseImage(imgPath).subscribe({
+        next: (res) => {
+          this.courseImageUrl = URL.createObjectURL(res);
+        },
+        error: () => {
+          this.courseImageUrl = undefined;
+        },
+      });
+    }
+    this.courseImageUrl = undefined;
+  }
+
+  private handleError(error: string): void {
+    console.error(error);
+    this.isLoading.set(false);
+  }
 
   formatLecturePanelTitle(idx: number, title: string | undefined): string {
     return `${idx + 1}. ${title}`;
+  }
+
+  formatDifficultyLevel(): string {
+    const difficulyLevel = this.course()?.difficultyLevel;
+    if (difficulyLevel) {
+      return EnumUtils.formatDifficultyLevel(difficulyLevel);
+    }
+    return '';
+  }
+
+  onEnroll(): void {
+    console.log('Enroll course');
+    const courseId = this.course()?.id;
+    if (courseId) {
+      this.userProfileService.refreshAfterStateChange(this.courseService.enrollUserToCourse(courseId)).subscribe({
+        next: () => {
+          this.snackBar.open('Enrolled to course successfully', 'Close', { duration: 3000 });
+        },
+        error: () => {
+          this.snackBar.open('Error enrolling to course', 'Close', { duration: 3000 });
+        },
+      });
+    }
+  }
+
+  onEdit(): void {
+    const courseId = this.course()?.id;
+    if (courseId) {
+      this.router.navigate(['/courses/edit', courseId]);
+    }
+  }
+
+  onDelete(): void {
+    const courseId = this.course()?.id;
+    if (courseId) {
+      this.courseService.deleteCourseById(courseId).subscribe({
+        next: () => {
+          this.snackBar.open('Course deleted successfully', 'Close', { duration: 3000 });
+          this.router.navigate(['/courses']);
+        },
+        error: () => {
+          this.snackBar.open('Course cannot be deleted. Students exist!', 'Close', { duration: 3000 });
+        },
+      });
+    }
   }
 }

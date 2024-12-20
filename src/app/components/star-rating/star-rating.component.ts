@@ -1,4 +1,4 @@
-import { Component, input, OnInit, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { WhiteSpaceNumberPipe } from '../../shared/pipes/white-space-number.pipe';
 import { CommonModule } from '@angular/common';
@@ -10,16 +10,12 @@ import { CommonModule } from '@angular/common';
   templateUrl: './star-rating.component.html',
   styleUrl: './star-rating.component.scss',
 })
-export class StarRatingComponent implements OnInit {
+export class StarRatingComponent {
   rating = input<number>(0);
   totalVotes = input<number>(0);
   editable = input<boolean>(false);
   ratingChange = output<number>();
   hoveredRating = signal<number>(0);
-
-  ngOnInit(): void {
-    console.log(this.totalVotes());
-  }
 
   get displayStars(): string[] {
     const effectiveRating = this.editable() ? this.hoveredRating() || this.rating() : this.rating();

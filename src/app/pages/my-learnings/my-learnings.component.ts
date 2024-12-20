@@ -15,11 +15,11 @@ import {
   TopicControllerService,
 } from '@ivannicksim/vlp-backend-openapi-client';
 import { delay } from 'rxjs';
-import { AuthService } from '../../auth/services/auth.service';
 import { MatSelectChange } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
+import { UserProfileService } from '../../services/user/user-profile.service';
 
 @Component({
   selector: 'app-my-learnings',
@@ -40,7 +40,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './my-learnings.component.scss',
 })
 export class MyLearningsComponent implements OnInit {
-  private authService = inject(AuthService);
+  private userProfileService = inject(UserProfileService);
   private courseService = inject(CourseControllerService);
   private topicService = inject(TopicControllerService);
   private snackBar = inject(MatSnackBar);
@@ -53,7 +53,7 @@ export class MyLearningsComponent implements OnInit {
   totalCreatedCourses = signal<number>(0);
   topics = signal<TopicAnalyticsDto[]>([]);
   isLoading = signal<boolean>(false);
-  user = computed(() => this.authService.user());
+  user = computed(() => this.userProfileService.userProfile());
   activeTab = 'created';
 
   enrolledCourseSortOptions = [
@@ -240,7 +240,6 @@ export class MyLearningsComponent implements OnInit {
       const userId = this.user()?.id;
 
       if (rating && courseId && userId) {
-        console.log('Rated with: ', rating);
         const courseRatingDto: CourseRatingDto = {
           courseId,
           userId,
@@ -307,7 +306,6 @@ export class MyLearningsComponent implements OnInit {
     this.isLoading.set(true);
     const { pageNumber, pageSize, sortBy, sortDirection, searchTitle, searchAuthor, topic, difficultyLevel } =
       this.paginationSortingFilteringCreated();
-    console.log(pageSize);
     this.courseService
       .getUsersCreatedCourses(
         {
@@ -324,7 +322,6 @@ export class MyLearningsComponent implements OnInit {
       .pipe(delay(300))
       .subscribe({
         next: (res) => {
-          console.log(res);
           this.createdCourses.set(res.content || []);
           this.totalCreatedCourses.set(res.totalElements || 0);
           this.isLoading.set(false);

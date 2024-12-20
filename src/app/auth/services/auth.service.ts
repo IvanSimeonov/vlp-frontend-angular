@@ -1,13 +1,13 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   AuthControllerService,
   AuthRequest,
   AuthResponse,
   RegisterRequest,
-  UserOverviewDto,
 } from '@ivannicksim/vlp-backend-openapi-client';
 import { StorageService } from './storage.service';
 import { tap } from 'rxjs';
+import { UserProfileService } from '../../services/user/user-profile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,11 +15,10 @@ import { tap } from 'rxjs';
 export class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'accessToken';
   private readonly REFRESH_TOKEN_KEY = 'refreshToken';
-  private readonly USER_PROFILE_KEY = 'userProfile';
 
   private authBeService = inject(AuthControllerService);
   private storageService = inject(StorageService);
-  public user = signal<UserOverviewDto | null>(this.loadUserFromStorage());
+  private userProfileService = inject(UserProfileService);
 
   login(credentials: AuthRequest) {
     return this.authBeService.login(credentials).pipe(
@@ -28,8 +27,7 @@ export class AuthService {
           this.storageService.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
           this.storageService.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
           if (response.userOverviewDto) {
-            this.storageService.setItem(this.USER_PROFILE_KEY, JSON.stringify(response.userOverviewDto));
-            this.user.set(response.userOverviewDto);
+            this.userProfileService.updateProfile(response.userOverviewDto);
           }
         },
         error: (err) => {
@@ -64,24 +62,9 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
-  hasRole(role: UserOverviewDto.RoleEnum): boolean {
-    return this.user()?.role === role;
-  }
-
-  hasAnyRole(roles: UserOverviewDto.RoleEnum[]): boolean {
-    const role = this.user()?.role;
-    return role ? roles.includes(role) : false;
-  }
-
   clearTokens(): void {
     this.storageService.removeItem(this.ACCESS_TOKEN_KEY);
     this.storageService.removeItem(this.REFRESH_TOKEN_KEY);
-    this.storageService.removeItem(this.USER_PROFILE_KEY);
-    this.user.set(null);
-  }
-
-  private loadUserFromStorage() {
-    const userJson = this.storageService.getItem(this.USER_PROFILE_KEY);
-    return userJson ? JSON.parse(userJson) : null;
+    this.userProfileService.updateProfile(null);
   }
 }

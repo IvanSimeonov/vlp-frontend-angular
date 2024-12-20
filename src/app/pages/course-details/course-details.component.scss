@@ -32,10 +32,10 @@
         font-size: clamp(16px, 2vw, 22px);
       }
 
-      &__topic {
+      &__topic,
+      &__difficulty {
         display: flex;
         column-gap: 5px;
-        margin: 2rem 0 0 3rem;
         font-size: 0.9rem;
         align-items: center;
 
@@ -46,7 +46,16 @@
         }
       }
 
+      &__topic {
+        margin: 2rem 0 0 3rem;
+      }
+
+      &__difficulty {
+        margin: 0.5rem 0 0 3rem;
+      }
+
       &__rating {
+        display: flex;
         margin: 0.5rem 0 0 3rem;
       }
 
@@ -168,4 +177,36 @@
       }
     }
   }
+}
+
+.current-state {
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 8px;
+  text-align: center;
+  color: var(--mdc-filled-button-label-text-color, var(--mat-app-on-primary));
+  background-color: var(--mdc-filled-button-container-color, var(--mat-app-primary));
+}
+
+.success {
+  background-color: #28a745;
+}
+
+.course-owner-actions {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+
+  button {
+    width: 100%;
+  }
+}
+
+.showed {
+  display: block;
+}
+
+.hidden {
+  display: none;
 }

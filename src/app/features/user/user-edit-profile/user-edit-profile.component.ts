@@ -22,6 +22,7 @@ import {
 import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UserProfileService } from '../../../services/user/user-profile.service';
 
 @Component({
   selector: 'app-user-edit-profile',
@@ -45,6 +46,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class UserEditProfileComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
+  private userProfileService = inject(UserProfileService);
   private userService = inject(UserControllerService);
   private adminService = inject(AdminControllerService);
   private formBuilder = inject(NonNullableFormBuilder);
@@ -66,7 +68,7 @@ export class UserEditProfileComponent implements OnInit, OnDestroy {
   ];
   html = '';
 
-  userId = computed(() => this.authService.user()?.id);
+  userId = computed(() => this.userProfileService.userProfile()?.id);
   user = signal<UserPublicProfileDto | null>(null);
   userProfileImage = signal<Blob | string | undefined>(undefined);
   hideCurrentPassword = signal(true);

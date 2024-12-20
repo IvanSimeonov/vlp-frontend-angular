@@ -8,6 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
+import { UserProfileService } from '../../services/user/user-profile.service';
 
 export interface INotification {
   type: string;
@@ -33,9 +34,10 @@ export interface INotification {
 })
 export class HeaderComponent {
   private authService = inject(AuthService);
+  private userProfileService = inject(UserProfileService);
   private router = inject(Router);
 
-  user = computed(() => this.authService.user());
+  user = computed(() => this.userProfileService.userProfile());
   notifications = signal<INotification[]>([]);
   unreadNotifications = computed(() => this.notifications().filter((n) => !n.isRead).length);
 
@@ -44,11 +46,11 @@ export class HeaderComponent {
   }
 
   isUserAdmin() {
-    return this.authService.hasAnyRole([UserOverviewDto.RoleEnum.Admin, UserOverviewDto.RoleEnum.RootAdmin]);
+    return this.userProfileService.hasAnyRole([UserOverviewDto.RoleEnum.Admin, UserOverviewDto.RoleEnum.RootAdmin]);
   }
 
   isUserTeacherOrStudent() {
-    return this.authService.hasAnyRole([UserOverviewDto.RoleEnum.Teacher, UserOverviewDto.RoleEnum.Student]);
+    return this.userProfileService.hasAnyRole([UserOverviewDto.RoleEnum.Teacher, UserOverviewDto.RoleEnum.Student]);
   }
 
   navigateToPublicProfile() {

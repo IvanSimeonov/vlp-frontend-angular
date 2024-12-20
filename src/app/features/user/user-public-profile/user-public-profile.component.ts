@@ -5,6 +5,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { CourseCardComponent } from '../../course/course-card/course-card.component';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import {
+  CourseControllerService,
   CourseOverviewDto,
   UserControllerService,
   UserPublicProfileDto,
@@ -23,6 +24,7 @@ import { MatCardModule } from '@angular/material/card';
 export class UserPublicProfileComponent implements OnInit {
   private userService = inject(UserControllerService);
   private route = inject(ActivatedRoute);
+  private courseService = inject(CourseControllerService);
 
   user = signal<UserPublicProfileDto>({});
   userProfileImage = signal<Blob | string | undefined>(undefined);
@@ -86,24 +88,29 @@ export class UserPublicProfileComponent implements OnInit {
     return role ? EnumUtils.formatUserRole(role) : '';
   }
 
+  fetchCourseImage(course: CourseOverviewDto) {
+    const imgPath = course.imagePath;
+    if (imgPath) {
+      return this.courseService.getCourseImage(imgPath);
+    }
+    return undefined;
+  }
+
   private updateEnrolledCoursesPage(pageIndex: number, pageSize: number) {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    console.log(end);
     this.currentPageCreatedCourses.set(this.user().createdCourses?.slice(start, end) || []);
   }
 
   private updateCreatedCoursesPage(pageIndex: number, pageSize: number) {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    console.log(end);
     this.currentPageEnrolledCourses.set(this.user().enrolledCourses?.slice(start, end) || []);
   }
 
   private updateCompletedCoursesPage(pageIndex: number, pageSize: number) {
     const start = pageIndex * pageSize;
     const end = start + pageSize;
-    console.log(end);
     this.currentPageCompletedCourses.set(this.user().completedCourses?.slice(start, end) || []);
   }
 }

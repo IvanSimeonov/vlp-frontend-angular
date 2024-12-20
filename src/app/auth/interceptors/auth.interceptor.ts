@@ -1,12 +1,21 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor,
+  HttpErrorResponse,
+  HttpResponse,
+} from '@angular/common/http';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { UserProfileService } from '../../services/user/user-profile.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
+  private userProfileService = inject(UserProfileService);
   private router = inject(Router);
   private readonly WHITE_LISTED_URLS = ['/api/v1/courses'];
 
@@ -19,6 +28,22 @@ export class AuthInterceptor implements HttpInterceptor {
       });
     }
     return next.handle(request).pipe(
+      tap({
+        next: (event) => {
+          if (event instanceof HttpResponse && !isWhiteListed) {
+            if (
+              event.url?.includes('api/v1/courses/learnings') ||
+              event.url?.includes('profile') ||
+              event.url?.includes('edit-profile')
+            ) {
+              this.userProfileService.refreshUserProfile().subscribe({
+                next: () => console.log('Profile refresh completed'),
+                error: (error) => console.error('Failed to refresh user profile:', error),
+              });
+            }
+          }
+        },
+      }),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
           this.authService.clearTokens();

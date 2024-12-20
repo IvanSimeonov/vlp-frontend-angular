@@ -10,6 +10,7 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import {
   CourseControllerService,
   CourseOverviewDto,
+  CourseSearchCriteriaDto,
   TopicAnalyticsDto,
   TopicControllerService,
 } from '@ivannicksim/vlp-backend-openapi-client';
@@ -90,6 +91,7 @@ export class CourseListComponent implements OnInit {
           authorName: searchAuthor,
           difficultyLevel: difficultyLevel,
           topic: topic,
+          status: CourseSearchCriteriaDto.StatusEnum.Published,
         },
         pageNumber,
         pageSize,
