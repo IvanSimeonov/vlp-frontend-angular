@@ -7,11 +7,18 @@
         [completed]="isCourseCreated()"
         [editable]="true">
         @if (!isCourseCreated()) {
-          <app-course-create-edit-form
-            [topics]="topics()"
-            [isEditMode]="isEditMode()"
-            [courseData]="courseData()"
-            (createdCourse)="handleCourseCreated($event)"></app-course-create-edit-form>
+          @if (isEditMode() && !createdCourseData()) {
+            <div class="loading-container">
+              <mat-spinner diameter="50"></mat-spinner>
+              <span class="loading-text">Loading course data</span>
+            </div>
+          } @else {
+            <app-course-create-edit-form
+              [topics]="topics()"
+              [isEditMode]="isEditMode()"
+              [courseData]="createdCourseData()"
+              (createdCourse)="handleCourseCreated($event)"></app-course-create-edit-form>
+          }
         } @else {
           <h4>Course was {{ isEditMode() ? 'updated' : 'created' }} successfully!</h4>
           <button mat-button matStepperNext>Next</button>
@@ -23,10 +30,7 @@
         [completed]="isPhotoUploaded()"
         [editable]="true">
         @if (!isPhotoUploaded()) {
-          <app-file-upload
-            [isEditMode]="isEditMode()"
-            [fileData]="courseData()?.courseImage"
-            (fileChange)="handlePhotoUploaded($event)"></app-file-upload>
+          <app-file-upload [isEditMode]="isEditMode()" (fileChange)="handlePhotoUploaded($event)"></app-file-upload>
         } @else {
           <h4>Course photo uploaded successfully!</h4>
           <button mat-button matStepperNext>Next</button>
@@ -38,11 +42,18 @@
         [completed]="areLecturesAdded()"
         [editable]="true">
         @if (!areLecturesAdded()) {
-          <app-lecture-management
-            [courseId]="courseId()"
-            [isEditMode]="isEditMode()"
-            [lecturesData]="courseData()?.lectures"
-            (addedLectures)="handleLecturesAdded($event)"></app-lecture-management>
+          @if (isEditMode() && !courseLecturesData()) {
+            <div class="loading-container">
+              <mat-spinner diameter="50"></mat-spinner>
+              <span class="loading-text">Loading course lectures</span>
+            </div>
+          } @else {
+            <app-lecture-management
+              [courseId]="courseId()"
+              [isEditMode]="isEditMode()"
+              [lecturesData]="courseLecturesData()"
+              (addedLectures)="handleLecturesAdded($event)"></app-lecture-management>
+          }
         } @else {
           <h4>Lectures are added successfully!</h4>
           <button mat-button matStepperNext>Next</button>

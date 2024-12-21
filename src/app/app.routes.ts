@@ -16,6 +16,8 @@ import { CourseCreateEditComponent } from './pages/course-create-edit/course-cre
 import { anonymousGuard } from './auth/guards/anonymous.guard';
 import { adminGuard } from './auth/guards/admin.guard';
 import { authGuard } from './auth/guards/auth.guard';
+import { teacherGuard } from './auth/guards/teacher.guard';
+import { courseOwnerGuard } from './auth/guards/course-owner.guard';
 
 export const routes: Routes = [
   {
@@ -27,12 +29,14 @@ export const routes: Routes = [
     path: 'courses/create',
     title: 'Create Course',
     component: CourseCreateEditComponent,
+    canActivate: [teacherGuard],
     data: { editMode: false },
   },
   {
     path: 'courses/edit/:id',
     title: 'Edit Course',
     component: CourseCreateEditComponent,
+    canActivate: [courseOwnerGuard],
     data: { editMode: true },
   },
   {

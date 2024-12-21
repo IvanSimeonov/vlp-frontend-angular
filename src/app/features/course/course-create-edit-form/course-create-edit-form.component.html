@@ -44,13 +44,13 @@
     <mat-form-field class="course__form__field" appearance="outline" subscriptSizing="dynamic">
       <mat-label>Select topic</mat-label>
       <mat-select
-        formControlName="topic"
-        (blur)="courseForm.controls.topic.markAsTouched(); courseForm.controls.topic.updateValueAndValidity()">
-        @for (topic of topics(); track topic.id) {
+        formControlName="topicId"
+        (blur)="courseForm.controls.topicId.markAsTouched(); courseForm.controls.topicId.updateValueAndValidity()">
+        @for (topic of topics(); let idx = $index; track idx) {
           <mat-option [value]="topic.id">{{ topic.title }}</mat-option>
         }
       </mat-select>
-      @if (courseForm.controls.topic.invalid) {
+      @if (courseForm.controls.topicId.invalid) {
         <mat-error>{{ topicErrorMsg() }}</mat-error>
       }
     </mat-form-field>

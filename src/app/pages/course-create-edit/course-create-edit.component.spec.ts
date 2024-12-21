@@ -4,6 +4,7 @@ import { CourseCreateEditComponent } from './course-create-edit.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('CourseCreateEditComponent', () => {
   let component: CourseCreateEditComponent;
@@ -14,6 +15,7 @@ describe('CourseCreateEditComponent', () => {
       imports: [CourseCreateEditComponent],
       providers: [
         provideAnimations(),
+        provideHttpClient(),
         {
           provide: ActivatedRoute,
           useValue: {

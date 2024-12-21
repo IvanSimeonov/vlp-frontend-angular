@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, input, OnInit, output, signal, WritableSignal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,24 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxEditorModule } from 'ngx-editor';
-import { merge } from 'rxjs';
 import { Validators as NgxEditorValidators } from 'ngx-editor';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
-import { ICourseDetails } from '../../../pages/course-create-edit/course-create-edit.component';
 import { EnumUtils } from '../../../shared/helpers/EnumUtils';
-
-export interface ITopic {
-  id?: number;
-  title?: string;
-  description?: string;
-  totalCourses?: number;
-}
-
-export enum DifficultyLevel {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-}
+import { CourseCreateDto, CourseUpdateDto, TopicOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
+import { StorageService } from '../../../auth/services/storage.service';
+import { merge } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-course-create-edit-form',
@@ -45,12 +33,13 @@ export enum DifficultyLevel {
   styleUrl: './course-create-edit-form.component.scss',
 })
 export class CourseCreateEditFormComponent implements OnInit {
+  private storageService = inject(StorageService);
   private fb = inject(FormBuilder);
-  difficultyLevels = Object.values(DifficultyLevel);
-  topics = input<ITopic[]>();
+  difficultyLevels = Object.values(CourseCreateDto.DifficultyLevelEnum);
+  topics = input<TopicOverviewDto[] | undefined>([]);
   isEditMode = input<boolean>(false);
-  courseData = input<ICourseDetails | null>(null);
-  createdCourse = output<ICourseDetails>();
+  courseData = input<CourseUpdateDto | undefined>();
+  createdCourse = output<CourseCreateDto>();
   titleErrorMsg = signal('');
   shortDescriptionErrorMsg = signal('');
   passingScoreErrorMsg = signal('');
@@ -69,8 +58,8 @@ export class CourseCreateEditFormComponent implements OnInit {
       [NgxEditorValidators.required(), NgxEditorValidators.minLength(50), NgxEditorValidators.maxLength(500)],
     ],
     passingScore: [0, [Validators.required, Validators.min(50), Validators.max(100)]],
-    topic: [0, [Validators.required]],
-    difficultyLevel: [DifficultyLevel.BEGINNER, [Validators.required]],
+    topicId: [0, [Validators.required]],
+    difficultyLevel: [CourseCreateDto.DifficultyLevelEnum.Beginner, [Validators.required]],
   });
 
   ngOnInit(): void {
@@ -79,7 +68,7 @@ export class CourseCreateEditFormComponent implements OnInit {
         title: this.courseData()?.title,
         shortDescription: this.courseData()?.shortDescription,
         passingScore: this.courseData()?.passingScore,
-        topic: 1,
+        topicId: this.courseData()?.topicId,
         difficultyLevel: this.courseData()?.difficultyLevel,
         requirements: this.courseData()?.requirements,
         fullDescription: this.courseData()?.fullDescription,
@@ -93,7 +82,20 @@ export class CourseCreateEditFormComponent implements OnInit {
 
   onCreate() {
     if (this.courseForm.valid) {
-      this.createdCourse.emit(this.courseForm.value);
+      const userProfile = this.storageService.getItem('userProfile');
+      if (userProfile) {
+        const userId = JSON.parse(userProfile).id;
+        this.createdCourse.emit({
+          title: this.courseForm.controls.title.value,
+          shortDescription: this.courseForm.controls.shortDescription.value,
+          fullDescription: this.courseForm.controls.fullDescription.value,
+          requirements: this.courseForm.controls.requirements.value,
+          passingScore: this.courseForm.controls.passingScore.value,
+          topicId: this.courseForm.controls.topicId.value,
+          difficultyLevel: this.courseForm.controls.difficultyLevel.value,
+          authorId: userId,
+        });
+      }
     } else {
       Object.values(this.courseForm.controls).forEach((control) => {
         control.markAsTouched();
@@ -102,7 +104,7 @@ export class CourseCreateEditFormComponent implements OnInit {
     }
   }
 
-  formatDifficultyLevel(difficulyLevel: DifficultyLevel): string {
+  formatDifficultyLevel(difficulyLevel: CourseCreateDto.DifficultyLevelEnum): string {
     return EnumUtils.formatDifficultyLevel(difficulyLevel);
   }
 
@@ -136,7 +138,7 @@ export class CourseCreateEditFormComponent implements OnInit {
         },
       },
       {
-        name: 'topic',
+        name: 'topicId',
         signal: this.topicErrorMsg,
         messages: {
           required: 'Enter course topic',

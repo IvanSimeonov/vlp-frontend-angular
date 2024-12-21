@@ -16,7 +16,7 @@ import { RichTextEditorComponent } from '../../../components/rich-text-editor/ri
 import { CdkDropList, CdkDrag, CdkDragDrop, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Validators as NgxEditorValidators } from 'ngx-editor';
-import { ILecture } from '../../../pages/course-create-edit/course-create-edit.component';
+import { LectureDetailDto, LectureDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 export interface LectureTypeForm {
   title: FormControl<string>;
@@ -49,11 +49,10 @@ export interface LectureTypeForm {
 export class LectureManagementComponent implements OnInit {
   private fb = inject(NonNullableFormBuilder);
   courseId = input.required<number>();
-  isFormValid = signal(true);
   isFormSubmitted = false;
   isEditMode = input<boolean>(false);
-  lecturesData = input<ILecture[] | undefined>();
-  addedLectures = output<ILecture[]>();
+  lecturesData = input<LectureDetailDto[] | undefined>();
+  addedLectures = output<LectureDto[]>();
 
   form: FormGroup<{ lectures: FormArray<FormGroup<LectureTypeForm>> }> = this.fb.group({
     lectures: this.fb.array<FormGroup<LectureTypeForm>>([], [Validators.minLength(3)]),
@@ -78,15 +77,21 @@ export class LectureManagementComponent implements OnInit {
 
   saveLectures() {
     this.isFormSubmitted = true;
-    if (this.form.valid) {
-      const lectureData: ILecture[] = this.lectures.controls.map((control) => ({
-        title: control.controls.title.value,
-        description: control.controls.description.value,
-        videoUrl: control.controls.videoUrl.value,
-        assignmentTask: control.controls.assignmentTask.value,
-        sequenceNumber: control.controls.sequenceNumber.value,
-        courseId: this.courseId(),
-      }));
+    if (this.form.valid && this.lectures.controls.length >= 3) {
+      const lectureData: LectureDto[] = this.lectures.controls.map((control, index) => {
+        const existingLecture = this.lecturesData()?.[index];
+        return {
+          id: existingLecture?.id || undefined,
+          title: control.controls.title.value,
+          description: control.controls.description.value,
+          shortDescription: control.controls.description.value.slice(0, 50),
+          fullDescription: control.controls.description.value,
+          videoUrl: control.controls.videoUrl.value,
+          assignmentTask: control.controls.assignmentTask.value,
+          sequenceNumber: control.controls.sequenceNumber.value,
+          courseId: this.courseId(),
+        };
+      });
       this.addedLectures.emit(lectureData);
     } else {
       this.lectures.controls.forEach((control) => {
@@ -99,7 +104,7 @@ export class LectureManagementComponent implements OnInit {
     }
   }
 
-  addLecture(lecture?: ILecture) {
+  addLecture(lecture?: LectureDetailDto) {
     const lectureForm: FormGroup<LectureTypeForm> = this.fb.group<LectureTypeForm>({
       title: this.fb.control(lecture?.title || '', [
         Validators.required,
@@ -118,7 +123,7 @@ export class LectureManagementComponent implements OnInit {
         NgxEditorValidators.maxLength(500),
       ]),
       sequenceNumber: this.fb.control(lecture?.sequenceNumber || this.lectures.length + 1, Validators.required),
-      courseId: this.fb.control(lecture?.courseId || this.courseId(), Validators.required),
+      courseId: this.fb.control(this.courseId(), Validators.required),
     });
     this.lectures.push(lectureForm);
     this.initializeErrorSignals(lectureForm, this.lectures.length - 1);
@@ -136,6 +141,10 @@ export class LectureManagementComponent implements OnInit {
     lecturesFormArray.removeAt(event.previousIndex);
     lecturesFormArray.insert(event.currentIndex, control);
     this.updateSequenceNumber();
+  }
+
+  isFormValid(): boolean {
+    return this.isFormSubmitted && (this.form.invalid || this.form.controls.lectures.length < 3);
   }
 
   private updateSequenceNumber() {
@@ -175,11 +184,4 @@ export class LectureManagementComponent implements OnInit {
   private capitalizeFirstLetter(word: string): string {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
-
-  // checkFormValidity() {
-  //   this.isFormSubmitted = true;
-  //   const isFormValid = this.form.valid && this.form.controls.lectures.length >= 3;
-  //   this.isFormValid.set(isFormValid);
-  //   return isFormValid;
-  // }
 }

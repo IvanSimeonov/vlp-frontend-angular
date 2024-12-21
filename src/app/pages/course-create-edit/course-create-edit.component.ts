@@ -1,14 +1,21 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
-import {
-  CourseCreateEditFormComponent,
-  DifficultyLevel,
-  ITopic,
-} from '../../features/course/course-create-edit-form/course-create-edit-form.component';
+import { CourseCreateEditFormComponent } from '../../features/course/course-create-edit-form/course-create-edit-form.component';
 import { FileUploadComponent } from '../../components/file-upload/file-upload.component';
 import { LectureManagementComponent } from '../../features/lecture/lecture-management/lecture-management.component';
 import { ActivatedRoute } from '@angular/router';
+import {
+  CourseControllerService,
+  CourseCreateDto,
+  CourseUpdateDto,
+  LectureControllerService,
+  LectureDetailDto,
+  LectureDto,
+  TopicControllerService,
+  TopicOverviewDto,
+} from '@ivannicksim/vlp-backend-openapi-client';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface IFile {
   name: string;
@@ -24,22 +31,6 @@ export interface ILecture {
   courseId: number;
 }
 
-export interface ICourseDetails {
-  title?: string;
-  shortDescription?: string;
-  fullDescription?: string;
-  requirements?: string;
-  topic?: number;
-  difficultyLevel?: DifficultyLevel;
-  rating?: number;
-  totalVotes?: number;
-  lastUpdated?: string;
-  author?: string;
-  lectures?: ILecture[];
-  passingScore?: number;
-  courseImage?: IFile;
-}
-
 @Component({
   selector: 'app-course-create-edit',
   standalone: true,
@@ -49,20 +40,26 @@ export interface ICourseDetails {
     CourseCreateEditFormComponent,
     FileUploadComponent,
     LectureManagementComponent,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './course-create-edit.component.html',
   styleUrl: './course-create-edit.component.scss',
 })
 export class CourseCreateEditComponent implements OnInit {
-  topics = signal<ITopic[]>([]);
+  private courseService = inject(CourseControllerService);
+  private topicService = inject(TopicControllerService);
+  private lectureService = inject(LectureControllerService);
+  topics = signal<TopicOverviewDto[] | undefined>([]);
 
   isCourseCreated = signal(false);
   isPhotoUploaded = signal(false);
   areLecturesAdded = signal(false);
   courseId = signal(-1);
   isEditMode = signal(false);
-  courseData = signal<ICourseDetails | null>(null);
+  courseData = signal<CourseCreateDto | CourseUpdateDto | null>(null);
+  createdCourseData = signal<CourseUpdateDto | undefined>(undefined);
   fileData: IFile | undefined;
+  courseLecturesData = signal<LectureDetailDto[] | undefined>(undefined);
 
   constructor(private route: ActivatedRoute) {}
 
@@ -72,29 +69,71 @@ export class CourseCreateEditComponent implements OnInit {
     if (this.isEditMode()) {
       this.courseId.set(Number(this.route.snapshot.paramMap.get('id')));
       if (this.courseId()) {
-        this.loadCourse();
+        this.loadCourse(this.courseId());
+        this.loadCourseLectures(this.courseId());
       }
     }
   }
 
-  handleCourseCreated(courseData: ICourseDetails): void {
-    // TODO: Add API call
-    console.log('Created Course: ', courseData);
-    this.courseId.set(1);
-    this.isCourseCreated.set(true);
+  handleCourseCreated(courseData: CourseCreateDto): void {
+    console.log(courseData);
+    if (this.isEditMode()) {
+      this.courseService
+        .updateCourseById(this.courseId(), {
+          id: this.courseId(),
+          ...courseData,
+        })
+        .subscribe({
+          next: (response) => {
+            this.isCourseCreated.set(true);
+            console.log('Updated Course: ', response);
+          },
+          error: (error) => {
+            console.error('Error updating course: ', error);
+          },
+        });
+    } else {
+      this.courseService.createCourse(courseData).subscribe({
+        next: (response) => {
+          this.createdCourseData.set({
+            id: response,
+            ...courseData,
+          });
+          this.isCourseCreated.set(true);
+          this.courseId.set(response);
+        },
+        error: (error) => {
+          console.error('Error creating course: ', error);
+        },
+      });
+    }
   }
 
   handlePhotoUploaded(photo: IFile): void {
-    // TODO: Add API call
-    console.log('Uploaded Photo: ', photo);
+    this.courseService.uploadCourseImage(this.courseId(), photo.file).subscribe({
+      next: (response) => {
+        console.log('Uploaded Photo Response: ', response);
+      },
+      error: (error) => {
+        console.error('Error uploading photo: ', error);
+      },
+    });
     this.isPhotoUploaded.set(true);
   }
 
-  handleLecturesAdded(lectures: ILecture[]): void {
-    // TODO: Add API call
+  handleLecturesAdded(lectures: LectureDto[]): void {
     console.log('Added lectures: ', lectures);
     if (lectures.length >= 3) {
       this.areLecturesAdded.set(true);
+      console.log('More than 3 Lectures: ', lectures.length);
+      this.lectureService.updateLectures(this.courseId(), lectures).subscribe({
+        next: (response) => {
+          console.log('Updated Lectures: ', response);
+        },
+        error: (error) => {
+          console.error('Error updating lectures: ', error);
+        },
+      });
     }
   }
 
@@ -108,114 +147,47 @@ export class CourseCreateEditComponent implements OnInit {
     console.log('Course Deleted!');
   }
 
-  private async dummyImageLoader() {
-    const response = await fetch('/images/course-default-img.jpeg');
-    console.log(response);
-    if (!response.ok) {
-      throw new Error('Failed');
-    }
-    const blob = await response.blob();
-    console.log(blob);
-    const file = new File([blob], 'course-default-img.jpeg', { type: blob.type });
-    console.log(file);
-    return { name: file.name, file: file };
-  }
-
   private loadTopics(): void {
-    // TODO: Add API call
-    this.topics.set([
-      {
-        id: 1,
-        title: 'Software Development',
-        description: 'Learn programming languages and tools to build efficient software solutions.',
-        totalCourses: 5,
+    this.topicService.getTopics().subscribe({
+      next: (response) => {
+        this.topics.set(response);
       },
-      {
-        id: 2,
-        title: 'Science',
-        description: 'Explore major scientific disciplines and discover how science explains our world.',
-        totalCourses: 4,
+      error: (error) => {
+        console.error('Error fetching topics: ', error);
       },
-      {
-        id: 3,
-        title: 'Business',
-        description: 'Master essential business skills from management to finance for organizational success.',
-        totalCourses: 4,
-      },
-      {
-        id: 4,
-        title: 'Engineering',
-        description: 'Study engineering principles and technologies across various engineering fields.',
-        totalCourses: 3,
-      },
-      {
-        id: 5,
-        title: 'Personal Development',
-        description: 'Develop life skills, productivity habits, and strategies for personal growth.',
-        totalCourses: 4,
-      },
-      {
-        id: 6,
-        title: 'Design',
-        description: 'Learn visual design principles and tools for creating compelling digital content.',
-        totalCourses: 2,
-      },
-      {
-        id: 7,
-        title: 'Health & Wellness',
-        description: 'Discover practices for improving physical and mental well-being.',
-        totalCourses: 2,
-      },
-    ]);
+    });
   }
 
-  private loadCourse(): void {
-    // TODO: Add API call
-    this.courseData.set({
-      title: 'Mastering Angular',
-      shortDescription: 'Learn Angular from basics to advanced concepts in this comprehensive course.',
-      fullDescription:
-        '<p>This course is designed to provide an in-depth understanding of modern web development, covering both front-end and back-end technologies. Whether you are a complete beginner or have some experience in coding, this course will equip you with the skills and knowledge required to build, maintain, and optimize websites and web applications.</p><p><strong>What you will learn:</strong></p><ul><li>Core concepts of HTML, CSS, and JavaScript.</li><li>Frameworks such as Angular, React, and Vue.js.</li><li>Server-side programming with Node.js and Express.</li><li>Database management with MySQL and MongoDB.</li><li>Version control using Git and GitHub.</li><li>Deployment of web applications to live environments.</li></ul><p>Throughout the course, you will work on multiple hands-on projects, enabling you to apply the concepts in real-world scenarios. These projects include creating responsive websites, dynamic web applications, and RESTful APIs, among others.</p><p>By the end of this course, you will have a portfolio of projects that showcase your skills to potential employers and clients.</p><p><strong>Who should take this course?</strong></p><p>This course is ideal for aspiring web developers, freelancers, and anyone interested in building their own websites or web applications. No prior programming experience is required, but familiarity with computers and basic internet usage is recommended.</p>',
-      requirements:
-        '<ul><li>Basic familiarity with computers and the internet.</li><li>A computer with internet access for hands-on practice.</li><li>Willingness to learn and complete exercises and projects.</li></ul>',
+  private loadCourse(courseId: number): void {
+    this.courseService.getCourseDetailsById(courseId).subscribe({
+      next: (response) => {
+        const courseUpdateDto: CourseUpdateDto = {
+          id: response.id!,
+          title: response.title!,
+          shortDescription: response.shortDescription!,
+          fullDescription: response.fullDescription!,
+          requirements: response.requirements!,
+          passingScore: response.passingScore!,
+          difficultyLevel: response.difficultyLevel!,
+          topicId: response.topicOverviewDto!.id!,
+          authorId: response.author!.id!,
+        };
+        this.createdCourseData.set(courseUpdateDto);
+      },
+      error: (error) => {
+        console.error('Error fetching course data: ', error);
+      },
+    });
+  }
 
-      topic: 1,
-      difficultyLevel: DifficultyLevel.ADVANCED,
-      rating: 4.8,
-      totalVotes: 12345,
-      lastUpdated: '2024-11-27',
-      author: 'Jane Doe',
-      lectures: [
-        {
-          title: 'Introduction to Angular',
-          description:
-            '<p><strong>Welcome to Angular!</strong></p><p>In this lecture, we will cover the basics of Angular, its purpose, and its architecture.</p>',
-          videoUrl: 'HSJBbCN6GjU',
-          assignmentTask: 'Write a brief essay about the benefits of using Angular.',
-          sequenceNumber: 1,
-          courseId: 1,
-        },
-        {
-          title: 'Components and Templates',
-          description:
-            '<p><strong>Understanding Components</strong></p><p>This lecture dives into Angular components and how to use templates to build dynamic UIs.</p>',
-          videoUrl: 'wZ6cST5pexo',
-          assignmentTask: 'Create a simple component that displays your favorite hobby.',
-          sequenceNumber: 2,
-          courseId: 1,
-        },
-        {
-          title: 'Directives and Pipes',
-          description:
-            '<p><strong>Enhancing Templates</strong></p><p>Learn how to use directives and pipes to manipulate DOM elements and format data dynamically.</p>',
-          videoUrl: 'ADQy4805YxY',
-          assignmentTask: 'Implement a custom pipe that formats dates in your preferred format.',
-          sequenceNumber: 3,
-          courseId: 1,
-        },
-      ],
-      courseImage: this.fileData,
-      passingScore: 70,
+  private loadCourseLectures(courseId: number): void {
+    this.lectureService.getAllLectureDetailsByCourseId(courseId).subscribe({
+      next: (response) => {
+        this.courseLecturesData.set(response);
+      },
+      error: (error) => {
+        console.error('Error fetching lectures: ', error);
+      },
     });
   }
 }

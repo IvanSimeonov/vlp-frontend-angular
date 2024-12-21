@@ -1,12 +1,10 @@
 <div class="lectures" [formGroup]="form">
   <div class="lectures__main-actions">
     <div class="lectures__main-actions__btns">
-      <button mat-flat-button (click)="saveLectures()" [disabled]="isFormSubmitted && form.invalid">
-        Save Lectures
-      </button>
+      <button mat-flat-button (click)="saveLectures()" [disabled]="isFormValid()">Save Lectures</button>
       <button mat-raised-button (click)="addLecture()">New Lecture</button>
     </div>
-    @if (isFormSubmitted && form.invalid) {
+    @if (isFormValid()) {
       <div class="lectures__main-actions__generic-error mat-elevation-z2">
         <mat-icon>error</mat-icon>
         Oops! To proceed, please fill in all fields for at least 3 lectures.
