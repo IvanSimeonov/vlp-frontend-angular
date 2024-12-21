@@ -6,6 +6,10 @@
     alt="Course Image" />
   @if (isUserCourseOwner()) {
     <div class="course-card__actions">
+      <span class="course-card__actions__status">
+        <span *ngIf="course().status === 'DRAFT'">Draft</span>
+        <span *ngIf="course().status === 'PUBLISHED'">Published</span>
+      </span>
       <button mat-mini-fab class="course-card__actions__edit-btn" (click)="editCourse($event)">
         <mat-icon>edit</mat-icon>
       </button>
