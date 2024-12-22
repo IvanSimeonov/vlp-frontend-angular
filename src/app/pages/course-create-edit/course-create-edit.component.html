@@ -61,8 +61,8 @@
       </mat-step>
       <mat-step class="course__stepper__preview" label="Preview and publish">
         <h4>Course successfully created in draft mode. Do you want to publish or remove it and all of its content?</h4>
-        <button mat-button (click)="publishCourse()">Publish</button>
-        <button mat-button (click)="deleteCourseAndContent()">Delete</button>
+        <button mat-flat-button (click)="publishCourse()">Publish</button>
+        <button mat-flat-button class="delete-btn" (click)="deleteCourseAndContent()">Delete</button>
       </mat-step>
     </mat-stepper>
   </div>

@@ -4,10 +4,11 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { CourseCreateEditFormComponent } from '../../features/course/course-create-edit-form/course-create-edit-form.component';
 import { FileUploadComponent } from '../../components/file-upload/file-upload.component';
 import { LectureManagementComponent } from '../../features/lecture/lecture-management/lecture-management.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   CourseControllerService,
   CourseCreateDto,
+  CourseStatusUpdateDto,
   CourseUpdateDto,
   LectureControllerService,
   LectureDetailDto,
@@ -16,19 +17,11 @@ import {
   TopicOverviewDto,
 } from '@ivannicksim/vlp-backend-openapi-client';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 export interface IFile {
   name: string;
   file: File;
-}
-
-export interface ILecture {
-  title: string;
-  description: string;
-  videoUrl: string;
-  assignmentTask: string;
-  sequenceNumber: number;
-  courseId: number;
 }
 
 @Component({
@@ -41,6 +34,7 @@ export interface ILecture {
     FileUploadComponent,
     LectureManagementComponent,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   templateUrl: './course-create-edit.component.html',
   styleUrl: './course-create-edit.component.scss',
@@ -49,6 +43,8 @@ export class CourseCreateEditComponent implements OnInit {
   private courseService = inject(CourseControllerService);
   private topicService = inject(TopicControllerService);
   private lectureService = inject(LectureControllerService);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
   topics = signal<TopicOverviewDto[] | undefined>([]);
 
   isCourseCreated = signal(false);
@@ -84,12 +80,12 @@ export class CourseCreateEditComponent implements OnInit {
           ...courseData,
         })
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.isCourseCreated.set(true);
-            console.log('Updated Course: ', response);
+            this.snackBar.open('Course updated successfully!', 'Close', { duration: 3000 });
           },
-          error: (error) => {
-            console.error('Error updating course: ', error);
+          error: () => {
+            this.snackBar.open('Course update failed! Try agian lated.', 'Close', { duration: 3000 });
           },
         });
     } else {
@@ -101,9 +97,10 @@ export class CourseCreateEditComponent implements OnInit {
           });
           this.isCourseCreated.set(true);
           this.courseId.set(response);
+          this.snackBar.open('Course created successfully!', 'Close', { duration: 3000 });
         },
-        error: (error) => {
-          console.error('Error creating course: ', error);
+        error: () => {
+          this.snackBar.open('Course creation failed!', 'Close', { duration: 3000 });
         },
       });
     }
@@ -113,38 +110,57 @@ export class CourseCreateEditComponent implements OnInit {
     this.courseService.uploadCourseImage(this.courseId(), photo.file).subscribe({
       next: (response) => {
         console.log('Uploaded Photo Response: ', response);
+        this.snackBar.open('Course photo uplaoded successfully!', 'Close', { duration: 3000 });
       },
-      error: (error) => {
-        console.error('Error uploading photo: ', error);
+      error: () => {
+        this.snackBar.open('Error uploading course photo. Please try again!', 'Close', { duration: 3000 });
       },
     });
     this.isPhotoUploaded.set(true);
   }
 
   handleLecturesAdded(lectures: LectureDto[]): void {
-    console.log('Added lectures: ', lectures);
     if (lectures.length >= 3) {
       this.areLecturesAdded.set(true);
-      console.log('More than 3 Lectures: ', lectures.length);
       this.lectureService.updateLectures(this.courseId(), lectures).subscribe({
-        next: (response) => {
-          console.log('Updated Lectures: ', response);
+        next: () => {
+          this.snackBar.open('Lectures updated successfully!', 'Close', { duration: 3000 });
         },
-        error: (error) => {
-          console.error('Error updating lectures: ', error);
+        error: () => {
+          this.snackBar.open('Updating lectures failed! Please try again.', 'Close', { duration: 3000 });
         },
       });
     }
   }
 
   publishCourse(): void {
-    // TODO: Add API call
-    console.log('Course published!');
+    if (this.courseLecturesData() && this.courseLecturesData()!.length < 3) {
+      this.snackBar.open('You need to add at least 3 lectures to publish the course!', 'Close', { duration: 3000 });
+      return;
+    }
+    this.courseService
+      .updateCourseStatusById(this.courseId(), { status: CourseStatusUpdateDto.StatusEnum.Published })
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Course published successfully!', 'Close', { duration: 3000 });
+          this.router.navigate(['/my-courses']);
+        },
+        error: () => {
+          this.snackBar.open('Course could not be published! Please try again.', 'Close', { duration: 3000 });
+        },
+      });
   }
 
   deleteCourseAndContent(): void {
-    // TODO: Add API call
-    console.log('Course Deleted!');
+    this.courseService.deleteCourseById(this.courseId()).subscribe({
+      next: () => {
+        this.snackBar.open('Course deleted successfully!', 'Close', { duration: 3000 });
+        this.router.navigate(['/my-courses']);
+      },
+      error: () => {
+        this.snackBar.open('Course could not be deleted! Please try again later.', 'Close', { duration: 3000 });
+      },
+    });
   }
 
   private loadTopics(): void {
@@ -152,8 +168,8 @@ export class CourseCreateEditComponent implements OnInit {
       next: (response) => {
         this.topics.set(response);
       },
-      error: (error) => {
-        console.error('Error fetching topics: ', error);
+      error: () => {
+        this.snackBar.open('Topics cannot be fetched!', 'Close', { duration: 3000 });
       },
     });
   }
@@ -174,8 +190,8 @@ export class CourseCreateEditComponent implements OnInit {
         };
         this.createdCourseData.set(courseUpdateDto);
       },
-      error: (error) => {
-        console.error('Error fetching course data: ', error);
+      error: () => {
+        this.snackBar.open('Course cannot be fetched!', 'Close', { duration: 3000 });
       },
     });
   }
@@ -185,8 +201,8 @@ export class CourseCreateEditComponent implements OnInit {
       next: (response) => {
         this.courseLecturesData.set(response);
       },
-      error: (error) => {
-        console.error('Error fetching lectures: ', error);
+      error: () => {
+        this.snackBar.open('Lectures cannot be fetched!', 'Close', { duration: 3000 });
       },
     });
   }
