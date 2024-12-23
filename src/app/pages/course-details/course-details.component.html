@@ -53,7 +53,7 @@
         </ng-template>
         <div class="course__body__lecture course__body__tab-cirriculum">
           <mat-accordion>
-            @for (lecture of lectures(); let idx = $index; track idx) {
+            @for (lecture of lectures(); let idx = $index; track lecture.id) {
               <mat-expansion-panel [disabled]="!lectureAccessibility().get(lecture.id!)">
                 <mat-expansion-panel-header>
                   <mat-panel-title>

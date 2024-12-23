@@ -36,7 +36,7 @@
         <mat-tab-group animationDuration="1000ms">
           <mat-tab [label]="'Enrolled Courses (' + user().enrolledCourses?.length + ')'">
             <div class="public-profile__layout__courses__enrolled">
-              @for (course of currentPageEnrolledCourses(); track $index) {
+              @for (course of currentPageEnrolledCourses(); track course.id) {
                 <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
               }
             </div>
@@ -49,7 +49,7 @@
           </mat-tab>
           <mat-tab [label]="'Completed Courses (' + user().completedCourses?.length + ')'">
             <div class="public-profile__layout__courses__completed">
-              @for (course of currentPageCompletedCourses(); track $index) {
+              @for (course of currentPageCompletedCourses(); track course.id) {
                 <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
               }
             </div>
@@ -63,7 +63,7 @@
           @if (isUserTeacher()) {
             <mat-tab [label]="'Created Courses (' + user().createdCourses?.length + ')'">
               <div class="public-profile__layout__courses__created">
-                @for (course of currentPageCreatedCourses(); track $index) {
+                @for (course of currentPageCreatedCourses(); track course.id) {
                   <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
                 }
               </div>

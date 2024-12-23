@@ -38,7 +38,7 @@
   }
   <div class="topic-management-layout__content">
     <div class="topic-management-layout__content__cards">
-      @for (topic of topics(); let idx = $index; track idx) {
+      @for (topic of topics(); let idx = $index; track topic.id) {
         <app-topic-card
           [topic]="topic"
           (edit)="openEditDialog(topic)"

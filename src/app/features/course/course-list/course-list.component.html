@@ -33,7 +33,7 @@
     </div>
     <div class="course-layout__content__courses mat-elevation-z8">
       <div class="course-layout__content__courses__cards">
-        @for (course of courses(); let i = $index; track i) {
+        @for (course of courses(); track course.id) {
           <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
         }
       </div>

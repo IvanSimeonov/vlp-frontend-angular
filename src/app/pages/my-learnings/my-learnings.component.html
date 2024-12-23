@@ -27,7 +27,7 @@
               (filterChange)="handleCreatedCoursesFiltersChange($event)"
               (sortChange)="sortCreatedCourses($event)"></app-course-filter-bar>
             <div class="learnings__content__courses__created">
-              @for (course of createdCourses(); track $index) {
+              @for (course of createdCourses(); track course.id) {
                 <app-course-card
                   [course]="course"
                   [courseImage]="fetchCourseImage(course)"
@@ -50,7 +50,7 @@
             (filterChange)="handleEnrolledCoursesFiltersChange($event)"
             (sortChange)="sortEnrolledCourses($event)"></app-course-filter-bar>
           <div class="learnings__content__courses__enrolled">
-            @for (course of enrolledCourses(); track $index) {
+            @for (course of enrolledCourses(); track course.id) {
               <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
             }
           </div>
@@ -68,7 +68,7 @@
             (filterChange)="handleCompletedCoursesFiltersChange($event)"
             (sortChange)="sortCompletedCourses($event)"></app-course-filter-bar>
           <div class="learnings__content__courses__completed">
-            @for (course of completedCourses(); track $index) {
+            @for (course of completedCourses(); track course.id) {
               <app-course-card
                 [course]="course"
                 [courseImage]="fetchCourseImage(course)"

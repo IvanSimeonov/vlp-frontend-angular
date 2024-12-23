@@ -4,7 +4,7 @@
       <app-assignment-solution-filter></app-assignment-solution-filter>
     }
     <div class="assignment-solutions-list__content">
-      @for (assignmentSolution of assignmentSolutions; track $index) {
+      @for (assignmentSolution of assignmentSolutions; track assignmentSolution.id) {
         <app-assignment-solution-card
           [assignmentSolution]="assignmentSolution"
           [isTeacher]="isTeacher"

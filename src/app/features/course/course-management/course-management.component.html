@@ -37,7 +37,7 @@
         (filterChange)="applyFilters($event)"></app-course-filter>
     </div>
     <div class="course-management-layout__content__courses mat-elevation-z8">
-      @for (course of courses(); let idx = $index; track idx) {
+      @for (course of courses(); track course.id) {
         <app-course-row
           [course]="course"
           [courseImage]="fetchCourseImage(course)"
