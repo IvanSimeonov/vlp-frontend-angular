@@ -34,6 +34,10 @@ body {
   padding: 0;
   margin: 0;
 }
+.ProseMirror * {
+  padding: revert;
+  margin: revert;
+}
 
 .mat-badge-content {
   background: red !important;
@@ -54,18 +58,4 @@ body {
 
 .advanced-pie-legend .legend-items-container .legend-items {
   overflow: visible !important;
-}
-
-.NgxEditor__Content > {
-  ol,
-  ul {
-    display: block;
-    list-style-type: decimal;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    padding-inline-start: 40px;
-    unicode-bidi: isolate;
-  }
 }
