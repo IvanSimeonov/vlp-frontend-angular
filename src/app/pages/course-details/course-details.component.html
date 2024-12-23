@@ -54,10 +54,15 @@
         <div class="course__body__lecture course__body__tab-cirriculum">
           <mat-accordion>
             @for (lecture of lectures(); let idx = $index; track idx) {
-              <mat-expansion-panel>
-                <mat-expansion-panel-header>{{
-                  formatLecturePanelTitle(idx, lecture?.title)
-                }}</mat-expansion-panel-header>
+              <mat-expansion-panel [disabled]="!lectureAccessibility().get(lecture.id!)">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ formatLecturePanelTitle(idx, lecture?.title) }}
+                    @if (!lectureAccessibility().get(lecture.id!)) {
+                      <mat-icon class="lock-icon">lock</mat-icon>
+                    }
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
                 <div class="course__body__lecture__body">
                   <div class="course__body__lecture__body__description">
                     <p [innerHTML]="lecture.description"></p>
@@ -73,28 +78,53 @@
                       allowfullscreen></iframe>
                   </div>
                   <div class="course__body__lecture__body__assignment-task">
-                    <p>{{ assignments }}</p>
+                    <h6>Assignment Task</h6>
+                    <p>{{ lecture.assignmentTask }}</p>
                   </div>
-                  <div class="course__body__lecture__body__assignment-solution"></div>
+                  <div class="course__body__lecture__body__assignment-solution">
+                    @if (!isUserCourseAuthor()) {
+                      <h6>Assignment Solution</h6>
+                    }
+                    <div class="file-upload-container">
+                      @if (
+                        !assignmentSolutions().get(lecture.id!) && !isUserCompletedCourse() && !isUserCourseAuthor()
+                      ) {
+                        <app-file-upload
+                          [allowedFileTypes]="allowedFileTypes"
+                          [maxFileSizeMB]="maxFileSizeMB"
+                          (fileChange)="onFileUpload(lecture.id!, $event.file)"></app-file-upload>
+                      } @else if (isUserCourseAuthor()) {
+                      } @else {
+                        <div class="submitted-file">
+                          <mat-icon>description</mat-icon>
+                          <span>{{ getAssignmentSolutionFileName(lecture.id!) }}</span>
+                          <button mat-icon-button (click)="downloadAssignmentSolution(lecture.id!)">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                          <span>Grade: {{ getAssignmentSolutionGrade(lecture.id!) }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
                 </div>
               </mat-expansion-panel>
             }
           </mat-accordion>
         </div>
       </mat-tab>
-      <mat-tab [disabled]="!isUserCourseAuthor() && !isUserEnrolled() && !isUserCompletedCourse()">
+      <mat-tab [disabled]="!isUserCourseAuthor()">
         <ng-template mat-tab-label> Submissions </ng-template>
         <div class="course__body__lecture course__body__tab-cirriculum">
+          <button mat-flat-button (click)="fetchAllUsersSolutions()">Fetch</button>
           <mat-accordion>
             <ng-container *ngFor="let lecture of lectures(); let idx = index">
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title> {{ idx + 1 }}. {{ lecture.title }} </mat-panel-title>
                 </mat-expansion-panel-header>
-                <!-- <app-assignment-solution-list
-                  [assignmentSolutions]="lecture!.assignmentSolutions"
-                  [isTeacher]="isUserCourseAuthor()"
-                ></app-assignment-solution-list> -->
+                <app-assignment-solution-list
+                  [assignmentSolutions]="filteredAssignments(lecture.id!)"
+                  [isTeacher]="isUserCourseAuthor()"></app-assignment-solution-list>
               </mat-expansion-panel>
             </ng-container>
           </mat-accordion>
@@ -136,7 +166,9 @@
       <button [ngClass]="canUserEnroll() ? 'showed' : 'hidden'" type="button" mat-flat-button (click)="onEnroll()">
         Enroll
       </button>
-      <span class="current-state" [ngClass]="isUserEnrolled() ? 'showed' : 'hidden'"> Continue Learning </span>
+      <span class="current-state" [ngClass]="isUserEnrolled() && !isUserCompletedCourse() ? 'showed' : 'hidden'">
+        Continue Learning
+      </span>
       <span class="current-state success" [ngClass]="isUserCompletedCourse() ? 'showed' : 'hidden'"> Completed </span>
       <div class="course-owner-actions" [ngClass]="canUserEditDeteleCourse() ? '' : 'hidden'">
         <button class="current-state" type="button" mat-flat-button (click)="onEdit()">Edit</button>
