@@ -28,7 +28,7 @@
       @if (user().bio) {
         <section class="public-profile__layout__about">
           <h4>About me</h4>
-          <p [innerHTML]="user().bio"></p>
+          <p class="unset" [innerHTML]="user().bio"></p>
         </section>
       }
       <section class="public-profile__layout__courses">

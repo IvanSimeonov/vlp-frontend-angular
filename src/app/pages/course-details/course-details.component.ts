@@ -24,6 +24,7 @@ import { EnumUtils } from '../../shared/helpers/EnumUtils';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UserProfileService } from '../../services/user/user-profile.service';
 import { FileUploadComponent } from '../../components/file-upload/file-upload.component';
+import { YoutubeVideoComponent } from '../../components/youtube-video/youtube-video.component';
 
 @Component({
   selector: 'app-course-details',
@@ -43,6 +44,7 @@ import { FileUploadComponent } from '../../components/file-upload/file-upload.co
     MatFormFieldModule,
     FileUploadComponent,
     AssignmentSolutionListComponent,
+    YoutubeVideoComponent,
   ],
   templateUrl: './course-details.component.html',
   styleUrl: './course-details.component.scss',
@@ -194,6 +196,7 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
     return this.lectureService.getAllLectureDetailsByCourseId(courseId).pipe(
       delay(300),
       tap((lectures) => {
+        console.log(lectures);
         this.lectures.set(lectures);
       })
     );

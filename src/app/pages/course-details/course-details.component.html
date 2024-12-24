@@ -34,11 +34,11 @@
         <div class="course__body__tab-desc">
           <div class="course__body__tab-desc__req">
             <h4 class="course__body__tab-desc__req__title">Requirements</h4>
-            <p class="course__body__tab-desc__req__content" [innerHTML]="course()?.requirements"></p>
+            <p class="course__body__tab-desc__req__content unset" [innerHTML]="course()?.requirements"></p>
           </div>
           <div class="course__body__tab-desc__desc">
             <h4 class="course__body__tab-desc__desc__title">Description</h4>
-            <p class="course__body__tab-desc__desc__content" [innerHTML]="course()?.fullDescription"></p>
+            <p class="course__body__tab-desc__desc__content unset" [innerHTML]="course()?.fullDescription"></p>
           </div>
         </div>
       </mat-tab>
@@ -64,22 +64,16 @@
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="course__body__lecture__body">
-                  <div class="course__body__lecture__body__description">
-                    <p [innerHTML]="lecture.description"></p>
-                  </div>
                   <div class="course__body__lecture__body__video">
-                    <iframe
-                      width="420"
-                      height="249"
-                      [src]="lecture.videoUrl | safeUrl"
-                      title="YouTube video player"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen></iframe>
+                    <app-youtube-video [videoUrl]="lecture.videoUrl" [title]="lecture.title"></app-youtube-video>
+                  </div>
+                  <div class="course__body__lecture__body__description">
+                    <h6>Description</h6>
+                    <p class="unset" [innerHTML]="lecture.description"></p>
                   </div>
                   <div class="course__body__lecture__body__assignment-task">
                     <h6>Assignment Task</h6>
-                    <p>{{ lecture.assignmentTask }}</p>
+                    <p class="unset" [innerHTML]="lecture.assignmentTask"></p>
                   </div>
                   <div class="course__body__lecture__body__assignment-solution">
                     @if (!isUserCourseAuthor()) {
