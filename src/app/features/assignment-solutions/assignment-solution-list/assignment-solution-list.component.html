@@ -1,27 +1,25 @@
-@if (assignmentSolutions) {
+@if (assignmentSolutions()) {
   <div class="assignment-solutions-list">
-    @if (isTeacher) {
-      <app-assignment-solution-filter></app-assignment-solution-filter>
-    }
     <div class="assignment-solutions-list__content">
-      @for (assignmentSolution of assignmentSolutions; track assignmentSolution.id) {
+      @for (assignmentSolution of assignmentSolutions(); track assignmentSolution.id) {
         <app-assignment-solution-card
           [solution]="assignmentSolution"
-          [isTeacher]="isTeacher"
+          [isTeacher]="isTeacher()"
           (gradeAssignment)="handleGrade(assignmentSolution)"></app-assignment-solution-card>
       }
     </div>
-    @if (isTeacher) {
+    @if (isTeacher()) {
       <mat-paginator
-        [length]="assignmentSolutions.length"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="pageSizeOptions"
-        (page)="onPaginate($event)"></mat-paginator>
+        [length]="totalSolutions()"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageNumber()"
+        [pageSizeOptions]="[5, 10, 15, 20]"
+        (page)="handlePageEvent($event)"></mat-paginator>
     }
   </div>
 } @else {
   <div class="no-solutions-placeholder">
-    @if (isTeacher) {
+    @if (isTeacher()) {
       <p>No assignment solutions are available for grading at this time. Please, check again later.</p>
     } @else {
       <p>Your assignment solution is not graded yet. Please, check again later.</p>

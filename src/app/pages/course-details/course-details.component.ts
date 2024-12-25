@@ -95,7 +95,6 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeCourse();
-    this.fetchAllUsersSolutions();
   }
 
   ngOnDestroy(): void {
@@ -124,7 +123,8 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
             return forkJoin({
               course: this.fetchCourse(courseId),
               lectures: this.fetchLectures(courseId),
-              assignments: this.isUserEnrolled() ? this.fetchUserAssignments(courseId) : of([]),
+              assignments: this.fetchUserAssignments(courseId),
+              allUsersSolutions: this.assignmentSolutionService.getAllSolutionsByCourseId(courseId),
             });
           } else {
             this.isLoading.set(false);
@@ -133,10 +133,11 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe({
-        next: ({ course, lectures, assignments }) => {
+        next: ({ course, lectures, assignments, allUsersSolutions }) => {
           this.course.set(course);
           this.lectures.set(lectures);
           this.updateAssignments(assignments);
+          this.allUsersSolutions.set(allUsersSolutions);
           this.updateLectureAccess();
         },
         error: this.handleError.bind(this),
@@ -372,9 +373,22 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
       this.assignmentSolutionService.getAllSolutionsByCourseId(courseId).subscribe({
         next: (result: AssignmentSolutionDto[]) => {
           this.allUsersSolutions.set(result);
-          console.log('Submissions: ', result);
         },
         error: (error) => console.error('Submissions error: ', error),
+      });
+    }
+  }
+
+  onGradeUpdated() {
+    const courseId = this.course()?.id;
+    if (courseId) {
+      this.assignmentSolutionService.getAllSolutionsByCourseId(courseId).subscribe({
+        next: (solutions) => {
+          this.allUsersSolutions.set(solutions);
+        },
+        error: (error) => {
+          console.error('Error fetching solutions: ', error);
+        },
       });
     }
   }

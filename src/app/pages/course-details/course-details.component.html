@@ -90,12 +90,18 @@
                       } @else if (isUserCourseAuthor()) {
                       } @else {
                         <div class="submitted-file">
-                          <mat-icon>description</mat-icon>
-                          <span>{{ getAssignmentSolutionFileName(lecture.id!) }}</span>
-                          <button mat-icon-button (click)="downloadAssignmentSolution(lecture.id!)">
-                            <mat-icon>download</mat-icon>
-                          </button>
-                          <span>Grade: {{ getAssignmentSolutionGrade(lecture.id!) }}</span>
+                          <div class="file-desc">
+                            <mat-icon>description</mat-icon>
+                            <span>{{ getAssignmentSolutionFileName(lecture.id!) }}</span>
+                            <button mat-icon-button (click)="downloadAssignmentSolution(lecture.id!)">
+                              <mat-icon>download</mat-icon>
+                            </button>
+                          </div>
+                          <div class="file-download"></div>
+                          <div class="file-grade">
+                            <mat-icon>grade</mat-icon>
+                            <span>Grade: {{ getAssignmentSolutionGrade(lecture.id!) }} / 100</span>
+                          </div>
                         </div>
                       }
                     </div>
@@ -109,7 +115,6 @@
       <mat-tab [disabled]="!isUserCourseAuthor()">
         <ng-template mat-tab-label> Submissions </ng-template>
         <div class="course__body__lecture course__body__tab-cirriculum">
-          <button mat-flat-button (click)="fetchAllUsersSolutions()">Fetch</button>
           <mat-accordion>
             <ng-container *ngFor="let lecture of lectures(); let idx = index">
               <mat-expansion-panel>
@@ -118,7 +123,8 @@
                 </mat-expansion-panel-header>
                 <app-assignment-solution-list
                   [assignmentSolutions]="filteredAssignments(lecture.id!)"
-                  [isTeacher]="isUserCourseAuthor()"></app-assignment-solution-list>
+                  [isTeacher]="isUserCourseAuthor()"
+                  (gradeUpdated)="onGradeUpdated()"></app-assignment-solution-list>
               </mat-expansion-panel>
             </ng-container>
           </mat-accordion>

@@ -1,5 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { AssignmentSolutionFilterComponent } from '../assignment-solution-filter/assignment-solution-filter.component';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { AssignmentSolutionCardComponent } from '../assignment-solution-card/assignment-solution-card.component';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -9,24 +8,27 @@ import { AssignmentSolutionControllerService, AssignmentSolutionDto } from '@iva
 @Component({
   selector: 'app-assignment-solution-list',
   standalone: true,
-  imports: [AssignmentSolutionFilterComponent, AssignmentSolutionCardComponent, MatPaginatorModule, MatDialogModule],
+  imports: [AssignmentSolutionCardComponent, MatPaginatorModule, MatDialogModule],
   templateUrl: './assignment-solution-list.component.html',
   styleUrl: './assignment-solution-list.component.scss',
 })
-export class AssignmentSolutionListComponent implements OnInit {
+export class AssignmentSolutionListComponent {
   private assignmentService = inject(AssignmentSolutionControllerService);
-  readonly dialog = inject(MatDialog);
-  @Input() assignmentSolutions: AssignmentSolutionDto[] | undefined;
-  @Input() isTeacher = false;
-  pageSize = 10;
-  pageSizeOptions = [5, 10, 25, 50];
+  private readonly dialog = inject(MatDialog);
 
-  ngOnInit(): void {
-    console.log('Assignment Solutions Length: ', this.assignmentSolutions?.length);
-  }
+  readonly isLoading = signal(false);
+  readonly pageSize = signal(10);
+  readonly pageNumber = signal(0);
 
-  onPaginate(event: PageEvent) {
-    console.log('Page Event: ', event);
+  assignmentSolutions = input<AssignmentSolutionDto[]>([]);
+  isTeacher = input(false);
+  totalSolutions = computed(() => this.assignmentSolutions().length);
+
+  gradeUpdated = output();
+
+  handlePageEvent(event: PageEvent) {
+    this.pageNumber.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   handleGrade(assignmentSolution: AssignmentSolutionDto): void {
@@ -34,13 +36,19 @@ export class AssignmentSolutionListComponent implements OnInit {
       data: { assignmentSolution },
     });
 
-    dialogRef.afterClosed().subscribe((score) => {
-      if (score) {
-        console.log('AS-LIST-SCORE: ', score);
-        console.log('AS-LIST-SCORE: ', assignmentSolution.id);
-        this.assignmentService.updateGradeSolution(1, assignmentSolution.id!, score).subscribe({
-          next: (result) => console.log('After grade: ', result),
-          error: (err) => console.error('Error grading: ', err),
+    dialogRef.afterClosed().subscribe((grade) => {
+      if (grade) {
+        this.isLoading.set(true);
+        this.assignmentService.updateGradeSolution(1, assignmentSolution.id!, grade).subscribe({
+          next: () => {
+            this.gradeUpdated.emit();
+          },
+          error: (err) => {
+            console.error('Error grading: ', err);
+          },
+          complete: () => {
+            this.isLoading.set(false);
+          },
         });
       }
     });
