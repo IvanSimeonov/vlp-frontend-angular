@@ -16,6 +16,7 @@ describe('AssignmentSolutionCardComponent', () => {
 
     fixture = TestBed.createComponent(AssignmentSolutionCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('solution', {});
     fixture.detectChanges();
   });
 

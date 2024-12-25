@@ -1,23 +1,16 @@
 <mat-card class="assignment-solution-card" appearance="outlined">
   <mat-card-header class="assignment-solution-card__header">
-    <mat-card-title class="assignment-solution-card__title">
-      {{ isTeacher ? 'Student ' : 'Your Submission' }}
-    </mat-card-title>
+    <mat-card-title class="assignment-solution-card__title">{{ studentName() }} </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p class="assignment-solution-card__content">
-      Grade&nbsp;
-      @if (assignmentSolution && assignmentSolution.grade) {
-        <span> {{ assignmentSolution.grade }}/100</span>
-      } @else {
-        <span>N/A</span>
-      }
-    </p>
+    <div class="assignment-solution-card__content">
+      <span>{{ displayGrade() }}</span>
+    </div>
   </mat-card-content>
-  @if (isTeacher) {
+  @if (isTeacher()) {
     <mat-card-actions>
-      <button mat-flat-button (click)="downloadSubmission()">Download Solution</button>
-      <button mat-flat-button (click)="onGrade()">Grade Submission</button>
+      <button mat-flat-button (click)="downloadSubmission()">Download Solution<mat-icon>download</mat-icon></button>
+      <button mat-flat-button (click)="onGrade()">Grade Submission <mat-icon>grade</mat-icon></button>
     </mat-card-actions>
   }
 </mat-card>

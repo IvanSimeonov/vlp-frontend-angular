@@ -6,14 +6,14 @@
     <div class="assignment-solutions-list__content">
       @for (assignmentSolution of assignmentSolutions; track assignmentSolution.id) {
         <app-assignment-solution-card
-          [assignmentSolution]="assignmentSolution"
+          [solution]="assignmentSolution"
           [isTeacher]="isTeacher"
           (gradeAssignment)="handleGrade(assignmentSolution)"></app-assignment-solution-card>
       }
     </div>
     @if (isTeacher) {
       <mat-paginator
-        [length]="assignmentSolutions?.length"
+        [length]="assignmentSolutions.length"
         [pageSize]="pageSize"
         [pageSizeOptions]="pageSizeOptions"
         (page)="onPaginate($event)"></mat-paginator>

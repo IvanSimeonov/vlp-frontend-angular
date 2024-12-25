@@ -6,7 +6,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
 import { StarRatingComponent } from '../../components/star-rating/star-rating.component';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { SafeUrlPipe } from '../../shared/pipes/safe-url.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AssignmentSolutionListComponent } from '../../features/assignment-solutions/assignment-solution-list/assignment-solution-list.component';
@@ -38,7 +37,6 @@ import { YoutubeVideoComponent } from '../../components/youtube-video/youtube-vi
     StarRatingComponent,
     MatListModule,
     MatExpansionModule,
-    SafeUrlPipe,
     ReactiveFormsModule,
     FormsModule,
     MatFormFieldModule,
