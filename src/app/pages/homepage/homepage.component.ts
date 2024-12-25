@@ -42,7 +42,6 @@ export class HomepageComponent implements OnInit {
   fetchCourses() {
     this.courseService.getTopCoursesByStudentCount().subscribe({
       next: (res) => {
-        console.log(res);
         this.courses.set(res);
       },
       error: (err) => {
@@ -54,7 +53,6 @@ export class HomepageComponent implements OnInit {
   fetchTeachers() {
     this.userService.getTopTeachersByStudentCount().subscribe({
       next: (res) => {
-        console.log(res);
         this.teachers.set(res);
       },
       error: (err) => {

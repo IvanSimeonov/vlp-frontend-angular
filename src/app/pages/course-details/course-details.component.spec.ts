@@ -2,24 +2,33 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CourseDetailsComponent } from './course-details.component';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpEvent, provideHttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import { CourseControllerService } from '@ivannicksim/vlp-backend-openapi-client';
+import { CourseControllerService, CourseDetailsDto } from '@ivannicksim/vlp-backend-openapi-client';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('CourseDetailsComponent', () => {
   let component: CourseDetailsComponent;
   let fixture: ComponentFixture<CourseDetailsComponent>;
-  const courseServiceMock: jasmine.SpyObj<CourseControllerService> = jasmine.createSpyObj('CourseService', [
-    'getCourseDetailsById',
-  ]);
+  let courseServiceSpy: jasmine.SpyObj<CourseControllerService>;
+
+  const courseDetailsMock: CourseDetailsDto = {
+    id: 1,
+    title: 'Course Title Test',
+  };
 
   beforeEach(async () => {
+    courseServiceSpy = jasmine.createSpyObj('CourseControllerService', ['getCourseDetailsById']);
+    courseServiceSpy.getCourseDetailsById.and.returnValue(
+      of({ body: courseDetailsMock } as HttpEvent<CourseDetailsDto>)
+    );
     await TestBed.configureTestingModule({
       imports: [CourseDetailsComponent],
       providers: [
         provideAnimations(),
         provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -38,7 +47,7 @@ describe('CourseDetailsComponent', () => {
         },
         {
           provide: CourseControllerService,
-          useValue: courseServiceMock,
+          useValue: courseServiceSpy,
         },
       ],
     }).compileComponents();

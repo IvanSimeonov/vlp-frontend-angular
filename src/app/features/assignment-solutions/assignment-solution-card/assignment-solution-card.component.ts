@@ -38,22 +38,25 @@ export class AssignmentSolutionCardComponent {
   gradeAssignment = output();
 
   constructor() {
-    effect((onCleanup) => {
-      const studentId = this.solution().userId;
-      if (studentId) {
-        const subscription = this.userService.getUserPublicProfile(studentId).subscribe({
-          next: (response) => {
-            this.studentNameSignal.set(`${response.firstName} ${response.lastName}`);
-          },
-          error: () => {
-            this.studentNameSignal.set('Unknown Student');
-          },
-        });
-        onCleanup(() => subscription.unsubscribe());
-      } else {
-        this.studentNameSignal.set('Unknown Student');
-      }
-    });
+    effect(
+      (onCleanup) => {
+        const studentId = this.solution().userId;
+        if (studentId) {
+          const subscription = this.userService.getUserPublicProfile(studentId).subscribe({
+            next: (response) => {
+              this.studentNameSignal.set(`${response.firstName} ${response.lastName}`);
+            },
+            error: () => {
+              this.studentNameSignal.set('Unknown Student');
+            },
+          });
+          onCleanup(() => subscription.unsubscribe());
+        } else {
+          this.studentNameSignal.set('Unknown Student');
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   onGrade(): void {

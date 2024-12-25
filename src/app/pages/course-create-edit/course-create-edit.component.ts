@@ -72,7 +72,6 @@ export class CourseCreateEditComponent implements OnInit {
   }
 
   handleCourseCreated(courseData: CourseCreateDto): void {
-    console.log(courseData);
     if (this.isEditMode()) {
       this.courseService
         .updateCourseById(this.courseId(), {
@@ -108,8 +107,7 @@ export class CourseCreateEditComponent implements OnInit {
 
   handlePhotoUploaded(photo: IFile): void {
     this.courseService.uploadCourseImage(this.courseId(), photo.file).subscribe({
-      next: (response) => {
-        console.log('Uploaded Photo Response: ', response);
+      next: () => {
         this.snackBar.open('Course photo uplaoded successfully!', 'Close', { duration: 3000 });
       },
       error: () => {

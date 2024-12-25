@@ -4,17 +4,17 @@
     <mat-form-field class="topic-dialog__form__field" appearance="outline">
       <mat-label>Title</mat-label>
       <input matInput formControlName="title" (blur)="markAsTouched('title')" aria-label="Topic Title" />
-      <mat-hint>{{ topicForm.controls.title.value?.length }} / 50</mat-hint>
+      <mat-hint>{{ topicForm.get('title')?.value?.length }} / 50</mat-hint>
       @if (topicForm.controls.title.invalid) {
-        <mat-error>{{ errorMessages()?.['title'] }}</mat-error>
+        <mat-error>{{ errorMessages()['title'] }}</mat-error>
       }
     </mat-form-field>
     <mat-form-field class="topic-dialog__form__field" appearance="outline">
       <mat-label>Description</mat-label>
       <textarea matInput formControlName="description" rows="3" aria-label="Topic Description"></textarea>
-      <mat-hint>{{ topicForm.controls.description.value?.length }} / 100</mat-hint>
+      <mat-hint>{{ topicForm.get('description')?.value?.length }} / 100</mat-hint>
       @if (topicForm.controls.description.invalid) {
-        <mat-error>{{ errorMessages()?.['description'] }}</mat-error>
+        <mat-error>{{ errorMessages()['description'] }}</mat-error>
       }
     </mat-form-field>
 

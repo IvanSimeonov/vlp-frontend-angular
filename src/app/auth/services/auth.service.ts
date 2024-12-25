@@ -41,10 +41,10 @@ export class AuthService {
     return this.authBeService.register(registerData).pipe(
       tap({
         next: (response: AuthResponse) => {
-          console.log(response);
+          console.log('Register response data: ', response);
         },
         error: (err) => {
-          console.error('Register failed: ', err);
+          console.error('Registration failed: ', err);
         },
       })
     );

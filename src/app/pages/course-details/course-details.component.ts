@@ -161,9 +161,7 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
     const solutionsMap = new Map<number, AssignmentSolutionDto>(
       assignments.map((solution) => [solution.lectureId!, solution])
     );
-    console.log('Updated assignments', solutionsMap);
     this.assignmentSolutions.set(solutionsMap);
-    console.log('Updated assignments solutions', this.assignmentSolutions());
   }
 
   private fetchCourse(courseId: number): Observable<CourseDetailsDto> {
@@ -195,7 +193,6 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
     return this.lectureService.getAllLectureDetailsByCourseId(courseId).pipe(
       delay(300),
       tap((lectures) => {
-        console.log(lectures);
         this.lectures.set(lectures);
       })
     );
@@ -219,7 +216,6 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
   }
 
   onEnroll(): void {
-    console.log('Enroll course');
     const courseId = this.course()?.id;
     if (courseId) {
       this.userProfileService.refreshAfterStateChange(this.courseService.enrollUserToCourse(courseId)).subscribe({
@@ -256,22 +252,16 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
   }
 
   isLectureAccessible(lectureIndex: number): boolean {
-    // First lecture is always accessible
     if (lectureIndex === 0) {
       return true;
     }
-
-    // Special cases for course author or completed course
     if (this.isUserCompletedCourse() || this.isUserCourseAuthor()) {
       return true;
     }
-
-    // Must be enrolled to access lectures
     if (!this.isUserEnrolled()) {
       return false;
     }
 
-    // Get the current lecture's details
     const currentLecture = this.lectures()[lectureIndex];
     const previousLecture = this.lectures()[lectureIndex - 1];
 
@@ -281,8 +271,6 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
       solutions: Array.from(this.assignmentSolutions().entries()),
       hasPreviousSubmission: this.assignmentSolutions().has(previousLecture.id!),
     });
-
-    // Check if previous lecture has a submission
     return this.assignmentSolutions().has(previousLecture.id!);
   }
 
@@ -291,21 +279,16 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
     this.assignmentSolutionService.uploadAssignmentSolution(lectureId, file).subscribe({
       next: (solution) => {
         const currentSolutions = this.assignmentSolutions();
-        console.log('Current solutions before update: ', currentSolutions.entries());
-
         const updatedSolutions = new Map(currentSolutions);
         updatedSolutions.set(lectureId, solution);
         this.assignmentSolutions.set(updatedSolutions);
-
-        console.log('Solutions after update: ', this.assignmentSolutions());
         this.updateLectureAccess();
         setTimeout(() => {
           this.updateLectureAccess();
         }, 0);
         this.snackBar.open('Assignment submitted successfully', 'Close', { duration: 3000 });
       },
-      error: (error) => {
-        console.error('Error submitting assignment', error);
+      error: () => {
         this.snackBar.open('Error submitting assignment', 'Close', { duration: 3000 });
       },
       complete: () => this.isLoading.set(false),

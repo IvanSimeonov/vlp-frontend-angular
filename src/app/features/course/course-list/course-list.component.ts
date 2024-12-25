@@ -101,7 +101,6 @@ export class CourseListComponent implements OnInit {
       .pipe(delay(300))
       .subscribe({
         next: (res) => {
-          console.log(res.content);
           this.courses.set(res.content || []);
           this.totalCourses.set(res.totalElements || 0);
           this.isLoading.set(false);

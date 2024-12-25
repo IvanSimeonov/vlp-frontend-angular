@@ -54,10 +54,10 @@ export class UserNewAdminDialogComponent {
         })
         .subscribe({
           next: (res) => {
-            console.log(res);
+            console.log('New admin user created successfully: ', res);
           },
           error: (err) => {
-            console.error('Error: ', err);
+            console.error('Error occured while creating a new admin: ', err);
           },
         });
       this.dialogRef.close();

@@ -4,6 +4,7 @@ import { UserDialogComponent } from './user-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('UserDialogComponent', () => {
   let component: UserDialogComponent;
@@ -23,6 +24,7 @@ describe('UserDialogComponent', () => {
         },
         provideAnimations(),
         provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 

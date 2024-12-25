@@ -154,7 +154,7 @@ export class CourseManagementComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading.set(false);
-        console.log('Error: ', err);
+        console.error('Error changing course status: ', err);
       },
     });
   }
@@ -177,6 +177,5 @@ export class CourseManagementComponent implements OnInit {
     this.paginationSortingFiltering().status = filters.status;
     this.paginationSortingFiltering().pageNumber = 0;
     this.fetchCourses();
-    console.log(filters);
   }
 }

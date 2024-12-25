@@ -47,7 +47,6 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.editor.destroy();
-    // console.log('Destroy: ', this.destroy$);
     this.destroy$.next();
     this.destroy$.complete();
   }

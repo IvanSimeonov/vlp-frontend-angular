@@ -112,7 +112,6 @@ export class UserListComponent implements OnInit, AfterViewInit {
   }
 
   onSortChange(event: Sort): void {
-    console.log(event);
     this.paginator.pageIndex = 0;
     this.paginationSortingFiltering.update((state) => ({
       ...state,
@@ -137,7 +136,6 @@ export class UserListComponent implements OnInit, AfterViewInit {
       .pipe(delay(300))
       .subscribe({
         next: (res) => {
-          console.log(res.content);
           this.dataSource.set(new MatTableDataSource(res.content || []));
           this.paginator.length = res.totalElements || 0;
           this.isLoading.set(false);
@@ -159,7 +157,6 @@ export class UserListComponent implements OnInit, AfterViewInit {
     this.paginationSortingFiltering().status = filters.status;
     this.paginationSortingFiltering().pageNumber = 0;
     this.fetchUsers();
-    console.log(filters);
   }
 
   resetFilters() {

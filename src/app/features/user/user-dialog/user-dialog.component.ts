@@ -64,7 +64,6 @@ export class UserDialogComponent implements OnInit {
   private fetchUser() {
     this.adminService.getUser(this.data).subscribe({
       next: (res: UserOverviewDto) => {
-        console.log(res);
         this.user.set(res);
         this.userAccessForm.patchValue({
           role: res.role,
@@ -100,10 +99,10 @@ export class UserDialogComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          console.log(res);
+          console.log('User profile successfully updated: ', res);
         },
         error: (err) => {
-          console.error('Error: ', err);
+          console.error('Error occured updating the user profile: ', err);
         },
       });
   }

@@ -17,9 +17,7 @@ export class SafeUrlPipe implements PipeTransform {
     if (!videoId) {
       console.warn('Could not extract YouTube Video ID from the URL: ', url);
     }
-    console.log(videoId);
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-    console.log(embedUrl);
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
 
