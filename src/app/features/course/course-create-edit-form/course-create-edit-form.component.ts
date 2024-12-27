@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxEditorModule } from 'ngx-editor';
-import { Validators as NgxEditorValidators } from 'ngx-editor';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
 import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 import { CourseCreateDto, CourseUpdateDto, TopicOverviewDto } from '@ivannicksim/vlp-backend-openapi-client';
@@ -49,14 +48,8 @@ export class CourseCreateEditFormComponent implements OnInit {
   courseForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
     shortDescription: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(300)]],
-    fullDescription: [
-      '',
-      [NgxEditorValidators.required(), NgxEditorValidators.minLength(300), NgxEditorValidators.maxLength(3000)],
-    ],
-    requirements: [
-      '',
-      [NgxEditorValidators.required(), NgxEditorValidators.minLength(50), NgxEditorValidators.maxLength(500)],
-    ],
+    fullDescription: ['', [Validators.required, Validators.minLength(300), Validators.maxLength(3000)]],
+    requirements: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(500)]],
     passingScore: [0, [Validators.required, Validators.min(50), Validators.max(100)]],
     topicId: [0, [Validators.required]],
     difficultyLevel: [CourseCreateDto.DifficultyLevelEnum.Beginner, [Validators.required]],

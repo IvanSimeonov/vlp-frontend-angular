@@ -15,7 +15,6 @@ import { MatInputModule } from '@angular/material/input';
 import { RichTextEditorComponent } from '../../../components/rich-text-editor/rich-text-editor.component';
 import { CdkDropList, CdkDrag, CdkDragDrop, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Validators as NgxEditorValidators } from 'ngx-editor';
 import { LectureDetailDto, LectureDto } from '@ivannicksim/vlp-backend-openapi-client';
 
 export interface LectureTypeForm {
@@ -112,15 +111,15 @@ export class LectureManagementComponent implements OnInit {
         Validators.maxLength(50),
       ]),
       description: this.fb.control(lecture?.description || '', [
-        NgxEditorValidators.required(),
-        NgxEditorValidators.minLength(50),
-        NgxEditorValidators.maxLength(500),
+        Validators.required,
+        Validators.minLength(50),
+        Validators.maxLength(500),
       ]),
       videoUrl: this.fb.control(lecture?.videoUrl || '', [Validators.required]),
       assignmentTask: this.fb.control(lecture?.assignmentTask || '', [
-        NgxEditorValidators.required(),
-        NgxEditorValidators.minLength(50),
-        NgxEditorValidators.maxLength(500),
+        Validators.required,
+        Validators.minLength(50),
+        Validators.maxLength(500),
       ]),
       sequenceNumber: this.fb.control(lecture?.sequenceNumber || this.lectures.length + 1, Validators.required),
       courseId: this.fb.control(this.courseId(), Validators.required),
