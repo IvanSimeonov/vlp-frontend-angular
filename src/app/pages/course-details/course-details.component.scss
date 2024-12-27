@@ -213,3 +213,15 @@
 .hidden {
   display: none;
 }
+
+.submitted-file {
+  display: flex;
+  flex-direction: column-reverse;
+  row-gap: 20px;
+}
+
+.file-desc,
+.file-grade {
+  display: flex;
+  gap: 10px;
+}

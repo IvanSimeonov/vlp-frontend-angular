@@ -90,14 +90,12 @@
                       } @else if (isUserCourseAuthor()) {
                       } @else {
                         <div class="submitted-file">
-                          <div class="file-desc">
-                            <mat-icon>description</mat-icon>
-                            <span>{{ getAssignmentSolutionFileName(lecture.id!) }}</span>
-                            <button mat-icon-button (click)="downloadAssignmentSolution(lecture.id!)">
+                          <div class="file-download">
+                            <button mat-flat-button (click)="downloadAssignmentSolution(lecture.id!)">
+                              Download
                               <mat-icon>download</mat-icon>
                             </button>
                           </div>
-                          <div class="file-download"></div>
                           <div class="file-grade">
                             <mat-icon>grade</mat-icon>
                             <span>Grade: {{ getAssignmentSolutionGrade(lecture.id!) }} / 100</span>
