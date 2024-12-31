@@ -58,7 +58,13 @@ export class CourseDetailsComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private destroy$ = new Subject<void>();
 
-  allowedFileTypes: string[] = ['application/pdf', 'application/msword'];
+  allowedFileTypes: string[] = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ];
   maxFileSizeMB = 50;
 
   course = signal<CourseDetailsDto | null>(null);

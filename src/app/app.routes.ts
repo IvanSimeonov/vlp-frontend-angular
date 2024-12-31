@@ -47,6 +47,7 @@ export const routes: Routes = [
   {
     path: 'courses/:id',
     title: 'Course Details',
+    canActivate: [authGuard],
     component: CourseDetailsComponent,
   },
   {
@@ -54,6 +55,11 @@ export const routes: Routes = [
     title: 'My Learnings',
     canActivate: [authGuard],
     component: MyLearningsComponent,
+  },
+  {
+    path: 'user/my-profile',
+    title: 'Public Profile',
+    component: UserPublicProfileComponent,
   },
   {
     path: 'user/:id/profile',

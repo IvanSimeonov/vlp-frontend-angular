@@ -13,6 +13,9 @@ import {
 import { EnumUtils } from '../../../shared/helpers/EnumUtils';
 import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
+import { AuthService } from '../../../auth/services/auth.service';
+import { StorageService } from '../../../auth/services/storage.service';
+import { UserProfileService } from '../../../services/user/user-profile.service';
 
 @Component({
   selector: 'app-user-public-profile',
@@ -22,6 +25,9 @@ import { MatCardModule } from '@angular/material/card';
   styleUrl: './user-public-profile.component.scss',
 })
 export class UserPublicProfileComponent implements OnInit {
+  private authService = inject(AuthService);
+  private storageService = inject(StorageService);
+  private userProfileService = inject(UserProfileService);
   private userService = inject(UserControllerService);
   private route = inject(ActivatedRoute);
   private courseService = inject(CourseControllerService);
@@ -37,32 +43,33 @@ export class UserPublicProfileComponent implements OnInit {
   enrolledCoursesPageSize = 10;
 
   ngOnInit(): void {
-    const userId = Number(this.route.snapshot.paramMap.get('id'));
-    if (userId && !isNaN(userId)) {
-      this.userService.getUserPublicProfile(userId).subscribe({
-        next: (res) => {
-          this.user.set(res);
-          this.updateCreatedCoursesPage(0, this.createdCoursesPageSize);
-          this.updateEnrolledCoursesPage(0, this.enrolledCoursesPageSize);
-          this.updateCompletedCoursesPage(0, this.completedCoursesPageSize);
-          const imagePath = res.profileImagePath;
-          if (imagePath) {
-            this.userService.getProfileImage(imagePath).subscribe({
-              next: (img) => {
-                const imageUrl = URL.createObjectURL(img);
-                this.userProfileImage.set(imageUrl);
-              },
-              error: (err) => {
-                console.error('Error fetching profile image: ', err);
-              },
-            });
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching user profile: ', err);
-        },
-      });
+    let userId = Number(this.route.snapshot.paramMap.get('id'));
+    if (userId === 0) {
+      userId = this.userProfileService.userProfile()!.id!;
     }
+    this.userService.getUserPublicProfile(userId).subscribe({
+      next: (res) => {
+        this.user.set(res);
+        this.updateCreatedCoursesPage(0, this.createdCoursesPageSize);
+        this.updateEnrolledCoursesPage(0, this.enrolledCoursesPageSize);
+        this.updateCompletedCoursesPage(0, this.completedCoursesPageSize);
+        const imagePath = res.profileImagePath;
+        if (imagePath) {
+          this.userService.getProfileImage(imagePath).subscribe({
+            next: (img) => {
+              const imageUrl = URL.createObjectURL(img);
+              this.userProfileImage.set(imageUrl);
+            },
+            error: (err) => {
+              console.error('Error fetching profile image: ', err);
+            },
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching user profile: ', err);
+      },
+    });
   }
 
   paginateCreatedCourses(event: PageEvent): void {

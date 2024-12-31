@@ -32,13 +32,16 @@ export class AuthInterceptor implements HttpInterceptor {
         next: (event) => {
           if (event instanceof HttpResponse && !isWhiteListed) {
             if (
-              event.url?.includes('api/v1/courses/learnings') ||
-              event.url?.includes('profile') ||
-              event.url?.includes('edit-profile')
+              (event.url?.includes('api/v1/courses/learnings') ||
+                event.url?.includes('profile') ||
+                event.url?.includes('edit-profile')) &&
+              this.authService.isLoggedIn()
             ) {
               this.userProfileService.refreshUserProfile().subscribe({
                 next: () => console.log('Profile refresh completed'),
-                error: (error) => console.error('Failed to refresh user profile:', error),
+                error: (error) => {
+                  console.error('Failed to refresh user profile:', error);
+                },
               });
             }
           }

@@ -1,7 +1,6 @@
 <div class="user-dialog">
   <div class="user-dialog__header">
-    <!-- <img [src]="user()?.photo || '/images/user-default-img.webp'" alt="User photo" class="user-dialog__photo" /> -->
-    <img [src]="'/images/user-default-img.webp'" alt="User photo" class="user-dialog__photo" />
+    <img [src]="userProfileImage() || '/images/user-default-img.webp'" alt="User photo" class="user-dialog__photo" />
     <h2 class="user-dialog__name">{{ user()?.firstName }} {{ user()?.lastName }}</h2>
     <p class="user-dialog__email">{{ user()?.email }}</p>
   </div>

@@ -81,7 +81,7 @@
         <div class="header__profile">
           <img
             class="header__profile-avatar"
-            [src]="'/images/user-default-img.webp'"
+            [src]="userProfileImage() || '/images/user-default-img.webp'"
             alt="{{ user()?.firstName }} {{ user()?.lastName }} avatar" />
           <div>
             <span class="header__profile-name">{{ user()?.firstName }} {{ user()?.lastName }}</span>
@@ -89,7 +89,7 @@
           </div>
         </div>
         <mat-divider></mat-divider>
-        <a class="header__menu-item" [routerLink]="navigateToPublicProfile()">Profile</a>
+        <a class="header__menu-item" routerLink="/user/my-profile">Profile</a>
         <a class="header__menu-item" routerLink="/user/edit-profile">Account Settings</a>
         <a class="header__menu-item" (click)="logout()" (keydown)="logout()" tabindex="{0}">Logout</a>
       </mat-menu>

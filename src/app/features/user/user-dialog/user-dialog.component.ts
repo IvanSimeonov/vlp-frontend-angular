@@ -9,6 +9,7 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/materia
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AdminControllerService,
+  UserControllerService,
   UserOverviewDto,
   UserSearchCriteriaDto,
 } from '@ivannicksim/vlp-backend-openapi-client';
@@ -35,7 +36,9 @@ export class UserDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<UserDialogComponent>);
   private data: number = inject(MAT_DIALOG_DATA);
   private adminService = inject(AdminControllerService);
+  private userService = inject(UserControllerService);
   private fb = inject(FormBuilder);
+  userProfileImage = signal<Blob | string | undefined>(undefined);
 
   user = signal<UserOverviewDto | undefined>(undefined);
   isEditable = computed(() => this.user()?.role !== 'ROLE_ADMIN' && this.user()?.role !== 'ROLE_ROOT_ADMIN');
@@ -76,6 +79,10 @@ export class UserDialogComponent implements OnInit {
           this.userAccessForm.get('role')?.enable();
           this.userAccessForm.get('status')?.enable();
         }
+        const imagePath = res?.profileImagePath;
+        if (imagePath) {
+          this.fetchUserImage();
+        }
       },
       error: (err) => {
         console.error('Error: ', err);
@@ -89,6 +96,21 @@ export class UserDialogComponent implements OnInit {
 
   formatStatus(status: boolean) {
     return EnumUtils.formatUserStatus(status);
+  }
+
+  fetchUserImage() {
+    const imagePath = this.user()?.profileImagePath;
+    if (imagePath) {
+      this.userService.getProfileImage(imagePath).subscribe({
+        next: (img) => {
+          const imageUrl = URL.createObjectURL(img);
+          this.userProfileImage.set(imageUrl);
+        },
+        error: (err) => {
+          console.error('Error fetching profile image: ', err);
+        },
+      });
+    }
   }
 
   private updateUser(userId: number) {
