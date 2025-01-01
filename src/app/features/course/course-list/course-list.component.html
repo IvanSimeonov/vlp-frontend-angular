@@ -32,6 +32,9 @@
       <app-course-filter [topics]="topics()" (filterChange)="applyFilters($event)"></app-course-filter>
     </div>
     <div class="course-layout__content__courses mat-elevation-z8">
+      @if (totalCourses() === 0) {
+        <span>No courses were found. Please modify your search criteria and try again.</span>
+      }
       <div class="course-layout__content__courses__cards">
         @for (course of courses(); track course.id) {
           <app-course-card [course]="course" [courseImage]="fetchCourseImage(course)"></app-course-card>
