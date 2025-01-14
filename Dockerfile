@@ -10,7 +10,7 @@ RUN npm run build
 FROM nginx:1.27.3-alpine
 
 COPY  nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /vlp/dist/vlp-frontend-angular /usr/share/nginx/html
+COPY --from=builder /vlp/dist/vlp-frontend-angular/browser /usr/share/nginx/html
 
 EXPOSE 4200
 
