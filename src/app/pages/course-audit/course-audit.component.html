@@ -1,0 +1,133 @@
+@if (isLoading) {
+  Loading...
+} @else {
+  <div class="course-audit-container" fxLayout="column" fxLayoutGap="20px">
+    <!-- Course Title -->
+
+    <h2>COURSE AUDIT - ID: {{ id }}, Version: {{ version }}</h2>
+
+    <h3>Properties</h3>
+
+    <div>
+      <div class="course-audit-property-row"><strong>Title:</strong> {{ course?.title }}</div>
+      <div class="course-audit-property-row"><strong>Short description:</strong> {{ course?.shortDescription }}</div>
+      <div class="course-audit-property-row"><strong>Requirements:</strong> {{ course?.requirements }}</div>
+      <div class="course-audit-property-row">
+        <strong>Full description: </strong><button (click)="toggleShowFullDescription()">show full text</button>
+      </div>
+      @if (showFullDescription) {
+        <p [innerHTML]="course?.fullDescription"></p>
+      }
+      <div class="course-audit-property-row"><strong>Created On:</strong> {{ course?.author?.created | date }}</div>
+    </div>
+    <!-- Author Details -->
+    <h3>Author</h3>
+
+    <div>
+      <img
+        *ngIf="course?.author?.profileImagePath"
+        [src]="course?.author?.profileImagePath"
+        alt="Author Image"
+        width="50"
+        height="50" />
+
+      <div class="course-audit-property-row">
+        <strong>Name:</strong> {{ course?.author?.firstName }} {{ course?.author?.lastName }}
+      </div>
+      <div class="course-audit-property-row"><strong>Email:</strong> {{ course?.author?.email }}</div>
+      <div class="course-audit-property-row"><strong>Role:</strong> {{ course?.author?.role }}</div>
+      <div class="course-audit-property-row">
+        <strong>Enabled:</strong> {{ course?.author?.enabled ? 'Yes' : 'No' }}
+      </div>
+      <div class="course-audit-property-row"><strong>Created On:</strong> {{ course?.author?.created | date }}</div>
+    </div>
+
+    <h3>Lectures</h3>
+
+    <mat-table [dataSource]="sortedLectures" class="mat-elevation-z8">
+      <ng-container matColumnDef="sequenceNumber">
+        <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+        <mat-cell *matCellDef="let lecture"> {{ lecture.sequenceNumber }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+        <mat-cell *matCellDef="let lecture"> {{ lecture.title }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+        <mat-cell *matCellDef="let lecture"> {{ lecture.description }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="videoUrl">
+        <mat-header-cell *matHeaderCellDef> Video URL </mat-header-cell>
+        <mat-cell *matCellDef="let lecture">
+          <a [href]="lecture.videoUrl" target="_blank">Watch Video</a>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="assignmentTask">
+        <mat-header-cell *matHeaderCellDef> Assignment Task </mat-header-cell>
+        <mat-cell *matCellDef="let lecture"> {{ lecture.assignmentTask }} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="lectureColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: lectureColumns"></mat-row>
+    </mat-table>
+
+    <h3>Enrolled Users</h3>
+    <!-- Completed Users Tab -->
+    <mat-table [dataSource]="course!.enrolledUsers" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.firstName }} {{ user.lastName }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.email }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.role }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="created">
+        <mat-header-cell *matHeaderCellDef> Created On </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.created }} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="userColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: userColumns"></mat-row>
+    </mat-table>
+
+    <h3>Completed Users</h3>
+    <!-- Completed Users Tab -->
+    <mat-table [dataSource]="course!.completedUsers" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.firstName }} {{ user.lastName }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.email }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.role }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="created">
+        <mat-header-cell *matHeaderCellDef> Created On </mat-header-cell>
+        <mat-cell *matCellDef="let user"> {{ user.created }} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="userColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: userColumns"></mat-row>
+    </mat-table>
+  </div>
+}

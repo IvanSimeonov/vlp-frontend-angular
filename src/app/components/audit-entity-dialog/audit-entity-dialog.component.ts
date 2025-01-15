@@ -30,6 +30,6 @@ export class AuditEntityDialogComponent {
 
   expandedElementVersion = -1;
 
-  columnsToDisplay = ['version', 'datetime', 'isInitial', 'changes', 'author'];
+  columnsToDisplay = ['version', 'datetime', 'isInitial', 'changes', 'author', 'actions'];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
 }

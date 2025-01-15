@@ -18,6 +18,7 @@ import { adminGuard } from './auth/guards/admin.guard';
 import { authGuard } from './auth/guards/auth.guard';
 import { teacherGuard } from './auth/guards/teacher.guard';
 import { courseOwnerGuard } from './auth/guards/course-owner.guard';
+import { CourseAuditComponent } from './pages/course-audit/course-audit.component';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,12 @@ export const routes: Routes = [
     title: 'Course Details',
     canActivate: [authGuard],
     component: CourseDetailsComponent,
+  },
+  {
+    path: 'audit/courses/:id/version/:version',
+    title: 'Course Audit',
+    canActivate: [authGuard],
+    component: CourseAuditComponent,
   },
   {
     path: 'my-courses',
